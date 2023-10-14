@@ -30,13 +30,10 @@ public class SpotifyApiConnection {
         .setClientSecret(clientSecret)
         .build();
 
-    private final ClientCredentialsRequest clientCredentialsRequest = apiClient.clientCredentials()
-        .build();
-
     //#endregion
 
     //#region " Methods "
-    
+
     //Getter for the Spotify API client, first refreshes the access token
     public SpotifyApi getApiClient() {
 
@@ -56,6 +53,10 @@ public class SpotifyApiConnection {
 
         //First create a return variable
         boolean refreshSuccessful = false;
+
+        //Next create the credential request builder object
+        ClientCredentialsRequest clientCredentialsRequest = apiClient.clientCredentials()
+        .build();
 
         try {
             //First grab the credentails, and set the access token
