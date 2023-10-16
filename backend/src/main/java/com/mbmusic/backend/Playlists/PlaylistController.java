@@ -1,5 +1,6 @@
 package com.mbmusic.backend.Playlists;
 
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -10,7 +11,7 @@ import se.michaelthelin.spotify.requests.data.artists.GetArtistRequest;
 
 //This class resembles the controller for accessing playlist data
 @RestController
-@RequestMapping("/playlist")
+@RequestMapping("playlist")
 public class PlaylistController {
     //#region " Members "
     
@@ -20,7 +21,6 @@ public class PlaylistController {
     //#endregion
 
     //#region " Constructor "
-
     public PlaylistController(SpotifyApiConnection connection) {
         this.spotifyClient = connection;
     }
@@ -31,8 +31,8 @@ public class PlaylistController {
 
     //#region " GET "
 
-    @RequestMapping("test")
-    public String GetTest() {
+    @GetMapping("/test")
+    public String getTest() {
         
         GetArtistRequest request = this.spotifyClient.getApiClient().getArtist("1GxkXlMwML1oSg5eLPiAz3").build();
         Artist artist;

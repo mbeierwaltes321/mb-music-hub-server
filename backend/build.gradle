@@ -26,4 +26,9 @@ dependencies {
 
 tasks.named('test') {
 	useJUnitPlatform()
+
+	environment("SpotifyClientId", System.getProperty("SpotifyClientId"))
+
+	environment("SpotifyClientSecret", System.getProperty("SpotifyClientSecret"))
+
 }
