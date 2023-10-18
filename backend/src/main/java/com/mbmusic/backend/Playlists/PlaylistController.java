@@ -13,6 +13,7 @@ import se.michaelthelin.spotify.requests.data.artists.GetArtistRequest;
 @RestController
 @RequestMapping("playlist")
 public class PlaylistController {
+
     //#region " Members "
     
     //The client to the spotify API
@@ -31,6 +32,7 @@ public class PlaylistController {
 
     //#region " GET "
 
+    //Test endpoint for testing MVC
     @GetMapping("/test")
     public String getTest() {
         
