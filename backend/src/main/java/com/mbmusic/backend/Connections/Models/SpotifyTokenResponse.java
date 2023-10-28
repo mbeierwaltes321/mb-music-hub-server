@@ -18,6 +18,9 @@ public class SpotifyTokenResponse {
     //The datetime which the token was generated/refreshed
     private LocalDateTime tokenGeneratedAt;
 
+    //The state string used to verify the request
+    private String state;
+
     public LocalDateTime getTokenGeneratedAt() {
         return tokenGeneratedAt;
     }
@@ -52,6 +55,14 @@ public class SpotifyTokenResponse {
     //Sets the refresh access token
     public void setRefreshToken(String refreshToken) {
         this.refreshToken = refreshToken;
+    }
+
+    public String getState() {
+        return state;
+    }
+
+    public void setState(String state) {
+        this.state = state;
     }
     
 }

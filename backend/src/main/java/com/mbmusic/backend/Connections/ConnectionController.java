@@ -30,7 +30,7 @@ public class ConnectionController {
     //#region " Methods "
     //This method generates the login URI for authenticating the user into Spotify
     @PostMapping("/spotifylogin")
-    public ResponseEntity<SpotifyLoginAuth> PostSpotifyLogin() {
+    public ResponseEntity<SpotifyLoginAuth> postSpotifyLogin() {
 
         //First create the return object
         SpotifyLoginAuth loginAuth = new SpotifyLoginAuth();
@@ -83,7 +83,7 @@ public class ConnectionController {
     //This method is called by the Spotify API
     //NOTE: When the state is returned to the client, you
     //must verify that the state in the browser matches the state passed here
-    @GetMapping("/spotifytoken")
+    @GetMapping("/redirect")
     public ResponseEntity<SpotifyTokenResponse> spotifyAuthToken(String code, String state) {
         
         //First create the response token
@@ -107,11 +107,14 @@ public class ConnectionController {
             tokenResponse.setRefreshToken(authorizationCodeCredentials.getRefreshToken());
             tokenResponse.setExpiresIn(authorizationCodeCredentials.getExpiresIn());
             tokenResponse.setTokenGeneratedAt(LocalDateTime.now());
+            tokenResponse.setState(state);
 
         } catch (Exception e) {
             // There was an error setting obtaining the credentails, send 500 error
             return ResponseEntity.internalServerError().build();
         }
+
+        //TODO - The response should be a confirmation page that will return the tokenResponse to the frontend application
 
         //Return the response
         return new ResponseEntity<SpotifyTokenResponse>(tokenResponse, HttpStatusCode.valueOf(HttpStatus.SC_OK));

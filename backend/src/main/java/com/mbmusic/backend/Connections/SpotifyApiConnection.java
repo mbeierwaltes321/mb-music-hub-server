@@ -24,7 +24,7 @@ public class SpotifyApiConnection {
     private static final String clientSecret = System.getenv("SpotifyClientSecret");
 
     //The redirection URI for authorization requests
-    private static final URI redirectUri = SpotifyHttpManager.makeUri("http://localhost:8080/api/conn/spotifytoken"); 
+    private static final URI redirectUri = SpotifyHttpManager.makeUri("http://localhost:8080/api/conn/redirect"); 
 
     //The api object that contains the connection information
     private static final SpotifyApi apiClient = new SpotifyApi.Builder()
