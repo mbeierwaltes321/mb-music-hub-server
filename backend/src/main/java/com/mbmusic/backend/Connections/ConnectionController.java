@@ -7,10 +7,13 @@ import org.apache.hc.core5.http.HttpStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.ui.Model;
 
 import com.mbmusic.backend.Connections.Models.SpotifyLoginAuth;
 import com.mbmusic.backend.Connections.Models.SpotifyTokenResponse;
@@ -20,7 +23,7 @@ import se.michaelthelin.spotify.requests.authorization.authorization_code.Author
 import se.michaelthelin.spotify.requests.authorization.authorization_code.AuthorizationCodeUriRequest;
 
 //This controller is responsible for handling any requests related to API connections
-@RestController
+@Controller
 @RequestMapping("conn")
 public class ConnectionController {
 
@@ -84,14 +87,14 @@ public class ConnectionController {
     //NOTE: When the state is returned to the client, you
     //must verify that the state in the browser matches the state passed here
     @GetMapping("/redirect")
-    public ResponseEntity<SpotifyTokenResponse> spotifyAuthToken(String code, String state) {
+    public String spotifyAuthToken(@RequestParam(name="code") String code, @RequestParam(name="state") String state, Model model) {
         
         //First create the response token
         SpotifyTokenResponse tokenResponse = new SpotifyTokenResponse();
 
         if (code.isBlank() || code == null) {
             //Blank or null code, return 500
-            return ResponseEntity.internalServerError().build();
+            // return ResponseEntity.internalServerError().build();
         }
 
         //Create an authorization code request object for retrieving the access/refresh tokens
@@ -111,14 +114,16 @@ public class ConnectionController {
 
         } catch (Exception e) {
             // There was an error setting obtaining the credentails, send 500 error
-            return ResponseEntity.internalServerError().build();
+            // return ResponseEntity.internalServerError().build();
         }
 
         //TODO - The response should be a confirmation page that will return the tokenResponse to the frontend application
 
         //Return the response
-        return new ResponseEntity<SpotifyTokenResponse>(tokenResponse, HttpStatusCode.valueOf(HttpStatus.SC_OK));
 
+        //TODO - Return a success page on success, failure page on failure
+        model.addAttribute("ResponseObj", tokenResponse);
+        return "SpotifyTokenGenerated";
     }
 
 
