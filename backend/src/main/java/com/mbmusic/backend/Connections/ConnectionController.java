@@ -87,42 +87,51 @@ public class ConnectionController {
     //NOTE: When the state is returned to the client, you
     //must verify that the state in the browser matches the state passed here
     @GetMapping("/redirect")
-    public String spotifyAuthToken(@RequestParam(name="code") String code, @RequestParam(name="state") String state, Model model) {
+    public String spotifyAuthToken(@RequestParam(name="code") String code, @RequestParam(name="state") String state, @RequestParam(name="error", required= false) String error, Model model) {
         
+        //First create boolean variable which determines the success of the token request
+        boolean authTokenSuccessful = true;
+
         //First create the response token
         SpotifyTokenResponse tokenResponse = new SpotifyTokenResponse();
 
-        if (code.isBlank() || code == null) {
-            //Blank or null code, return 500
-            // return ResponseEntity.internalServerError().build();
+        //First check if there isn error
+        if (error != null && !error.isBlank()) {
+            authTokenSuccessful = false;
+            System.out.println(error);
         }
+        //Check for if the code returned is either blank or null
+        else if (code.isBlank() || code == null) {
+            authTokenSuccessful = false;
+        } else {
+            //Create an authorization code request object for retrieving the access/refresh tokens
+            final AuthorizationCodeRequest request = spotifyConnection.getApiClient().authorizationCode(code).build();
 
-        //Create an authorization code request object for retrieving the access/refresh tokens
-        final AuthorizationCodeRequest request = spotifyConnection.getApiClient().authorizationCode(code).build();
+            //Grab the credentails
+            try {
+                // Attempt to obtain the credentails
+                final AuthorizationCodeCredentials authorizationCodeCredentials = request.execute();
 
-        //Grab the credentails
-        try {
-            // Attempt to obtain the credentails
-            final AuthorizationCodeCredentials authorizationCodeCredentials = request.execute();
+                //Populate the return varaible
+                tokenResponse.setAccessToken(authorizationCodeCredentials.getAccessToken());
+                tokenResponse.setRefreshToken(authorizationCodeCredentials.getRefreshToken());
+                tokenResponse.setExpiresIn(authorizationCodeCredentials.getExpiresIn());
+                tokenResponse.setTokenGeneratedAt(LocalDateTime.now());
+                tokenResponse.setState(state);
 
-            //Populate the return varaible
-            tokenResponse.setAccessToken(authorizationCodeCredentials.getAccessToken());
-            tokenResponse.setRefreshToken(authorizationCodeCredentials.getRefreshToken());
-            tokenResponse.setExpiresIn(authorizationCodeCredentials.getExpiresIn());
-            tokenResponse.setTokenGeneratedAt(LocalDateTime.now());
-            tokenResponse.setState(state);
+            } catch (Exception e) {
+                // There was an error setting obtaining the credentails, send 500 error
+                authTokenSuccessful = false;
+            }
 
-        } catch (Exception e) {
-            // There was an error setting obtaining the credentails, send 500 error
-            // return ResponseEntity.internalServerError().build();
         }
-
+    
         //TODO - The response should be a confirmation page that will return the tokenResponse to the frontend application
 
-        //Return the response
 
-        //TODO - Return a success page on success, failure page on failure
-        model.addAttribute("ResponseObj", tokenResponse);
+        //Return the response
+        model.addAttribute("authTokenSuccess", authTokenSuccessful);
+        model.addAttribute("responseObj", tokenResponse);
         return "SpotifyTokenGenerated";
     }
 
