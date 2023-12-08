@@ -1,13 +1,22 @@
 package com.mbmusic.backend.Connections;
 
+import java.io.IOException;
 import java.net.URI;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 
+import org.springframework.cglib.core.Local;
 import org.springframework.stereotype.Component;
+
+import com.mbmusic.backend.Connections.Models.SpotifyTokenInfo;
 
 import se.michaelthelin.spotify.SpotifyApi;
 import se.michaelthelin.spotify.SpotifyHttpManager;
+import se.michaelthelin.spotify.exceptions.SpotifyWebApiException;
+import se.michaelthelin.spotify.model_objects.credentials.AuthorizationCodeCredentials;
 import se.michaelthelin.spotify.model_objects.credentials.ClientCredentials;
+import se.michaelthelin.spotify.requests.authorization.authorization_code.AuthorizationCodeRefreshRequest;
 import se.michaelthelin.spotify.requests.authorization.client_credentials.ClientCredentialsRequest;
 
 // This class handles the connection between the music hub
@@ -37,12 +46,63 @@ public class SpotifyApiConnection {
 
     //#region " Methods "
 
-    //Getter for the Spotify API client, first refreshes the access token
+    //Simple getter that returns the Spotify API client
     public SpotifyApi getApiClient() {
-        //TODO: At this point, you should assign the tokens to the spotify api client, and check for a refresh token
         
         return apiClient;
     }
+
+    //This method sets the authroization tokens with the Spotify API client,
+    //refreshes the token if necessary, updates the tokens object, and the finally returns
+    //the object
+    public SpotifyApi getApiClient(SpotifyTokenInfo authTokens)
+        throws IOException, SpotifyWebApiException, org.apache.hc.core5.http.ParseException{
+
+        //First populate the client with the correct tokens
+        this.apiClient.setAccessToken(authTokens.getAccessToken());
+        this.apiClient.setRefreshToken(authTokens.getRefreshToken());
+        
+        //Now see if the authorization token is expired.
+        //The LocalDateTime should already be in UTC from the frontend
+        LocalDateTime authDateTime = authTokens.getTokenGeneratedAt();
+
+        //Determine whether the token is expired and needs to be refreshed
+        Boolean tokenExpired = LocalDateTime.now().isAfter(authDateTime.plusSeconds(authTokens.getExpiresIn()));
+        if(tokenExpired) {
+            //Create an authorization code refresh request
+            final AuthorizationCodeRefreshRequest refreshRequest = this.apiClient.authorizationCodeRefresh().build();
+
+            //Perform the refresh
+            final AuthorizationCodeCredentials newCreds = refreshRequest.execute();
+
+            //Now update the API Client's credntials
+            this.apiClient.setAccessToken(newCreds.getAccessToken());
+            this.apiClient.setRefreshToken(newCreds.getRefreshToken());
+
+            //Get a UTC ZoneId
+            final ZoneId UTC = ZoneId.of("UTC");
+
+            //Get the token generation time in UTC
+            final LocalDateTime generationTimeUTC = LocalDateTime.now(UTC);
+
+            //Finally, set the auth token object's fields
+            authTokens.setTokenGeneratedAt(generationTimeUTC);
+            authTokens.setExpiresIn(newCreds.getExpiresIn());
+            authTokens.setAccessToken(this.apiClient.getAccessToken());
+            authTokens.setRefreshToken(this.apiClient.getRefreshToken());
+
+        }
+        
+        //Return the api client
+        return apiClient;
+
+    }
+
+    
+
+
+
+
 
     // //This method refreshes the access token for the api client
     // private boolean refreshAccessToken() {
