@@ -2,7 +2,6 @@ package com.mbmusic.backend.Connections;
 
 import java.net.URI;
 import java.net.URL;
-import java.time.LocalDateTime;
 
 import org.apache.hc.core5.http.HttpStatus;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -65,7 +64,7 @@ public class ConnectionController {
         request = spotifyConnection.getApiClient().authorizationCodeUri()
                     .state(stateSb.toString())
                     .response_type("code")
-                    .scope("user-library-read")
+                    .scope("user-library-read playlist-read-private")
                     .build();
 
         final URI authUri = request.execute();

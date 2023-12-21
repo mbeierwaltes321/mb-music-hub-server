@@ -2,6 +2,8 @@ package com.mbmusic.backend.Connections.Models;
 
 import java.time.LocalDateTime;
 
+import org.springframework.format.annotation.DateTimeFormat;
+
 //This class models the return object containing the Spotify access
 //token and the corresponding refresh token
 public class SpotifyTokenInfo {
@@ -17,6 +19,7 @@ public class SpotifyTokenInfo {
     private int expiresIn;
 
     //The datetime which the token was generated/refreshed
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private LocalDateTime tokenGeneratedAt;
 
     //#endregion

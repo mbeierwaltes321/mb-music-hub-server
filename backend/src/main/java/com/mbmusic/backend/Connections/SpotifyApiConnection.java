@@ -2,11 +2,9 @@ package com.mbmusic.backend.Connections;
 
 import java.io.IOException;
 import java.net.URI;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 
-import org.springframework.cglib.core.Local;
 import org.springframework.stereotype.Component;
 
 import com.mbmusic.backend.Connections.Models.SpotifyTokenInfo;
@@ -15,9 +13,7 @@ import se.michaelthelin.spotify.SpotifyApi;
 import se.michaelthelin.spotify.SpotifyHttpManager;
 import se.michaelthelin.spotify.exceptions.SpotifyWebApiException;
 import se.michaelthelin.spotify.model_objects.credentials.AuthorizationCodeCredentials;
-import se.michaelthelin.spotify.model_objects.credentials.ClientCredentials;
 import se.michaelthelin.spotify.requests.authorization.authorization_code.AuthorizationCodeRefreshRequest;
-import se.michaelthelin.spotify.requests.authorization.client_credentials.ClientCredentialsRequest;
 
 // This class handles the connection between the music hub
 // and the Spotify API
@@ -66,8 +62,13 @@ public class SpotifyApiConnection {
         //The LocalDateTime should already be in UTC from the frontend
         LocalDateTime authDateTime = authTokens.getTokenGeneratedAt();
 
+        //Get the current time in UTC
+        //Get a UTC ZoneId
+        final ZoneId UTC = ZoneId.of("UTC");
+        final LocalDateTime currentTimeUTC = LocalDateTime.now(UTC);
+
         //Determine whether the token is expired and needs to be refreshed
-        Boolean tokenExpired = LocalDateTime.now().isAfter(authDateTime.plusSeconds(authTokens.getExpiresIn()));
+        Boolean tokenExpired = currentTimeUTC.isAfter(authDateTime.plusSeconds(authTokens.getExpiresIn()));
         if(tokenExpired) {
             //Create an authorization code refresh request
             final AuthorizationCodeRefreshRequest refreshRequest = this.apiClient.authorizationCodeRefresh().build();
@@ -77,19 +78,11 @@ public class SpotifyApiConnection {
 
             //Now update the API Client's credntials
             this.apiClient.setAccessToken(newCreds.getAccessToken());
-            this.apiClient.setRefreshToken(newCreds.getRefreshToken());
-
-            //Get a UTC ZoneId
-            final ZoneId UTC = ZoneId.of("UTC");
-
-            //Get the token generation time in UTC
-            final LocalDateTime generationTimeUTC = LocalDateTime.now(UTC);
 
             //Finally, set the auth token object's fields
-            authTokens.setTokenGeneratedAt(generationTimeUTC);
+            authTokens.setTokenGeneratedAt(currentTimeUTC);
             authTokens.setExpiresIn(newCreds.getExpiresIn());
             authTokens.setAccessToken(this.apiClient.getAccessToken());
-            authTokens.setRefreshToken(this.apiClient.getRefreshToken());
 
         }
         
@@ -97,43 +90,6 @@ public class SpotifyApiConnection {
         return apiClient;
 
     }
-
-    
-
-
-
-
-
-    // //This method refreshes the access token for the api client
-    // private boolean refreshAccessToken() {
-
-    //     //First create a return variable
-    //     boolean refreshSuccessful = false;
-
-    //     //Next create the credential request builder object
-    //     ClientCredentialsRequest clientCredentialsRequest = apiClient.clientCredentials()
-    //     .build();
-
-    //     try {
-    //         //First grab the credentails, and set the access token
-    //         ClientCredentials creds = clientCredentialsRequest.execute();
-    //         apiClient.setAccessToken(creds.getAccessToken());
-
-    //         //Update the access token time
-    //         tokenAccessed = java.time.LocalDateTime.now();
-
-    //         //Success, set the return variable to true
-    //         refreshSuccessful = true;
-    //     } catch (Exception e) {
-    //         // Print out exception
-    //         System.out.println(e.getMessage());
-            
-    //         //Failed, so return variable remains false
-    //     }
-
-    //     return refreshSuccessful;
-    // } 
-
 
     //#endregion
 }
