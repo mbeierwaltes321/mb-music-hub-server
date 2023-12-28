@@ -4,6 +4,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.mbmusic.backend.Common.Models.ApiResponse;
@@ -59,14 +60,23 @@ public class PlaylistController {
 
     //This method gets all of the Spotify playlists created by the current user
     @GetMapping("/getuserspotifyplaylists")
-    public ResponseEntity<ApiResponse<Paging<PlaylistSimplified>>> GetUserSpotifyPlaylists(SpotifyTokenInfo authTokens) 
+    public ResponseEntity<ApiResponse<Paging<PlaylistSimplified>>> GetUserSpotifyPlaylists(SpotifyTokenInfo authTokens, @RequestParam(required = false)Integer offset) 
         throws Exception {
 
         //First obtain the spotify client from the connection
         SpotifyApi spotifyApi = this.spotifyConnection.getApiClient(authTokens);
 
-        //Now create a requet to get the playlists for the current user
-        final GetListOfCurrentUsersPlaylistsRequest request = spotifyApi.getListOfCurrentUsersPlaylists().build();
+        //Now create a requet builder to get the playlists for the current user
+        GetListOfCurrentUsersPlaylistsRequest.Builder requestBuilder = spotifyApi.getListOfCurrentUsersPlaylists();
+
+        //Now determine if there is an offset applied
+        if (offset != null) {
+            //Offset isn't null. Add it
+            requestBuilder.offset(offset);
+        }
+
+        //Finally build the request
+        final GetListOfCurrentUsersPlaylistsRequest request = requestBuilder.build();
 
         //Execute the request to obtain the playlists
         Paging<PlaylistSimplified> playlists = request.execute();
@@ -78,9 +88,6 @@ public class PlaylistController {
 
         //Set the token information
         response.setSpotifyTokenInfo(authTokens);
-
-        // //Now create the response
-        // ResponseEntity<Paging<PlaylistSimplified>> response = new ResponseEntity<Paging<PlaylistSimplified>>(response, HttpStatus.OK);
 
         //return the response
         return new ResponseEntity<ApiResponse<Paging<PlaylistSimplified>>>(response, HttpStatus.OK);
