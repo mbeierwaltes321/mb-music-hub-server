@@ -12,10 +12,8 @@ import com.mbmusic.backend.Connections.SpotifyApiConnection;
 import com.mbmusic.backend.Connections.Models.SpotifyTokenInfo;
 
 import se.michaelthelin.spotify.SpotifyApi;
-import se.michaelthelin.spotify.model_objects.specification.Artist;
 import se.michaelthelin.spotify.model_objects.specification.Paging;
 import se.michaelthelin.spotify.model_objects.specification.PlaylistSimplified;
-import se.michaelthelin.spotify.requests.data.artists.GetArtistRequest;
 import se.michaelthelin.spotify.requests.data.playlists.GetListOfCurrentUsersPlaylistsRequest;
 
 //This class resembles the controller for accessing playlist data
@@ -40,23 +38,6 @@ public class PlaylistController {
     //#region " Methods "
 
     //#region " GET "
-
-    //Test endpoint for testing MVC
-    @GetMapping("/test")
-    public String getTest() {
-        
-        GetArtistRequest request = this.spotifyConnection.getApiClient().getArtist("1GxkXlMwML1oSg5eLPiAz3").build();
-        Artist artist;
-
-        try {
-            //Attempt to grab the artist
-            artist = request.execute();
-        } catch (Exception e) {            
-            System.out.println(e.getMessage());
-            return "Oops!";
-        }
-        return "I LOVE " + artist.getName();
-    }
 
     //This method gets all of the Spotify playlists created by the current user
     @GetMapping("/getuserspotifyplaylists")

@@ -2,6 +2,8 @@ package com.mbmusic.backend.Connections;
 
 import java.net.URI;
 import java.net.URL;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 
 import org.apache.hc.core5.http.HttpStatus;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -110,12 +112,19 @@ public class ConnectionController {
             try {
                 // Attempt to obtain the credentails
                 final AuthorizationCodeCredentials authorizationCodeCredentials = request.execute();
+                
+                //Create time zone obbject to get current time in UTC
+                ZoneId UTC = ZoneId.of("UTC");
+
+                //Get the current time in UTC
+                LocalDateTime generatedTimeUTC = LocalDateTime.now(UTC);
 
                 //Build frontend redirect url
                 redirectUrl = UriComponentsBuilder.fromUriString("http://localhost:8080/api/conn/testDisplayToken")
                                     .queryParam("token", authorizationCodeCredentials.getAccessToken())
                                     .queryParam("refresh", authorizationCodeCredentials.getRefreshToken())
                                     .queryParam("state", state)
+                                    .queryParam("generatedAt", generatedTimeUTC.toString())
                                     .build()
                                     .toUri()
                                     .toURL();
@@ -143,11 +152,12 @@ public class ConnectionController {
 
     //This method is used to display the spotify token response data without a need for the frontend application
     @GetMapping("testDisplayToken")
-    public String testDisplayTokens(@RequestParam(name="token") String token, @RequestParam(name="refresh") String refresh, @RequestParam(name="state") String state, Model model) {
+    public String testDisplayTokens(@RequestParam(name="token") String token, @RequestParam(name="refresh") String refresh, @RequestParam(name="state") String state, @RequestParam(name="generatedAt")String generatedAt, Model model) {
 
         model.addAttribute("token", token);
         model.addAttribute("refresh", refresh);
         model.addAttribute("state", state);
+        model.addAttribute("generatedAt", generatedAt);
 
         return "TokenDisplay";
 

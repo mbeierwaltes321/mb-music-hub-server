@@ -1,7 +1,9 @@
 package com.mbmusic.backend.Common.Models;
 
+import java.io.Serializable;
+
 //This class sets up the general response of a request from the server
-public class ApiResponse<T> {
+public class ApiResponse<T> implements Serializable{
     //#region " Members "
     // This member contains the token information which is returned to the user
     private com.mbmusic.backend.Connections.Models.SpotifyTokenInfo spotifyTokenInfo;

@@ -23,6 +23,9 @@ dependencies {
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	// https://mvnrepository.com/artifact/se.michaelthelin.spotify/spotify-web-api-java
 	implementation group: 'se.michaelthelin.spotify', name: 'spotify-web-api-java', version: '8.1.0'
+	// https://mvnrepository.com/artifact/com.fasterxml.jackson.datatype/jackson-datatype-jsr310
+	implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.16.1'
+
 }
 
 tasks.named('test') {
