@@ -1,4 +1,4 @@
-package com.mbmusic.backend.ControllerTests;
+package com.mbmusic.backend;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -19,7 +19,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.jayway.jsonpath.JsonPath;
-import com.mbmusic.backend.TestCommon;
 import com.mbmusic.backend.Connections.Models.SpotifyTokenInfo;
 import com.mbmusic.backend.Playlists.PlaylistController;
 
