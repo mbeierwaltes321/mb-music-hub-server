@@ -86,7 +86,7 @@ public class PlaylistController {
         throws Exception {
 
         //First create the return variable
-        Boolean result = false;
+        Boolean itemsAdded = false;
 
         //Grab the fields from the request body
         SpotifyTokenInfo authTokens = requestBody.getAuthTokens();
@@ -107,14 +107,25 @@ public class PlaylistController {
         //Check if the reques succeeded
         if (snapshot != null) {
             //Success! Set return object to true
-            result = true;
+            itemsAdded = true;
         }
 
         //Finally create the result object
         ApiResponse<Boolean> resultObject = new ApiResponse<Boolean>();
-        resultObject.setResponseContent(result);
-        resultObject.setSpotifyTokenInfo(authTokens);
-        ResponseEntity<ApiResponse<Boolean>> response = new ResponseEntity<ApiResponse<Boolean>>(resultObject, HttpStatus.CREATED);
+        ResponseEntity<ApiResponse<Boolean>> response;
+
+        //Determine what is returned depending on the success
+        if (!itemsAdded) {
+            //Failure, return false
+            resultObject.setResponseContent(false);
+            response = new ResponseEntity<ApiResponse<Boolean>>(resultObject, HttpStatus.INTERNAL_SERVER_ERROR);
+
+        } else {
+            //Success
+            resultObject.setResponseContent(itemsAdded);
+            resultObject.setSpotifyTokenInfo(authTokens);
+            response = new ResponseEntity<ApiResponse<Boolean>>(resultObject, HttpStatus.CREATED);
+        }
 
         return response;
     }
