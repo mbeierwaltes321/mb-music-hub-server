@@ -5,11 +5,11 @@ import com.mbmusic.backend.Connections.Models.SpotifyTokenInfo;
 import java.time.LocalDateTime;
 
 //This class contains common methods used in testing the backend application
-public class TestCommon {
+class TestCommon {
 
     //This method utilizes the credentials from the environment variables to generate
     //the necessary spotify token information
-    public static SpotifyTokenInfo getSpotifyTokenInfo() {
+    static SpotifyTokenInfo getSpotifyTokenInfo() {
         //First get the token information from the environment
         final String spotifyAccessToken = System.getenv("SpotifyAccessToken");
         final String spotifyRefreshToken = System.getenv("SpotifyRefreshToken");

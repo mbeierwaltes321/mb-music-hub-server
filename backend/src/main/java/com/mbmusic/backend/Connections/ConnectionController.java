@@ -66,7 +66,7 @@ public class ConnectionController {
         request = spotifyConnection.getApiClient().authorizationCodeUri()
                     .state(stateSb.toString())
                     .response_type("code")
-                    .scope("user-library-read playlist-read-private")
+                    .scope("user-library-read playlist-read-private playlist-modify-public playlist-modify-private")
                     .build();
 
         final URI authUri = request.execute();

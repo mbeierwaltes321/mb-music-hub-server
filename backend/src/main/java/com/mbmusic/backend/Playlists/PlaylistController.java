@@ -3,6 +3,8 @@ package com.mbmusic.backend.Playlists;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -10,10 +12,13 @@ import org.springframework.web.bind.annotation.RestController;
 import com.mbmusic.backend.Common.Models.ApiResponse;
 import com.mbmusic.backend.Connections.SpotifyApiConnection;
 import com.mbmusic.backend.Connections.Models.SpotifyTokenInfo;
+import com.mbmusic.backend.Playlists.Models.PostSpotifyItemRequest;
 
 import se.michaelthelin.spotify.SpotifyApi;
+import se.michaelthelin.spotify.model_objects.special.SnapshotResult;
 import se.michaelthelin.spotify.model_objects.specification.Paging;
 import se.michaelthelin.spotify.model_objects.specification.PlaylistSimplified;
+import se.michaelthelin.spotify.requests.data.playlists.AddItemsToPlaylistRequest;
 import se.michaelthelin.spotify.requests.data.playlists.GetListOfCurrentUsersPlaylistsRequest;
 
 //This class resembles the controller for accessing playlist data
@@ -72,6 +77,57 @@ public class PlaylistController {
 
         //return the response
         return new ResponseEntity<ApiResponse<Paging<PlaylistSimplified>>>(response, HttpStatus.OK);
+    }
+
+    //This method adds the provided spotify items to the selected playlist
+    @PostMapping("/spotify-items")
+    public ResponseEntity<ApiResponse<Boolean>> postSpotifyItems(
+        @RequestBody(required = true) PostSpotifyItemRequest requestBody)
+        throws Exception {
+
+        //First create the return variable
+        Boolean itemsAdded = false;
+
+        //Grab the fields from the request body
+        SpotifyTokenInfo authTokens = requestBody.getAuthTokens();
+        String playlistId = requestBody.getPlaylistId();
+        String[] spotifyItems = requestBody.getSpotifyItems();
+            
+        //First obtain the spotify client from the connection
+        SpotifyApi spotifyApi = this.spotifyConnection.getApiClient(authTokens);
+
+        //Create the request object
+        final AddItemsToPlaylistRequest addItemsToPlaylistRequest = spotifyApi
+        .addItemsToPlaylist(playlistId, spotifyItems)
+        .build();
+
+        //Run the request
+        SnapshotResult snapshot = addItemsToPlaylistRequest.execute();
+
+        //Check if the reques succeeded
+        if (snapshot != null) {
+            //Success! Set return object to true
+            itemsAdded = true;
+        }
+
+        //Finally create the result object
+        ApiResponse<Boolean> resultObject = new ApiResponse<Boolean>();
+        ResponseEntity<ApiResponse<Boolean>> response;
+
+        //Determine what is returned depending on the success
+        if (!itemsAdded) {
+            //Failure, return false
+            resultObject.setResponseContent(false);
+            response = new ResponseEntity<ApiResponse<Boolean>>(resultObject, HttpStatus.INTERNAL_SERVER_ERROR);
+
+        } else {
+            //Success
+            resultObject.setResponseContent(itemsAdded);
+            resultObject.setSpotifyTokenInfo(authTokens);
+            response = new ResponseEntity<ApiResponse<Boolean>>(resultObject, HttpStatus.CREATED);
+        }
+
+        return response;
     }
 
     //#endregion
