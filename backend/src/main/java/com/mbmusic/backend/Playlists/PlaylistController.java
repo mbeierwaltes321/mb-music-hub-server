@@ -205,7 +205,7 @@ public class PlaylistController {
                 //The playlist wasn't created, return an error
                 PostSpotifyPlaylistResponse errorResponse = new PostSpotifyPlaylistResponse(false, "", HttpStatus.INTERNAL_SERVER_ERROR.value(), "Unable to create a Spotify Playlist");
                 
-                statusCode = HttpStatus.OK;
+                statusCode = HttpStatus.INTERNAL_SERVER_ERROR;
                 response.setResponseContent(errorResponse);
             }
 
@@ -213,7 +213,7 @@ public class PlaylistController {
             //The user is not valid. Return error
             PostSpotifyPlaylistResponse errorResponse = new PostSpotifyPlaylistResponse(false, "", HttpStatus.INTERNAL_SERVER_ERROR.value(), "User ID was invalid when getting user's profile");
             
-            statusCode = HttpStatus.OK;
+            statusCode = HttpStatus.INTERNAL_SERVER_ERROR;
             response.setResponseContent(errorResponse);
         }
 
