@@ -22,7 +22,7 @@ public class PostSpotifyPlaylistRequest {
     private List<String> spotifyURIs;
 
     //Indicates whether the newly created playlist is public or private
-    private Boolean isPublic;
+    private boolean isPublic;
 
     //#endregion
 
@@ -59,11 +59,11 @@ public class PostSpotifyPlaylistRequest {
         this.spotifyURIs = spotifyURIs;
     }
 
-    public Boolean getIsPublic() {
+    public boolean getIsPublic() {
         return isPublic;
     }
 
-    public void setIsPublic(Boolean isPublic) {
+    public void setIsPublic(boolean isPublic) {
         this.isPublic = isPublic;
     }
 

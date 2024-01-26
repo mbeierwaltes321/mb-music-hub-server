@@ -151,7 +151,7 @@ public class PlaylistController {
         String playlistName = requestBody.getPlaylistName();
         String playlistDescription = requestBody.getPlaylistDescription();
         List<String> spotifyURIs = requestBody.getSpotifyURIs();
-        Boolean isPublic = requestBody.getIsPublic();
+        boolean isPublic = requestBody.getIsPublic();
             
         //Now obtain the spotify client from the connection
         SpotifyApi spotifyApi = this.spotifyConnection.getApiClient(authTokens);
@@ -170,7 +170,7 @@ public class PlaylistController {
             //Now create a playlist request
             CreatePlaylistRequest createPlaylist = spotifyApi.createPlaylist(userId, playlistName)
             .description(playlistDescription)
-            .public_(isPublic)
+            .public_(isPublic)  //NOTE: the Spotify API is outdated, and you cannot create a private playlist at the moment :(
             .build();
 
             //Execute the playlist request
