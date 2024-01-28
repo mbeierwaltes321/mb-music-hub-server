@@ -131,7 +131,7 @@ public class PlaylistController {
             //Success
             resultObject.setResponseContent(itemsAdded);
             resultObject.setSpotifyTokenInfo(authTokens);
-            response = new ResponseEntity<ApiResponse<Boolean>>(resultObject, HttpStatus.CREATED);
+            response = new ResponseEntity<ApiResponse<Boolean>>(resultObject, HttpStatus.OK);
         }
 
         return response;
@@ -194,12 +194,12 @@ public class PlaylistController {
                 }
 
                 //Create the return content
-                PostSpotifyPlaylistResponse content = new PostSpotifyPlaylistResponse(true, newPlaylistId, HttpStatus.OK.value());
+                PostSpotifyPlaylistResponse content = new PostSpotifyPlaylistResponse(true, newPlaylistId, HttpStatus.CREATED.value());
 
                 //Populate the return object
                 response.setResponseContent(content);
                 response.setSpotifyTokenInfo(authTokens);
-                statusCode = HttpStatus.OK;
+                statusCode = HttpStatus.CREATED;
 
             } else {
                 //The playlist wasn't created, return an error
