@@ -93,7 +93,7 @@ public class PlaylistController {
     ) throws Exception {
 
         //First create the return variable
-        Boolean itemsAdded = false;
+        boolean itemsAdded = false;
 
         //Grab the fields from the request body
         SpotifyTokenInfo authTokens = requestBody.getAuthTokens();

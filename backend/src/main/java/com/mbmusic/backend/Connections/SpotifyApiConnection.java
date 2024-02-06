@@ -68,7 +68,7 @@ public class SpotifyApiConnection {
         final LocalDateTime currentTimeUTC = LocalDateTime.now(UTC);
 
         //Determine whether the token is expired and needs to be refreshed
-        Boolean tokenExpired = currentTimeUTC.isAfter(authDateTime.plusSeconds(authTokens.getExpiresIn()));
+        boolean tokenExpired = currentTimeUTC.isAfter(authDateTime.plusSeconds(authTokens.getExpiresIn()));
         if(tokenExpired) {
             //Create an authorization code refresh request
             final AuthorizationCodeRefreshRequest refreshRequest = this.apiClient.authorizationCodeRefresh().build();
