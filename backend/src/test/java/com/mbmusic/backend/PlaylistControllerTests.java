@@ -120,6 +120,7 @@ public class PlaylistControllerTests {
 
     //This method tests the spotify-items POST method by adding the itmes to the API playlist
     //and verifying that the items are indeed added
+    @SuppressWarnings("null")
     @Test
     public void shouldPostSpotifyItems() throws Exception {
         //Get the token information to make the API Call
@@ -160,6 +161,7 @@ public class PlaylistControllerTests {
         body.setSpotifyItems(items.toArray(new String[items.size()]));
 
         //Write the body as a JSON object
+        
         String postBodyJSON = mapper.writeValueAsString(body);
 
         //Get the number of items for use later
@@ -185,16 +187,11 @@ public class PlaylistControllerTests {
     }
 
     //This method tests the spotify-playlist POST request, which should create a spotify playlist. The resulting playlist is empty
+    @SuppressWarnings("null")
     @Test
     public void shouldCreatePlaylistWithoutSongs() throws Exception{
         //Get the token information to make the API Call
         SpotifyTokenInfo authTokens = TestCommon.getSpotifyTokenInfo();
-
-        //Create a Spotify Client for purposes of calling other API methods
-        SpotifyApiConnection spotifyApi = new SpotifyApiConnection();
-
-        //Get a Spotify API
-        SpotifyApi api = spotifyApi.getApiClient(authTokens);
 
         //Initialize parameters, set request body
         PostSpotifyPlaylistRequest requestBody = new PostSpotifyPlaylistRequest();
@@ -214,6 +211,7 @@ public class PlaylistControllerTests {
     }
     
     //This method tests the spotify-playlist POST request, which should create a spotify playlist. The resulting playlist contains 4 songs
+    @SuppressWarnings("null")
     @Test
     public void shouldCreatePlaylistWithSongs() throws Exception{
         //Get the token information to make the API Call

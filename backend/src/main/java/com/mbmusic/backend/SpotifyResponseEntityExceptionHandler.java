@@ -3,6 +3,7 @@ package com.mbmusic.backend;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.lang.NonNull;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
@@ -18,7 +19,7 @@ public class SpotifyResponseEntityExceptionHandler
 
     //This method should handle all exceptions rooting from the SpotifyWebApiException class
     @ExceptionHandler(value = {SpotifyWebApiException.class})
-    protected ResponseEntity<Object> handleConflict(SpotifyWebApiException ex, WebRequest request) {
+    protected ResponseEntity<Object> handleConflict(SpotifyWebApiException ex, @NonNull WebRequest request) {
 
         //Declare message body variable
         String bodyOfResponse = "";
