@@ -22,50 +22,60 @@ public class SpotifyResponseEntityExceptionHandler
     protected ResponseEntity<Object> handleConflict(SpotifyWebApiException ex, @NonNull WebRequest request) {
 
         //Declare message body variable
-        String bodyOfResponse = "";
+        String responseMessage = "";
+
+        //Declare http status variable
+        HttpStatus status;
 
         //Determine the type of Spotify Exception
         if (ex.getClass().isAssignableFrom(BadGatewayException.class)) {
-            bodyOfResponse = "The server was acting as a gateway or proxy and received an invalid response from the upstream server";
+            
+            responseMessage = "The server was acting as a gateway or proxy and received an invalid response from the upstream server";
+            status = HttpStatus.BAD_GATEWAY;
 
-            return handleExceptionInternal(ex, bodyOfResponse, new HttpHeaders(), HttpStatus.BAD_GATEWAY, request);
         } else if (ex.getClass().isAssignableFrom(BadRequestException.class)) {
-            bodyOfResponse = "The request could not be understood by the server due to malformed syntax.";
-
-            return handleExceptionInternal(ex, bodyOfResponse, new HttpHeaders(), HttpStatus.BAD_REQUEST, request);
+            
+            responseMessage = "The request could not be understood by the server due to malformed syntax.";
+            status = HttpStatus.BAD_REQUEST;
+            
         } else if (ex.getClass().isAssignableFrom(ForbiddenException.class)) {
-            bodyOfResponse = "The server understood the request, but is refusing to fulfill it.";
+            
+            responseMessage = "The server understood the request, but is refusing to fulfill it.";
+            status = HttpStatus.FORBIDDEN;
 
-            return handleExceptionInternal(ex, bodyOfResponse, new HttpHeaders(), HttpStatus.FORBIDDEN, request);
         } else if (ex.getClass().isAssignableFrom(InternalServerErrorException.class)) {
-            bodyOfResponse = "You should never receive this error because our clever coders catch them all ... but if you are unlucky enough to get one, please report it to us.";
+            
+            responseMessage = "You should never receive this error because our clever coders catch them all ... but if you are unlucky enough to get one, please report it to us.";
+            status = HttpStatus.INTERNAL_SERVER_ERROR;
 
-            return handleExceptionInternal(ex, bodyOfResponse, new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR, request);
         } else if (ex.getClass().isAssignableFrom(NotFoundException.class)) {
-            bodyOfResponse = "The requested resource could not be found. This error can be due to a temporary or permanent condition.";
+            
+            responseMessage = "The requested resource could not be found. This error can be due to a temporary or permanent condition.";
+            status = HttpStatus.NOT_FOUND;
 
-            return handleExceptionInternal(ex, bodyOfResponse, new HttpHeaders(), HttpStatus.NOT_FOUND, request);
         } else if (ex.getClass().isAssignableFrom(ServiceUnavailableException.class)) {
-            bodyOfResponse = "The server is currently unable to handle the request due to a temporary condition which will be alleviated after some delay. You can choose to resend the request again.";
+            
+            responseMessage = "The server is currently unable to handle the request due to a temporary condition which will be alleviated after some delay. You can choose to resend the request again.";
+            status = HttpStatus.SERVICE_UNAVAILABLE;
 
-            return handleExceptionInternal(ex, bodyOfResponse, new HttpHeaders(), HttpStatus.SERVICE_UNAVAILABLE, request);
-        } else if (ex.getClass().isAssignableFrom(ServiceUnavailableException.class)) {
-            bodyOfResponse = "The server is currently unable to handle the request due to a temporary condition which will be alleviated after some delay. You can choose to resend the request again.";
-
-            return handleExceptionInternal(ex, bodyOfResponse, new HttpHeaders(), HttpStatus.SERVICE_UNAVAILABLE, request);
         } else if (ex.getClass().isAssignableFrom(TooManyRequestsException.class)) {
-            bodyOfResponse = "Rate limiting has been applied.";
+            
+            responseMessage = "Rate limiting has been applied.";
+            status = HttpStatus.TOO_MANY_REQUESTS;
 
-            return handleExceptionInternal(ex, bodyOfResponse, new HttpHeaders(), HttpStatus.TOO_MANY_REQUESTS, request);
         } else if (ex.getClass().isAssignableFrom(UnauthorizedException.class)) {
-            bodyOfResponse = "The request requires user authorization or, if the request included authorization credentials, authorization has been refused for those credentials.";
+            
+            responseMessage = "The request requires user authorization or, if the request included authorization credentials, authorization has been refused for those credentials.";
+            status = HttpStatus.UNAUTHORIZED;
 
-            return handleExceptionInternal(ex, bodyOfResponse, new HttpHeaders(), HttpStatus.UNAUTHORIZED, request);
+        } else {
+            //Return a Spotify API exception not found in this method which should not be possible
+            responseMessage = "An unknown Spotify API exception has occured";
+            status = HttpStatus.INTERNAL_SERVER_ERROR;
         }
 
-        //Return a Spotify API exception not found in this method which should not be possible
-        bodyOfResponse = "An unknown Spotify API exception has occured";
-        return handleExceptionInternal(ex, bodyOfResponse, new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR, request);
+        //Return the exception
+        return handleExceptionInternal(ex, responseMessage, new HttpHeaders(), status, request);
 
     }
 }
