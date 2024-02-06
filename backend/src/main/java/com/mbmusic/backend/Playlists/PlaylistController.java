@@ -98,14 +98,14 @@ public class PlaylistController {
         //Grab the fields from the request body
         SpotifyTokenInfo authTokens = requestBody.getAuthTokens();
         String playlistId = requestBody.getPlaylistId();
-        String[] spotifyItems = requestBody.getSpotifyItems();
+        List<String> spotifyItems = requestBody.getSpotifyItems();
             
         //First obtain the spotify client from the connection
         SpotifyApi spotifyApi = this.spotifyConnection.getApiClient(authTokens);
 
         //Create the request object
         final AddItemsToPlaylistRequest addItemsToPlaylistRequest = spotifyApi
-        .addItemsToPlaylist(playlistId, spotifyItems)
+        .addItemsToPlaylist(playlistId, spotifyItems.toArray(new String[0]))
         .build();
 
         //Run the request
@@ -186,7 +186,7 @@ public class PlaylistController {
                 if (spotifyURIs != null && !spotifyURIs.isEmpty()) {
 
                     //Now create a playlist insert request
-                    final AddItemsToPlaylistRequest addItems = spotifyApi.addItemsToPlaylist(newPlaylistId, spotifyURIs.toArray(new String[spotifyURIs.size()]))
+                    final AddItemsToPlaylistRequest addItems = spotifyApi.addItemsToPlaylist(newPlaylistId, spotifyURIs.toArray(new String[0]))
                     .build();
                     
                     //Insert the items

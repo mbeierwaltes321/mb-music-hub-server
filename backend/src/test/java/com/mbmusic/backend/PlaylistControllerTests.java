@@ -158,7 +158,7 @@ public class PlaylistControllerTests {
         items.add("spotify:track:2FlcxnvybdwpaMmMhaRtSN");
         items.add("spotify:track:0IgSgIyhnVmQLDh64PtmFa");
 
-        body.setSpotifyItems(items.toArray(new String[items.size()]));
+        body.setSpotifyItems(items);
 
         //Write the body as a JSON object
         

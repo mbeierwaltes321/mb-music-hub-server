@@ -1,5 +1,7 @@
 package com.mbmusic.backend.Playlists.Models;
 
+import java.util.List;
+
 import com.mbmusic.backend.Connections.Models.SpotifyTokenInfo;
 
 //This class models the request body for the post spotify item endpoint
@@ -14,7 +16,7 @@ public class PostSpotifyItemRequest {
     private String playlistId;
 
     //The array of spotify items that will be added to the playlist
-    private String[] spotifyItems;
+    private List<String> spotifyItems;
 
     //#endregion
 
@@ -36,11 +38,11 @@ public class PostSpotifyItemRequest {
         this.playlistId = playlistId;
     }
 
-    public String[] getSpotifyItems() {
+    public List<String> getSpotifyItems() {
         return spotifyItems;
     }
 
-    public void setSpotifyItems(String[] spotifyItems) {
+    public void setSpotifyItems(List<String> spotifyItems) {
         this.spotifyItems = spotifyItems;
     }
 
