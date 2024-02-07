@@ -78,12 +78,12 @@ public class PlaylistControllerTests {
         parms.add("tokenGeneratedAt", authTokens.getTokenGeneratedAt().format(DateTimeFormatter.ISO_DATE_TIME));
 
         //Now call the endpoint
-        this.mvc.perform(get("/playlist/getuserspotifyplaylists")
+        this.mvc.perform(get("/playlists/spotify-playlists")
         .queryParams(parms))
         .andExpect(status().isOk());
     }
 
-    //This method gets playlists from the getuserspotifyplaylists endpoint an verifies
+    //This method gets playlists from the spotify-playlists GET request and verifies
     //that the information returned is true
     @Test
     public void playlistContentCorrect() throws Exception {
@@ -98,9 +98,9 @@ public class PlaylistControllerTests {
         parms.add("tokenGeneratedAt", authTokens.getTokenGeneratedAt().format(DateTimeFormatter.ISO_DATE_TIME));
 
         //Now call the endpoint
-        final MvcResult result = this.mvc.perform(get("/playlist/getuserspotifyplaylists")
+        final MvcResult result = this.mvc.perform(get("/playlists/spotify-playlists")
         .queryParams(parms))
-        .andExpectAll(status().isOk())
+        .andExpect(status().isOk())
         .andReturn();
 
         //Get the resulting JSON
@@ -168,7 +168,7 @@ public class PlaylistControllerTests {
         int numItemsToAdd = items.size();
 
         //Perform the POST request
-        this.mvc.perform(post("/playlist/spotify-items")
+        this.mvc.perform(post("/playlists/spotify-items")
         .contentType(MediaType.APPLICATION_JSON)
         .content(postBodyJSON))
         .andExpect(status().isOk());
@@ -203,7 +203,7 @@ public class PlaylistControllerTests {
         final String requestBodyJson = mapper.writeValueAsString(requestBody);
 
         //Run the endpoint, get the result
-        mvc.perform(post("/playlist/spotify-playlist")
+        mvc.perform(post("/playlists/spotify-playlists")
         .contentType(MediaType.APPLICATION_JSON)
         .content(requestBodyJson))
         .andExpect(status().isCreated());
@@ -241,7 +241,7 @@ public class PlaylistControllerTests {
         final String requestBodyJson = mapper.writeValueAsString(requestBody);
 
         //Run the endpoint, get the result
-        MvcResult mvcResult = mvc.perform(post("/playlist/spotify-playlist")
+        MvcResult mvcResult = mvc.perform(post("/playlists/spotify-playlists")
         .contentType(MediaType.APPLICATION_JSON)
         .content(requestBodyJson))
         .andExpect(status().isCreated())

@@ -30,7 +30,7 @@ import se.michaelthelin.spotify.requests.data.playlists.GetListOfCurrentUsersPla
 
 //This class resembles the controller for accessing playlist data
 @RestController
-@RequestMapping("playlist")
+@RequestMapping("playlists")
 public class PlaylistController {
 
     //#region " Members "
@@ -52,8 +52,8 @@ public class PlaylistController {
     //#region " GET "
 
     //This method gets all of the Spotify playlists created by the current user
-    @GetMapping("/getuserspotifyplaylists")
-    public ResponseEntity<ApiResponse<Paging<PlaylistSimplified>>> GetUserSpotifyPlaylists(SpotifyTokenInfo authTokens, @RequestParam(required = false)Integer offset) 
+    @GetMapping("/spotify-playlists")
+    public ResponseEntity<ApiResponse<Paging<PlaylistSimplified>>> getUserSpotifyPlaylists(SpotifyTokenInfo authTokens, @RequestParam(required = false)Integer offset) 
         throws Exception {
 
         //First obtain the spotify client from the connection
@@ -137,7 +137,7 @@ public class PlaylistController {
         return response;
     }
 
-    @PostMapping("/spotify-playlist")
+    @PostMapping("/spotify-playlists")
     public ResponseEntity<ApiResponse<PostSpotifyPlaylistResponse>> postSpotifyPlaylist(
         @RequestBody(required = true) PostSpotifyPlaylistRequest requestBody
     ) throws Exception {
