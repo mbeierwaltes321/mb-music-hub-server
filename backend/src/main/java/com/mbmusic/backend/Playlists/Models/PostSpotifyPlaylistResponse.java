@@ -8,17 +8,15 @@ public class PostSpotifyPlaylistResponse {
     }
 
     //Constructor with parameters
-    public PostSpotifyPlaylistResponse(boolean success, String playlistId, int status) {
+    public PostSpotifyPlaylistResponse(boolean success, String playlistId) {
         this.success = success;
         this.newPlaylistId = playlistId;
-        this.status = status;
     }    
 
     //Constructor with error parameters
-    public PostSpotifyPlaylistResponse(boolean success, String playlistId, int status, String errorMessage) {
+    public PostSpotifyPlaylistResponse(boolean success, String playlistId, String errorMessage) {
         this.success = success;
         this.newPlaylistId = playlistId;
-        this.status = status;
         this.errorMessage = errorMessage;
     }
     
@@ -31,9 +29,6 @@ public class PostSpotifyPlaylistResponse {
 
     //The error message if present
     private String errorMessage = "";
-
-    //The status code of the response
-    private int status;
 
     //#endregion
 
@@ -61,14 +56,6 @@ public class PostSpotifyPlaylistResponse {
 
     public void setErrorMessage(String errorMessage) {
         this.errorMessage = errorMessage;
-    }
-
-    public int getStatus() {
-        return status;
-    }
-
-    public void setStatus(int status) {
-        this.status = status;
     }
 
     //#endregion
