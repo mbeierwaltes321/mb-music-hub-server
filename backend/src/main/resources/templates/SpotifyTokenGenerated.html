@@ -23,8 +23,9 @@
                 <h5 th:unless="${authTokenSuccess}"class="card-title">Login Failed</h5>
                 <p th:if="${authTokenSuccess}" class="card-text">You may now return to MB's Music Hub!</p>
                 <p th:unless="${authTokenSuccess}" class="card-text">Error authenticating. Please try again. If problem persists, please contact the administrator</p>
-                <!-- TODO - Link the response object as query parameters to the frontend -->
-                <a href="#" class="btn btn-primary">Return to Music Hub</a>
+                <!-- For right now, send to token display page -->
+                <a th:if="${authTokenSuccess}" href="#" th:href="${redirectUrl}" class="btn btn-primary">Return to Music Hub</a>
+                <a th:unless="${authTokenSuccess}" href="#" class="btn btn-primary">Return to Music Hub</a>                
             </div>
         </div>
     </div>

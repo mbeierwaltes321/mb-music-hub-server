@@ -2,10 +2,13 @@ package com.mbmusic.backend.Connections.Models;
 
 import java.time.LocalDateTime;
 
+import org.springframework.format.annotation.DateTimeFormat;
+
 //This class models the return object containing the Spotify access
 //token and the corresponding refresh token
-public class SpotifyTokenResponse {
+public class SpotifyTokenInfo {
 
+    //#region " Members "
     //The access token that will be used to authenticate spotify requests
     private String accessToken;
 
@@ -16,10 +19,12 @@ public class SpotifyTokenResponse {
     private int expiresIn;
 
     //The datetime which the token was generated/refreshed
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private LocalDateTime tokenGeneratedAt;
 
-    //The state string used to verify the request
-    private String state;
+    //#endregion
+
+    //#region " Getters and Setters "
 
     public LocalDateTime getTokenGeneratedAt() {
         return tokenGeneratedAt;
@@ -57,12 +62,6 @@ public class SpotifyTokenResponse {
         this.refreshToken = refreshToken;
     }
 
-    public String getState() {
-        return state;
-    }
-
-    public void setState(String state) {
-        this.state = state;
-    }
+    //#endregion
     
 }

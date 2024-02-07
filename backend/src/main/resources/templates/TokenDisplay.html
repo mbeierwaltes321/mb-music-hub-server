@@ -1,0 +1,22 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>TEST Display Token</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+</head>
+<body>
+    <h1>Token Response Information</h1>
+    <h2>Token</h2>
+    <p th:text="${token}"></p>
+
+    <h2>Refresh Token</h2>
+    <p th:text="${refresh}"></p>
+
+    <h2>Generated At (UTC) </h2>
+    <p th:text="${generatedAt}"></p>
+
+    <h2>State</h2>
+    <p th:text="${state}"></p>
+</body>
+</html>

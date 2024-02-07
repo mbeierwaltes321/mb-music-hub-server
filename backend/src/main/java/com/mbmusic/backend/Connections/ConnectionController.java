@@ -1,7 +1,9 @@
 package com.mbmusic.backend.Connections;
 
 import java.net.URI;
+import java.net.URL;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 
 import org.apache.hc.core5.http.HttpStatus;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,11 +14,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.util.UriComponentsBuilder;
 import org.springframework.ui.Model;
 
 import com.mbmusic.backend.Connections.Models.SpotifyLoginAuth;
-import com.mbmusic.backend.Connections.Models.SpotifyTokenResponse;
 
 import se.michaelthelin.spotify.model_objects.credentials.AuthorizationCodeCredentials;
 import se.michaelthelin.spotify.requests.authorization.authorization_code.AuthorizationCodeRequest;
@@ -65,7 +66,7 @@ public class ConnectionController {
         request = spotifyConnection.getApiClient().authorizationCodeUri()
                     .state(stateSb.toString())
                     .response_type("code")
-                    .scope("user-library-read")
+                    .scope("user-library-read playlist-read-private playlist-modify-public playlist-modify-private")
                     .build();
 
         final URI authUri = request.execute();
@@ -87,13 +88,13 @@ public class ConnectionController {
     //NOTE: When the state is returned to the client, you
     //must verify that the state in the browser matches the state passed here
     @GetMapping("/redirect")
-    public String spotifyAuthToken(@RequestParam(name="code") String code, @RequestParam(name="state") String state, @RequestParam(name="error", required= false) String error, Model model) {
+    public String generateSpotifyAuthToken(@RequestParam(name="code") String code, @RequestParam(name="state") String state, @RequestParam(name="error", required= false) String error, Model model) {
         
         //First create boolean variable which determines the success of the token request
         boolean authTokenSuccessful = true;
 
-        //First create the response token
-        SpotifyTokenResponse tokenResponse = new SpotifyTokenResponse();
+        //Declare the URL object used to redirect to the frontend application
+        URL redirectUrl = null;
 
         //First check if there isn error
         if (error != null && !error.isBlank()) {
@@ -111,13 +112,22 @@ public class ConnectionController {
             try {
                 // Attempt to obtain the credentails
                 final AuthorizationCodeCredentials authorizationCodeCredentials = request.execute();
+                
+                //Create time zone obbject to get current time in UTC
+                ZoneId UTC = ZoneId.of("UTC");
 
-                //Populate the return varaible
-                tokenResponse.setAccessToken(authorizationCodeCredentials.getAccessToken());
-                tokenResponse.setRefreshToken(authorizationCodeCredentials.getRefreshToken());
-                tokenResponse.setExpiresIn(authorizationCodeCredentials.getExpiresIn());
-                tokenResponse.setTokenGeneratedAt(LocalDateTime.now());
-                tokenResponse.setState(state);
+                //Get the current time in UTC
+                LocalDateTime generatedTimeUTC = LocalDateTime.now(UTC);
+
+                //Build frontend redirect url
+                redirectUrl = UriComponentsBuilder.fromUriString("http://localhost:8080/api/conn/testDisplayToken")
+                                    .queryParam("token", authorizationCodeCredentials.getAccessToken())
+                                    .queryParam("refresh", authorizationCodeCredentials.getRefreshToken())
+                                    .queryParam("state", state)
+                                    .queryParam("generatedAt", generatedTimeUTC.toString())
+                                    .build()
+                                    .toUri()
+                                    .toURL();
 
             } catch (Exception e) {
                 // There was an error setting obtaining the credentails, send 500 error
@@ -125,16 +135,33 @@ public class ConnectionController {
             }
 
         }
+
+        //Get the final url
+        String urlString = "";
+        if(redirectUrl != null) {
+            urlString = redirectUrl.toString();
+        } else {
+            authTokenSuccessful = false;
+        }
     
-        //TODO - The response should be a confirmation page that will return the tokenResponse to the frontend application
-
-
         //Return the response
         model.addAttribute("authTokenSuccess", authTokenSuccessful);
-        model.addAttribute("responseObj", tokenResponse);
+        model.addAttribute("redirectUrl", urlString);
         return "SpotifyTokenGenerated";
     }
 
+    //This method is used to display the spotify token response data without a need for the frontend application
+    @GetMapping("testDisplayToken")
+    public String testDisplayTokens(@RequestParam(name="token") String token, @RequestParam(name="refresh") String refresh, @RequestParam(name="state") String state, @RequestParam(name="generatedAt")String generatedAt, Model model) {
+
+        model.addAttribute("token", token);
+        model.addAttribute("refresh", refresh);
+        model.addAttribute("state", state);
+        model.addAttribute("generatedAt", generatedAt);
+
+        return "TokenDisplay";
+
+    }
 
     //#endregion
     
