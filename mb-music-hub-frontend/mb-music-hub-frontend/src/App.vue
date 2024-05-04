@@ -4,6 +4,6 @@ import Introduction from "./components/Introduction.vue"
 
 <template>
   <!-- TODO- Define header -->  
-  <Introduction></Introduction>
+  <Introduction class="d-flex justify-content-center"></Introduction>
   <!-- TODO - Define footer -->
 </template>
