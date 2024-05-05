@@ -2,7 +2,7 @@
 </script>
 
 <template>
-    <div>
+    <div class="mt-5">
         <div id="IntroContainer" class="container-large text-center">
             <div class="row">
                 <div class="col">
@@ -11,14 +11,14 @@
             </div>
             <div class="row">
                 <div class="col">
-                    <p class="fs-2 text-light mt-md-3">Welcome to MB's Music Hub!</p>
+                    <p class="fs-2 text-light mt-3">Welcome to MB's Music Hub!</p>
                 </div>
             </div>
             <div class="row">
-                <a href="#" class="fs-2 text-primary mt-md-3">Who am I?</a>
+                <a href="#" class="fs-2 text-primary mt-3">Who am I?</a>
             </div>
             <div class="row">
-                <button type="button" class="btn btn-primary mt-md-5"> Let's Go! </button>
+                <button type="button" class="btn btn-primary mt-5"> Let's Go! </button>
             </div>
         </div>
     </div>
