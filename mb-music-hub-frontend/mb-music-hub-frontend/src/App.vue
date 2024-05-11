@@ -11,6 +11,6 @@ import AppHeader from "./components/AppHeader.vue";
 
 <style scoped>
 #app-header {
-  min-height: 15vh;
+  min-height: 10vh;
 }
 </style>
