@@ -1,5 +1,5 @@
 <script setup lang="ts">
-
+import SpotifyLoginIcon from "./icons/SpotifyLoginIcon.vue";
 </script>
 
 <template>
@@ -27,11 +27,7 @@
                 <button id="LoginHamburger" class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMediaSelection" aria-controls="navbarSupportedContent" aria-expanded="false">
                     <span class="navbar-toggler-icon"></span>
                 </button>
-                <div id="spotifyLoginButton" class="me-2">
-                    <div>
-                        <img src="./../assets/stadium-light-plain.svg"> 
-                    </div>
-                </div>
+                <SpotifyLoginIcon />
             </div>
         </div>
     </nav>
