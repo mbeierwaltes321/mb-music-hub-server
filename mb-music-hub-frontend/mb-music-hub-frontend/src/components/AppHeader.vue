@@ -15,20 +15,24 @@
                         <button class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown" aria-expanded="false">
                             Media
                         </button>
-                        <ui class="dropdown-menu">
+                        <ul class="dropdown-menu">
                             <li><a class="dropdown-item" href="#">Playlists</a></li>
                             <li><a class="dropdown-item" href="#">Podcasts</a></li>
                             <li><a class="dropdown-item" href="#">YouTube Mixes</a></li>
-                        </ui>
+                        </ul>
                     </li>
                 </ul>
             </div>
-            <div id="spotifyLoginButton" class="d-flex flex-row-reverse">
-                <img class="bg-light" src="./../assets/stadium-light-plain.svg">
+            <div class="d-flex flex-row-reverse">
+                <button id="LoginHamburger" class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMediaSelection" aria-controls="navbarSupportedContent" aria-expanded="false">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div id="spotifyLoginButton" class="me-2">
+                    <div>
+                        <img src="./../assets/stadium-light-plain.svg"> 
+                    </div>
+                </div>
             </div>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMediaSelection" aria-controls="navbarSupportedContent" aria-expanded="false">
-                <span class="navbar-toggler-icon"></span>
-            </button>
         </div>
     </nav>
 </template>
