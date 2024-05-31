@@ -8,7 +8,6 @@ const theme : Ref<string | null> = ref(localStorage.getItem("colorTheme"));
 
 <template>
     <nav id="NavigationBar" :class="'navbar navbar-expand-lg bg-' + theme" :data-bs-theme="theme">
-    <!-- <nav id="NavigationBar" :class="'navbar navbar-expand-lg bg-' + theme"> -->
         <div class="container-fluid">
             <a class="navbar-brand" href="#">MB's Music Hub</a>
             <div class="collapse navbar-collapse" id="navbarMediaSelection">
@@ -27,12 +26,12 @@ const theme : Ref<string | null> = ref(localStorage.getItem("colorTheme"));
                         </ul>
                     </li>
                 </ul>
+                <SpotifyLoginIcon/>
             </div>
             <div class="d-flex flex-row-reverse">
-                <button id="LoginHamburger" class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMediaSelection" aria-controls="navbarSupportedContent" aria-expanded="false">
+                <button id="LoginHamburger" class="navbar-toggler mt-2" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMediaSelection" aria-controls="navbarSupportedContent" aria-expanded="false">
                     <span class="navbar-toggler-icon"></span>
                 </button>
-                <SpotifyLoginIcon />
             </div>
         </div>
     </nav>

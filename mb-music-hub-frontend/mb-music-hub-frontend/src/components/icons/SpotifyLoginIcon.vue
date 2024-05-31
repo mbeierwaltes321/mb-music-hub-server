@@ -11,9 +11,11 @@ const imgSrc : string = `src/assets/stadium-${theme.value}-plain.svg`
 
 <template>
     <div id="spotifyLoginButton" class="me-2 position-relative">
-        <p :class="' z-1 position-absolute end-0 me-4 mt-1 fs-5 text-' + (theme == 'light' ? 'dark' : 'light')">Login</p>
-        <div class="z-0">
-           <img :src="imgSrc">            
+        <div>
+            <p :class="' z-1 position-absolute mt-1 fs-5 text-' + (theme == 'light' ? 'dark' : 'light')">Login</p>
+            <div class="z-0">
+                <img :src="imgSrc">            
+            </div>
         </div>
     </div>
 </template>
@@ -21,5 +23,6 @@ const imgSrc : string = `src/assets/stadium-${theme.value}-plain.svg`
 <style scoped>
     p {
         user-select: none;
+        margin-left: 3.3em;
     }
 </style>
