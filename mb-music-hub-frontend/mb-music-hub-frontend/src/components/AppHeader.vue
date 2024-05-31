@@ -1,9 +1,14 @@
 <script setup lang="ts">
 import SpotifyLoginIcon from "./icons/SpotifyLoginIcon.vue";
+import { type Ref, ref } from "vue";
+
+const theme : Ref<string | null> = ref(localStorage.getItem("colorTheme"));
+
 </script>
 
 <template>
-    <nav id="NavigationBar" class="navbar navbar-expand-lg bg-light">
+    <nav id="NavigationBar" :class="'navbar navbar-expand-lg bg-' + theme" :data-bs-theme="theme">
+    <!-- <nav id="NavigationBar" :class="'navbar navbar-expand-lg bg-' + theme"> -->
         <div class="container-fluid">
             <a class="navbar-brand" href="#">MB's Music Hub</a>
             <div class="collapse navbar-collapse" id="navbarMediaSelection">
@@ -32,10 +37,3 @@ import SpotifyLoginIcon from "./icons/SpotifyLoginIcon.vue";
         </div>
     </nav>
 </template>
-
-<style scoped>
-#app-logo {
-    width: 50px;
-    height: 50px;
-}
-</style>

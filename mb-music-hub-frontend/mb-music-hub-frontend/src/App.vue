@@ -1,6 +1,11 @@
 <script setup lang="ts">
 import Introduction from "./components/Introduction.vue";
 import AppHeader from "./components/AppHeader.vue";
+
+//Set the light mode/dark mode
+if(!localStorage.getItem("colorTheme"))
+  localStorage.setItem("colorTheme", "dark");
+
 </script>
 
 <template>

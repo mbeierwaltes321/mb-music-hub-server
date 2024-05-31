@@ -1,11 +1,25 @@
 <script setup lang="ts">
+import { type Ref, ref } from "vue";
+
+//Grab theme and decide on the image based on the theme
+const theme : Ref<string | null> = ref(localStorage.getItem("colorTheme"));
+
+//Build image path
+const imgSrc : string = `src/assets/stadium-${theme.value}-plain.svg`
 
 </script>
 
 <template>
-    <div id="spotifyLoginButton" class="me-2">
-        <div>
-            <img src="./../../assets/stadium-light-plain.svg">
+    <div id="spotifyLoginButton" class="me-2 position-relative">
+        <p :class="' z-1 position-absolute end-0 me-4 mt-1 fs-5 text-' + (theme == 'light' ? 'dark' : 'light')">Login</p>
+        <div class="z-0">
+           <img :src="imgSrc">            
         </div>
     </div>
 </template>
+
+<style scoped>
+    p {
+        user-select: none;
+    }
+</style>
