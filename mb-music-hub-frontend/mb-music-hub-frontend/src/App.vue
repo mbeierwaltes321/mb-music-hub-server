@@ -9,9 +9,7 @@ if(!localStorage.getItem("colorTheme"))
 </script>
 
 <template>
-    <AppHeader id="app-header" class="d-flex "/>
     <Introduction class="d-flex justify-content-center h-auto"></Introduction>
-  <!-- TODO - Define footer -->
 </template>
 
 <style scoped>

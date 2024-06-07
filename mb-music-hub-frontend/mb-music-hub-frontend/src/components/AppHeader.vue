@@ -11,7 +11,7 @@ const theme : Ref<string | null> = ref(localStorage.getItem("colorTheme"));
         <div class="container-fluid">
             <a class="navbar-brand" href="#">MB's Music Hub</a>
             <div class="collapse navbar-collapse" id="navbarMediaSelection">
-                <ul class="navbar-nav">
+                <ul class="navbar-nav me-auto">
                     <li class="nav-item">
                         <a class="nav-link active" aria-current="page" href="#">Home</a>
                     </li>
