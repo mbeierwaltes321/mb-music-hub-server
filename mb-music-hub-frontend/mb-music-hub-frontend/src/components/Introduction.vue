@@ -11,8 +11,12 @@
             </div>
             <div class="row">
                 <div class="col">
-                    <p class="fs-2 text-light mt-3">Welcome to MB's Music Hub!</p>
+                    <p id="Welcome" class="fs-2 text-light mt-3">Welcome to MB's Music Hub!</p>
                 </div>
+            </div>
+            <div id="PoweredBy" class="d-flex justify-content-center">
+                <p class="fs-3 text-light mt-3">Powered By:</p>
+                <img id="spotify-logo" class="ms-3 align-self-center" src="./../assets/Spotify_Logo_RGB_White.png">
             </div>
             <div class="row">
                 <a href="#" class="fs-2 text-primary mt-3">Who am I?</a>
@@ -35,9 +39,13 @@ h1 {
     animation: fadeIn 1s;
 }
 
-p {
+#Welcome {
     animation: fadeIn 1.5s;
     font-family: 'Abyssinica SIL';
+}
+
+#PoweredBy {
+    animation: fadeIn 2s;
 }
 
 a {
@@ -48,5 +56,9 @@ button {
     animation: fadeIn 3.5s;
 }
 
+#spotify-logo {
+    width: 13.36em;
+    height: 4em;
+}
 
 </style>
