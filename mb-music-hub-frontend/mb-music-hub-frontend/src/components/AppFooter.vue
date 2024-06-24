@@ -56,13 +56,13 @@ const footerLinks: FooterLinkData[] = [
             </div>
         </div>
         <div class="h-75 row row-cols-1 flex-column">
-                <div v-for="footerLink in footerLinks" 
-                    :class="`col ` + (footerLink.first === true ? ' mt-3' : '')
-                        + (footerLink.last === true? `mt-auto` : ``)">
-                    <a :href="footerLink.link" class="text-dark-emphasis">
-                        {{ footerLink.text }}
-                    </a>
-                </div>
+            <div v-for="footerLink in footerLinks" 
+                :class="`col ` + (footerLink.first === true ? ' mt-3' : '')
+                    + (footerLink.last === true? `mt-auto` : ``)">
+                <a :href="footerLink.link" class="text-dark-emphasis">
+                    {{ footerLink.text }}
+                </a>
+            </div>
         </div>
     </div>
 </template>

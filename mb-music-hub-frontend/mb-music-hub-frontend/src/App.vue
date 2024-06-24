@@ -6,5 +6,4 @@ import AppFooter from "./components/AppFooter.vue";
 
 <template>
     <Introduction/>
-    <AppFooter/>
 </template>
