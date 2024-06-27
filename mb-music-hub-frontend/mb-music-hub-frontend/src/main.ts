@@ -2,9 +2,13 @@ import './assets/main.css'
 
 import { createApp } from 'vue'
 import App from './App.vue'
+import router from "./router";
 
-//Set the light mode/dark mode
-if(!localStorage.getItem("colorTheme"))
-    localStorage.setItem("colorTheme", "dark");
+import setUpLocalStorage from './utilities/localStorage';
 
-createApp(App).mount('#app')
+//Set up the local storage defaults
+setUpLocalStorage();
+
+createApp(App)
+.use(router)
+.mount('#app')
