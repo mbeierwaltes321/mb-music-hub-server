@@ -11,8 +11,10 @@
     "type-check": "vue-tsc --build --force"
   },
   "dependencies": {
+    "vite-plugin-vuetify": "^2.0.3",
     "vue": "^3.4.21",
-    "vue-router": "^4.4.0"
+    "vue-router": "^4.4.0",
+    "vuetify": "^3.6.10"
   },
   "devDependencies": {
     "@tsconfig/node20": "^20.1.2",
