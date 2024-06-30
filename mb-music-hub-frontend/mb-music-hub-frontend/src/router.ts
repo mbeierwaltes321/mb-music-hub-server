@@ -5,7 +5,8 @@ import Home from "./components/Home.vue";
 //TODO - Add remaining routes
 
 const routes: RouteRecordRaw[] = [
-    { path: "/", component: Introduction }
+    { path: "/", component: Home },
+    { path: "/intro", component: Introduction}
 ];
 
 const router: Router = createRouter({
