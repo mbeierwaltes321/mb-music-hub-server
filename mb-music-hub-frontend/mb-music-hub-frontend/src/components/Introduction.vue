@@ -1,9 +1,9 @@
 <template>
-    <div class="h-auto mt-5">
+    <div id="AppIntro">
         <div id="IntroContainer" class="container-md text-center">
             <div class="row">
                 <div class="col">
-                    <h1 class="text-light">Hi! 👋</h1>
+                    <h1 class="text-light mt-5">Hi! 👋</h1>
                 </div>
             </div>
             <div class="row justify-content-center">
@@ -56,6 +56,11 @@ button {
 #spotify-logo {
     width: 13.36em;
     height: 4em;
+}
+
+#AppIntro {
+    background: linear-gradient(180deg, rgba(0,0,0,1) 0%, rgba(111,0,0,1) 50%);
+    height: 100vh;
 }
 
 </style>

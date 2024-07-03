@@ -1,10 +1,12 @@
 import { createMemoryHistory, createRouter, type RouteRecordRaw, type Router, type RouterOptions } from "vue-router";
 
 import Introduction from "./components/Introduction.vue";
-//TODO - Add about page to put my "about me" page
+import Home from "./components/Home.vue";
+//TODO - Add remaining routes
 
 const routes: RouteRecordRaw[] = [
-    { path: "/", component: Introduction }
+    { path: "/", component: Home },
+    { path: "/intro", component: Introduction}
 ];
 
 const router: Router = createRouter({
