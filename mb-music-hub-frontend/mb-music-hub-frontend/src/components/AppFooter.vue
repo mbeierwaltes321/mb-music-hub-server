@@ -1,5 +1,7 @@
 <script setup lang="ts">
 
+import { VContainer, VRow, VCol } from 'vuetify/components';
+
 //Define interfaces for the footer data
 interface FooterLinkData {
     text: string,
@@ -55,15 +57,17 @@ const footerLinks: FooterLinkData[] = [
                 </a>
             </div>
         </div>
-        <div class="h-75 row row-cols-1 flex-column">
-            <div v-for="footerLink in footerLinks" 
-                :class="`col ` + (footerLink.first === true ? ' mt-3' : '')
-                    + (footerLink.last === true? `mt-auto` : ``)">
-                <a :href="footerLink.link" class="text-dark-emphasis">
-                    {{ footerLink.text }}
-                </a>
-            </div>
-        </div>
+        <v-container class="m-0">
+            <v-row class="h-75" no-gutters>
+                <v-col v-for="footerLink in footerLinks"
+                       :class="(footerLink.last === true? 'mt-5' : '')"
+                       :cols="12">
+                    <a :href="footerLink.link" class="text-dark-emphasis">
+                        {{ footerLink.text }}
+                    </a>
+                </v-col>
+            </v-row>
+        </v-container>
     </div>
 </template>
 
@@ -71,7 +75,7 @@ const footerLinks: FooterLinkData[] = [
 
 #FooterContainer {
     background-color: rgb(75, 0, 0);
-    height: 40vh;
+    height: auto;
 }
 
 </style>
