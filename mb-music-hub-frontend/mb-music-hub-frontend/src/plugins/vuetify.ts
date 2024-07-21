@@ -11,4 +11,7 @@ export default createVuetify({
       fa,
     },
   },
+  theme: {
+    defaultTheme: "light",
+  },
 })

@@ -1,11 +1,12 @@
 <script setup lang="ts">
 import { VAppBar, VMenu, VAppBarTitle, VBtn, VAppBarNavIcon } from "vuetify/components";
 import { type Ref, ref, watch } from "vue";
-import { useDisplay } from "vuetify";
+import { useDisplay, useTheme } from "vuetify";
 
-const theme: Ref<string | null> = ref(localStorage.getItem("colorTheme"));
+const theme = useTheme();
 
 //TODO - Eventually frame this so that it works with Vue router.
+//TODO - Add the light/dark theme toggle depending on the size of the screen
 const mediaItems = [
     { title: "Playlists", value: 0 },
     { title: "Podcasts", value: 1 },
@@ -15,6 +16,14 @@ const mediaItems = [
 //Determine if the current screen is in the medium breakpoint or higher (960px or greater)
 const { mdAndUp } = useDisplay();
 const drawer: Ref<boolean | null> = ref<boolean | null>(null);
+
+
+/**
+ * This function changes the theme in the application from light mode to dark mode
+ */
+ function toggleTheme() {
+    theme.global.name.value = theme.global.current.value.dark ? 'light' : 'dark';
+}
 
 //Add watch that closes the drawer if the screen changes
 watch(() => mdAndUp.value, () => {
@@ -34,6 +43,8 @@ watch(() => mdAndUp.value, () => {
             </template>
             <v-list :items="mediaItems" />
         </v-menu>
+        <v-btn :icon="theme.current.value.dark ? 'fas fa-moon' : 'far fa-sun'" 
+               @click="toggleTheme"/>
         <v-btn class="text-none" variant="outlined" rounded="xl" append-icon="fab fa-spotify" size="x-large">
             Login
         </v-btn>
