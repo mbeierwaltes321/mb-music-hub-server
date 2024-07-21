@@ -1,38 +1,38 @@
 <script setup lang="ts">
-import SpotifyLoginIcon from "./icons/SpotifyLoginIcon.vue";
+import { VAppBar, VMenu, VAppBarTitle, VBtn } from "vuetify/components";
 import { type Ref, ref } from "vue";
 
 const theme : Ref<string | null> = ref(localStorage.getItem("colorTheme"));
 
+//TODO - Eventually frame this so that it works with Vue router.
+const mediaItems = [
+    { title: "Playlists", value: 0 },
+    { title: "Podcasts", value: 1 },
+    { title: "YouTube Mixes", value: 2 }
+];
+
 </script>
 
 <template>
-    <nav id="NavigationBar" :class="'navbar navbar-expand-lg bg-' + theme" :data-bs-theme="theme">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="#">MB's Music Hub</a>
-            <div class="collapse navbar-collapse" id="navbarMediaSelection">
-                <ul class="navbar-nav me-auto">
-                    <li class="nav-item">
-                        <a class="nav-link active" aria-current="page" href="#">Home</a>
-                    </li>
-                    <li class="nav-item dropdown">
-                        <button class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown" aria-expanded="false">
-                            Media
-                        </button>
-                        <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="#">Playlists</a></li>
-                            <li><a class="dropdown-item" href="#">Podcasts</a></li>
-                            <li><a class="dropdown-item" href="#">YouTube Mixes</a></li>
-                        </ul>
-                    </li>
-                </ul>
-                <SpotifyLoginIcon/>
-            </div>
-            <div class="d-flex flex-row-reverse">
-                <button id="LoginHamburger" class="navbar-toggler mt-2" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMediaSelection" aria-controls="navbarSupportedContent" aria-expanded="false">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-            </div>
-        </div>
-    </nav>
+    <!--TODO: Solve sizing issue in mobile. Title gets minimized-->
+    <v-app-bar>
+        <v-app-bar-title>MB's Music Hub</v-app-bar-title>
+        <v-menu>
+            <template #activator="{props}">
+                <v-btn v-bind="props"
+                       variant="text"
+                       class="text-none"
+                       append-icon="fas fa-caret-down"
+                       size="x-large">Media</v-btn>
+            </template>
+            <v-list :items="mediaItems" />
+        </v-menu>
+        <v-btn class="text-none"
+               variant="outlined"
+               rounded="xl"
+               append-icon="fab fa-spotify"
+               size="x-large">
+               Login
+        </v-btn>
+    </v-app-bar>
 </template>

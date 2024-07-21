@@ -1,11 +1,11 @@
 import { createMemoryHistory, createRouter, type RouteRecordRaw, type Router, type RouterOptions } from "vue-router";
 
 import Introduction from "./components/Introduction.vue";
-import Home from "./components/Home.vue";
+import Layout from "./components/Layout.vue";
 //TODO - Add remaining routes
 
 const routes: RouteRecordRaw[] = [
-    { path: "/", component: Home },
+    { path: "/", component: Layout },
     { path: "/intro", component: Introduction}
 ];
 

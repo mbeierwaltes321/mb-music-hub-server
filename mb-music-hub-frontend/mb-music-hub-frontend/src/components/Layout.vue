@@ -1,4 +1,4 @@
-<!--TODO: Rename this component to the -->
+<!--TODO: Rename this component to Layout-->
 <script setup lang="ts">
 import { VApp, VAppBar, VMain, VFooter } from 'vuetify/components';
 import AppFooter from './AppFooter.vue';
@@ -8,8 +8,7 @@ import AppHeader from './AppHeader.vue';
 
 <template>
     <v-app>
-        <v-app-bar>
-        </v-app-bar>
+        <AppHeader />
         <v-main>
             <!--TODO: Right here place the "Home component. This is where the main page should be displayed"-->
             <div class="h-100 w-100" style="background-color: red ">
