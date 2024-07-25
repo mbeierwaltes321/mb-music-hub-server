@@ -3,6 +3,8 @@ import '@fortawesome/fontawesome-free/css/all.css' // Ensure your project is cap
 import { createVuetify } from 'vuetify'
 import { aliases, fa } from 'vuetify/iconsets/fa'
 
+const storedTheme = localStorage.getItem("colorTheme") ?? "light";
+
 export default createVuetify({
   icons: {
     defaultSet: 'fa',
@@ -12,6 +14,6 @@ export default createVuetify({
     },
   },
   theme: {
-    defaultTheme: "light",
+    defaultTheme: storedTheme,
   },
 })

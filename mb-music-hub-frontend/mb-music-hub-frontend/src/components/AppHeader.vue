@@ -2,6 +2,7 @@
 import { VAppBar, VMenu, VAppBarTitle, VBtn, VAppBarNavIcon } from "vuetify/components";
 import { type Ref, ref, watch } from "vue";
 import { useDisplay, useTheme } from "vuetify";
+import { setThemeInLocalStorage } from "@/utilities/localStorage";
 
 const theme = useTheme();
 
@@ -21,8 +22,10 @@ const drawer: Ref<boolean | null> = ref<boolean | null>(null);
 /**
  * This function changes the theme in the application from light mode to dark mode
  */
- function toggleTheme() {
-    theme.global.name.value = theme.global.current.value.dark ? 'light' : 'dark';
+function toggleTheme() {
+    const newTheme: string = theme.global.current.value.dark ? 'light' : 'dark';
+    theme.global.name.value = newTheme;
+    setThemeInLocalStorage(newTheme);
 }
 
 //Add watch that closes the drawer if the screen changes

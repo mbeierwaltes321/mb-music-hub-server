@@ -5,7 +5,7 @@
 const initializeTheme = () => {
     //Set the light mode/dark mode
     if(!localStorage.getItem("colorTheme"))
-        localStorage.setItem("colorTheme", "dark");
+        localStorage.setItem("colorTheme", "light");
 }
 
 /**
@@ -23,6 +23,14 @@ const initializeIntro = () => {
 const setUpLocalStorage = () => {
     initializeTheme();
     initializeIntro();
+}
+
+/**
+ * This method updates the app's theme in local storage
+ * @param theme The theme for which to update the local storage
+ */
+export const setThemeInLocalStorage = (theme: string) => {
+    localStorage.setItem("colorTheme", theme);
 }
 
 export default setUpLocalStorage;
