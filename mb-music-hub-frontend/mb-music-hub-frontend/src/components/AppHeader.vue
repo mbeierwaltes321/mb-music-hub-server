@@ -12,9 +12,9 @@ const drawer: Ref<boolean | null> = ref<boolean | null>(null);
 
 //TODO - Eventually frame this so that it works with Vue router.
 const mediaItems = computed(() => [
-    { title: "Playlists", value: 0 },
-    { title: "Podcasts", value: 1 },
-    { title: "YouTube Mixes", value: 2 }
+    { title: "Playlists", value: 0, click: navigateToPlaylists },
+    { title: "Podcasts", value: 1, click: navigateToPodcasts },
+    { title: "YouTube Mixes", value: 2, click: navigateToYoutubeMixes }
 ]);
 
 
@@ -26,6 +26,28 @@ function toggleTheme() {
     theme.global.name.value = newTheme;
     setThemeInLocalStorage(newTheme);
 }
+
+/**
+ * This function navigates the user to the playlists component
+ */
+ function navigateToPlaylists() {
+    alert("You clicked on the playlists button!");
+}
+
+/**
+ * This function navigates the user to the podcasts component
+ */
+ function navigateToPodcasts() {
+    alert("You clicked on the podcasts button!");
+}
+
+/**
+ * This function navigates the user to the youtube mixes component
+ */
+ function navigateToYoutubeMixes() {
+    alert("You clicked on the youtube mixes button!");
+}
+
 
 //Add watch that closes the drawer if the screen changes
 watch(() => mdAndUp.value, () => {
@@ -43,7 +65,13 @@ watch(() => mdAndUp.value, () => {
                 <v-btn v-bind="props" variant="text" class="text-none" append-icon="fas fa-caret-down"
                     size="large">Media</v-btn>
             </template>
-            <v-list :items="mediaItems" />
+            <v-list>
+                <v-list-item v-for="item in mediaItems"
+                             :key="item.value"
+                             :title="item.title"
+                             @click="item.click"
+                             />
+            </v-list>
         </v-menu>
         <v-btn v-if="mdAndUp" 
                :icon="theme.current.value.dark ? 'fas fa-moon' : 'far fa-sun'" 
@@ -56,7 +84,8 @@ watch(() => mdAndUp.value, () => {
         <v-list>
             <v-list-item v-for="item in mediaItems"
                          :key="item.value"
-                         :title="item.title"/>
+                         :title="item.title"
+                         @click="item.click"/>
             <v-list-item :key="mediaItems.length"
                          :prepend-icon="theme.current.value.dark ? 'fas fa-moon' : 'far fa-sun'"
                          :ripple="false"
