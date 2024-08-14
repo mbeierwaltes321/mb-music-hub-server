@@ -1,7 +1,7 @@
 import { createMemoryHistory, createRouter, type RouteRecordRaw, type Router, type RouterOptions } from "vue-router";
 
 import Introduction from "./components/Introduction.vue";
-import Layout from "./components/Layout.vue";
+import Layout from "./components/layout/Layout.vue";
 //TODO - Add remaining routes
 
 const routes: RouteRecordRaw[] = [

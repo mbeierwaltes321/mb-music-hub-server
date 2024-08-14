@@ -41,34 +41,37 @@ const footerLinks: FooterLinkData[] = [
 </script>
 
 <template>
-    <div id="FooterContainer" class="container-fluid vh-25">
-        <div id="Links" class="d-flex align-items-center h-25 mt-2">
-            <div v-for="imgProp in imgProperties"> 
-                <a :href="imgProp.link">
-                    <img v-if="imgProp.path != ''" 
-                        :id="imgProp.id" 
-                        class="m-2" 
-                        :src="imgProp.path" 
-                        :length="imgProp.length"
-                        :width="imgProp.width"/>
-                    <p v-else id="tempIcon" class="m-2">
-                        TEMP
-                    </p>
-                </a>
-            </div>
-        </div>
-        <v-container class="m-0">
-            <v-row class="h-75" no-gutters>
-                <v-col v-for="footerLink in footerLinks"
-                       :class="(footerLink.last === true? 'mt-5' : '')"
-                       :cols="12">
-                    <a :href="footerLink.link" class="text-dark-emphasis">
-                        {{ footerLink.text }}
+    <v-footer :absolute="true" 
+              :app="true">    
+        <div id="FooterContainer" class="container-fluid vh-25">
+            <div id="Links" class="d-flex align-items-center h-25 mt-2">
+                <div v-for="imgProp in imgProperties"> 
+                    <a :href="imgProp.link">
+                        <img v-if="imgProp.path != ''" 
+                            :id="imgProp.id" 
+                            class="m-2" 
+                            :src="imgProp.path" 
+                            :length="imgProp.length"
+                            :width="imgProp.width"/>
+                        <p v-else id="tempIcon" class="m-2">
+                            TEMP
+                        </p>
                     </a>
-                </v-col>
-            </v-row>
-        </v-container>
-    </div>
+                </div>
+            </div>
+            <v-container class="m-0">
+                <v-row class="h-75" no-gutters>
+                    <v-col v-for="footerLink in footerLinks"
+                        :class="(footerLink.last === true? 'mt-5' : '')"
+                        :cols="12">
+                        <a :href="footerLink.link" class="text-dark-emphasis">
+                            {{ footerLink.text }}
+                        </a>
+                    </v-col>
+                </v-row>
+            </v-container>
+        </div>
+    </v-footer>
 </template>
 
 <style scoped>

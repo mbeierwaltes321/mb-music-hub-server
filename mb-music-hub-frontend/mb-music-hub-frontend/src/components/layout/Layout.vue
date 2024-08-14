@@ -1,0 +1,25 @@
+<script setup lang="ts">
+import { VApp, VAppBar, VMain, VFooter } from 'vuetify/components';
+import AppFooter from './AppFooter.vue';
+import AppHeader from './AppHeader.vue';
+import Home from '../Home.vue';
+
+</script>
+
+<template>
+    <v-app>
+        <AppHeader />
+        <v-main>
+            <Home />
+        </v-main>
+        <AppFooter/>    
+    </v-app>
+</template>
+
+<style scoped>
+
+.v-footer {
+    padding: 0%;
+}
+
+</style>
