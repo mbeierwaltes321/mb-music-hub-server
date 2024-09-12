@@ -29,7 +29,7 @@ watch(() => theme.global.current.value.dark, () => {
                    class="d-flex flex-column">
                    <h2>Music</h2>
                    <hr>
-                   <v-row align="center" justify="center">
+                   <v-row align="center" justify="center" no-gutters>
                         <v-col sm="auto"
                                :md="3"
                                class="d-flex justify-center">

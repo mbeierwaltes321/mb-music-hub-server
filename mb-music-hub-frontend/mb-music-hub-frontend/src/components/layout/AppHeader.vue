@@ -58,12 +58,16 @@ watch(() => mdAndUp.value, () => {
 
 <template>
     <v-app-bar>
-        <v-app-bar-nav-icon v-if="!mdAndUp" @click.stop="drawer = !drawer" />
+        <v-app-bar-nav-icon v-if="!mdAndUp" 
+                            @click.stop="drawer = !drawer" />
         <v-app-bar-title>MB's Music Hub</v-app-bar-title>
         <v-menu v-if="mdAndUp">
             <template #activator="{ props }">
-                <v-btn v-bind="props" variant="text" class="text-none" append-icon="fas fa-caret-down"
-                    size="large">Media</v-btn>
+                <v-btn v-bind="props" 
+                       variant="text" 
+                       class="text-none" 
+                       append-icon="fas fa-caret-down"
+                       size="large">Media</v-btn>
             </template>
             <v-list>
                 <v-list-item v-for="item in mediaItems"
@@ -76,7 +80,11 @@ watch(() => mdAndUp.value, () => {
         <v-btn v-if="mdAndUp" 
                :icon="theme.current.value.dark ? 'fas fa-moon' : 'far fa-sun'" 
                @click="toggleTheme"/>
-        <v-btn class="text-none" variant="outlined" rounded="xl" append-icon="fab fa-spotify" size="x-large">
+        <v-btn class="text-none"
+               variant="outlined" 
+               rounded="xl" 
+               append-icon="fab fa-spotify" 
+               size="large">
             Login
         </v-btn>
     </v-app-bar>
