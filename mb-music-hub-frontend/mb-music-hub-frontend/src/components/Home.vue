@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue';
 import { useTheme } from 'vuetify';
-import { VContainer, VCol, VRow, VCard, VCardText, VHover } from 'vuetify/components';
+import { VContainer, VCol, VRow, VCard, VCardText, VHover, VCarousel, VCarouselItem, VSheet } from 'vuetify/components';
 
 //Set the horizontal line depending on the color theme
 const theme = useTheme();
@@ -20,6 +20,19 @@ function navigateToYoutubeMixes() {
 function navigateToSpotifyPlaylists() {
     alert("You clicked on the Spotify Playlists button");
 }
+
+function navigateToPodcasts() {
+    alert("You clicked on the podcasts button");
+}
+
+const tempWindowObjects = [
+    {index: 0, podcastName: "Enciclopedia dei Videogiochi"},
+    {index: 1, podcastName: "Conan O'Brien Needs a Friend"},
+    {index: 2, podcastName: "Norah Jones Is Playing Along"},
+    {index: 3, podcastName: "Italian Stories with Davide"},
+    {index: 4, podcastName: "Gitbar - Italian developer podcast"}
+]
+
 
 
 watch(() => theme.global.current.value.dark, () => {
@@ -51,7 +64,8 @@ watch(() => theme.global.current.value.dark, () => {
                             <!--TODO: Add a background image for the hover-->
                             <v-hover>
                                 <template #default="{isHovering, props}">
-                                    <v-card title="YouTube Mixes"
+                                    <v-card class="music-items"
+                                            title="YouTube Mixes"
                                             v-bind="props"
                                             :color="isHovering ? 'red-darken-4' : undefined"
                                             @click="navigateToYoutubeMixes">
@@ -67,7 +81,8 @@ watch(() => theme.global.current.value.dark, () => {
                             <!--TODO: Add a background image for the hover-->
                             <v-hover>
                                 <template #default="{isHovering, props}">
-                                    <v-card title="Spotify Playlists"
+                                    <v-card class="music-items" 
+                                            title="Spotify Playlists"
                                             v-bind="props"
                                             :color="isHovering ? 'light-green-darken-1' : undefined"
                                             @click="navigateToSpotifyPlaylists">
@@ -83,6 +98,20 @@ watch(() => theme.global.current.value.dark, () => {
                      class="d-flex flex-column align-items-center">
                      <h2>Podcasts</h2>
                      <hr>
+                     <v-carousel cycle
+                                 show-arrows
+                                 :interval="4000"
+                                 :color="theme.current.value.dark ? 'white' : 'black'"
+                                 :height="300">
+                         <v-carousel-item v-for="pod in tempWindowObjects"
+                                          :key="pod.index"
+                                          :aspect-ratio="1">
+                            <v-sheet class="d-flex justify-center align-center w-100 h-100"
+                                     @click="navigateToPodcasts">
+                                <span class="text-h2">{{ pod.podcastName }}</span>
+                            </v-sheet>
+                         </v-carousel-item>
+                     </v-carousel>
                 </div>
             </v-col>
         </v-row>
@@ -116,7 +145,7 @@ h2 {
     align-self: center
 }
 
-.v-card {
+.music-items {
     width: 225px;
 }
 

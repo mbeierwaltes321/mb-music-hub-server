@@ -48,6 +48,13 @@ function toggleTheme() {
     alert("You clicked on the youtube mixes button!");
 }
 
+/**
+ * This function handles the user clicking on the login button for Spotify
+ */
+function onClickSpotifyButton() {
+    alert("You clicked on the spotify log in button!");
+}
+
 
 //Add watch that closes the drawer if the screen changes
 watch(() => mdAndUp.value, () => {
@@ -84,7 +91,8 @@ watch(() => mdAndUp.value, () => {
                variant="outlined" 
                rounded="xl" 
                append-icon="fab fa-spotify" 
-               size="large">
+               size="large"
+               @click="onClickSpotifyButton">
             Login
         </v-btn>
     </v-app-bar>
@@ -101,3 +109,9 @@ watch(() => mdAndUp.value, () => {
         </v-list>
     </v-navigation-drawer>
 </template>
+
+<style scoped >
+    .appBarTitle {
+        user-select: none
+    }
+</style>
