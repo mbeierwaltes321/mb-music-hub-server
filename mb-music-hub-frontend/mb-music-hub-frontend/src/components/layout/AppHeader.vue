@@ -48,6 +48,13 @@ function toggleTheme() {
     alert("You clicked on the youtube mixes button!");
 }
 
+/**
+ * This function handles the user clicking on the login button for Spotify
+ */
+function onClickSpotifyButton() {
+    alert("You clicked on the spotify log in button!");
+}
+
 
 //Add watch that closes the drawer if the screen changes
 watch(() => mdAndUp.value, () => {
@@ -58,12 +65,16 @@ watch(() => mdAndUp.value, () => {
 
 <template>
     <v-app-bar>
-        <v-app-bar-nav-icon v-if="!mdAndUp" @click.stop="drawer = !drawer" />
+        <v-app-bar-nav-icon v-if="!mdAndUp" 
+                            @click.stop="drawer = !drawer" />
         <v-app-bar-title>MB's Music Hub</v-app-bar-title>
         <v-menu v-if="mdAndUp">
             <template #activator="{ props }">
-                <v-btn v-bind="props" variant="text" class="text-none" append-icon="fas fa-caret-down"
-                    size="large">Media</v-btn>
+                <v-btn v-bind="props" 
+                       variant="text" 
+                       class="text-none" 
+                       append-icon="fas fa-caret-down"
+                       size="large">Media</v-btn>
             </template>
             <v-list>
                 <v-list-item v-for="item in mediaItems"
@@ -76,7 +87,12 @@ watch(() => mdAndUp.value, () => {
         <v-btn v-if="mdAndUp" 
                :icon="theme.current.value.dark ? 'fas fa-moon' : 'far fa-sun'" 
                @click="toggleTheme"/>
-        <v-btn class="text-none" variant="outlined" rounded="xl" append-icon="fab fa-spotify" size="x-large">
+        <v-btn class="text-none"
+               variant="outlined" 
+               rounded="xl" 
+               append-icon="fab fa-spotify" 
+               size="large"
+               @click="onClickSpotifyButton">
             Login
         </v-btn>
     </v-app-bar>
@@ -93,3 +109,9 @@ watch(() => mdAndUp.value, () => {
         </v-list>
     </v-navigation-drawer>
 </template>
+
+<style scoped >
+    .appBarTitle {
+        user-select: none
+    }
+</style>
