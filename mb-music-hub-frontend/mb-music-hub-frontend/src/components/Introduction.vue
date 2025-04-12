@@ -7,7 +7,7 @@ const router = useRouter();
  * This function will navigate the user to the main layout, which contains the home page
  */
 function navigateToMainLayout() {
-    router.push({name: "layout"});
+    router.push({name: "home"});
 }
 
 </script>

@@ -2,12 +2,27 @@ import { createWebHistory, createRouter, type RouteRecordRaw, type Router, type 
 
 import Introduction from "../components/Introduction.vue";
 import Layout from "../components/layout/Layout.vue";
+import Home from "@/components/Home.vue";
 //TODO - Add remaining routes
 
 //TODO - Add a 404 page and a route to catch it: https://router.vuejs.org/guide/essentials/dynamic-matching.html#Catch-all-404-Not-found-Route
-const routes = [
-    { path: "/", name: "introduction", component: Introduction },
-    { path: "/home", name: "layout", component: Layout }
+const routes: RouteRecordRaw[] = [
+    { 
+        path: "/",
+        name: "introduction",
+        component: Introduction 
+    },
+    { 
+        path: "/home",
+        component: Layout,
+        children: [
+            {
+                path: "",
+                name: "home",
+                component: Home
+            }
+        ]
+    }
 ];
 
 const router: Router = createRouter({

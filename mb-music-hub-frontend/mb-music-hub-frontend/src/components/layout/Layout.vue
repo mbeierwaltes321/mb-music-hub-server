@@ -3,6 +3,7 @@ import { VApp, VAppBar, VMain, VFooter } from 'vuetify/components';
 import AppFooter from './AppFooter.vue';
 import AppHeader from './AppHeader.vue';
 import Home from '../Home.vue';
+import { RouterView } from 'vue-router';
 
 </script>
 
@@ -10,7 +11,7 @@ import Home from '../Home.vue';
     <v-app>
         <AppHeader />
         <v-main>
-            <Home />
+            <RouterView></RouterView>
         </v-main>
         <AppFooter/>    
     </v-app>
