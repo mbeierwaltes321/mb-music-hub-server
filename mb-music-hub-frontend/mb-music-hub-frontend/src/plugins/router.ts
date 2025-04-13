@@ -8,12 +8,12 @@ import Home from "@/components/Home.vue";
 //TODO - Add a 404 page and a route to catch it: https://router.vuejs.org/guide/essentials/dynamic-matching.html#Catch-all-404-Not-found-Route
 const routes: RouteRecordRaw[] = [
     { 
-        path: "/",
+        path: "/intro",
         name: "introduction",
         component: Introduction 
     },
     { 
-        path: "/home",
+        path: "/",
         component: Layout,
         children: [
             {

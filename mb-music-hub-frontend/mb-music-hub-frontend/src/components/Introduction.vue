@@ -7,6 +7,9 @@ const router = useRouter();
  * This function will navigate the user to the main layout, which contains the home page
  */
 function navigateToMainLayout() {
+    //Set the visited storage item to false
+    localStorage.setItem("firstVisit", "false");
+
     router.push({name: "home"});
 }
 

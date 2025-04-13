@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue';
+import { onMounted, ref, watch } from 'vue';
 import { useTheme } from 'vuetify';
 import { VContainer, VCol, VRow, VCard, VCardText, VHover, VCarousel, VCarouselItem, VSheet } from 'vuetify/components';
 
@@ -33,11 +33,9 @@ const tempWindowObjects = [
     {index: 4, podcastName: "Gitbar - Italian developer podcast"}
 ]
 
-
-
 watch(() => theme.global.current.value.dark, () => {
     horizontalLineColor.value = theme.global.current.value.dark ? "#8B8B00" : "#00008B";
-})
+});
 
 </script>
 

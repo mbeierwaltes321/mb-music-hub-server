@@ -3,7 +3,10 @@ import { VApp, VAppBar, VMain, VFooter } from 'vuetify/components';
 import AppFooter from './AppFooter.vue';
 import AppHeader from './AppHeader.vue';
 import Home from '../Home.vue';
-import { RouterView } from 'vue-router';
+import { RouterView, useRouter } from 'vue-router';
+import { onBeforeMount } from 'vue';
+
+const router = useRouter();
 
 </script>
 
