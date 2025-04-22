@@ -3,7 +3,7 @@ import './assets/main.css'
 
 //Vue/Vue router
 import { createApp } from 'vue'
-import router from "./router";
+import router from "./plugins/router";
 
 //Vuetify
 import 'vuetify/styles';

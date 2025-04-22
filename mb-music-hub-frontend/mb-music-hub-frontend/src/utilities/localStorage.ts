@@ -11,10 +11,10 @@ const initializeTheme = () => {
 /**
  * This function sets up the starting page
  */
-const initializeIntro = () => {
+const setFirstTime = () => {
     //Set the start page to the intro, if not visited before
-    if(!localStorage.getItem("start"))
-        localStorage.setItem("start", "intro");
+    if(!localStorage.getItem("firstVisit"))
+        localStorage.setItem("firstVisit", "true");
 }
 
 /**
@@ -22,7 +22,7 @@ const initializeIntro = () => {
  */
 const setUpLocalStorage = () => {
     initializeTheme();
-    initializeIntro();
+    setFirstTime();
 }
 
 /**

@@ -33,11 +33,9 @@ const tempWindowObjects = [
     {index: 4, podcastName: "Gitbar - Italian developer podcast"}
 ]
 
-
-
 watch(() => theme.global.current.value.dark, () => {
     horizontalLineColor.value = theme.global.current.value.dark ? "#8B8B00" : "#00008B";
-})
+});
 
 </script>
 

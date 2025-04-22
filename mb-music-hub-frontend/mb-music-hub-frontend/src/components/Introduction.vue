@@ -1,3 +1,20 @@
+<script setup lang="ts">
+import { RouterLink, useRouter } from 'vue-router';
+
+const router = useRouter();
+
+/**
+ * This function will navigate the user to the main layout, which contains the home page
+ */
+function navigateToMainLayout() {
+    //Set the visited storage item to false
+    localStorage.setItem("firstVisit", "false");
+
+    router.push({name: "home"});
+}
+
+</script>
+
 <template>
     <div id="AppIntro">
         <div id="IntroContainer" class="container-md text-center">
@@ -19,7 +36,9 @@
                 <a href="#" class="col-md-auto fs-2 text-primary mt-3">Who am I?</a>
             </div> -->
             <div class="row justify-content-center">
-                <button type="button" class="col-4 fs-5 btn btn-primary mt-4"> Let's Go! </button>
+                <button type="button"
+                        class="col-4 fs-5 btn btn-primary mt-4"
+                        @click="navigateToMainLayout"> Let's Go! </button>
             </div>
         </div>
     </div>
