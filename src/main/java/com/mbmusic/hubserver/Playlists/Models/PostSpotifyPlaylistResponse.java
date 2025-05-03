@@ -1,4 +1,4 @@
-package com.mbmusic.backend.Playlists.Models;
+package com.mbmusic.hubserver.Playlists.Models;
 
 public class PostSpotifyPlaylistResponse {
 

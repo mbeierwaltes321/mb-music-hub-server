@@ -1,4 +1,4 @@
-package com.mbmusic.backend.Connections;
+package com.mbmusic.hubserver.Connections;
 
 import java.io.IOException;
 import java.net.URI;
@@ -7,7 +7,7 @@ import java.time.ZoneId;
 
 import org.springframework.stereotype.Component;
 
-import com.mbmusic.backend.Connections.Models.SpotifyTokenInfo;
+import com.mbmusic.hubserver.Connections.Models.SpotifyTokenInfo;
 
 import se.michaelthelin.spotify.SpotifyApi;
 import se.michaelthelin.spotify.SpotifyHttpManager;

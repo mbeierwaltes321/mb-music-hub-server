@@ -1,13 +1,13 @@
-package com.mbmusic.backend;
+package com.mbmusic.hubserver;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class BackendApplication {
+public class AppServer {
 
 	public static void main(String[] args) {
-		SpringApplication.run(BackendApplication.class, args);
+		SpringApplication.run(AppServer.class, args);
 	}
 
 }

@@ -1,4 +1,4 @@
-package com.mbmusic.backend.Connections;
+package com.mbmusic.hubserver.Connections;
 
 import java.net.URI;
 import java.net.URL;
@@ -15,9 +15,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.util.UriComponentsBuilder;
-import org.springframework.ui.Model;
 
-import com.mbmusic.backend.Connections.Models.SpotifyLoginAuth;
+import com.mbmusic.hubserver.Connections.Models.SpotifyLoginAuth;
+
+import org.springframework.ui.Model;
 
 import se.michaelthelin.spotify.model_objects.credentials.AuthorizationCodeCredentials;
 import se.michaelthelin.spotify.requests.authorization.authorization_code.AuthorizationCodeRequest;

@@ -1,8 +1,8 @@
-package com.mbmusic.backend;
-
-import com.mbmusic.backend.Connections.Models.SpotifyTokenInfo;
+package com.mbmusic.hubserver;
 
 import java.time.LocalDateTime;
+
+import com.mbmusic.hubserver.Connections.Models.SpotifyTokenInfo;
 
 //This class contains common methods used in testing the backend application
 class TestCommon {

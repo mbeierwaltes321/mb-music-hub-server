@@ -1,4 +1,4 @@
-package com.mbmusic.backend.Common.Models;
+package com.mbmusic.hubserver.Common.Models;
 
 import java.io.Serializable;
 
@@ -6,7 +6,7 @@ import java.io.Serializable;
 public class ApiResponse<T> implements Serializable{
     //#region " Members "
     // This member contains the token information which is returned to the user
-    private com.mbmusic.backend.Connections.Models.SpotifyTokenInfo spotifyTokenInfo;
+    private com.mbmusic.hubserver.Connections.Models.SpotifyTokenInfo spotifyTokenInfo;
 
     //This field resembles the content returned to the user 
     private T responseContent;
@@ -15,11 +15,11 @@ public class ApiResponse<T> implements Serializable{
 
     //#region " Getters/Setters "
 
-    public com.mbmusic.backend.Connections.Models.SpotifyTokenInfo getSpotifyTokenInfo() {
+    public com.mbmusic.hubserver.Connections.Models.SpotifyTokenInfo getSpotifyTokenInfo() {
         return spotifyTokenInfo;
     }
 
-    public void setSpotifyTokenInfo(com.mbmusic.backend.Connections.Models.SpotifyTokenInfo spotifyTokenInfo) {
+    public void setSpotifyTokenInfo(com.mbmusic.hubserver.Connections.Models.SpotifyTokenInfo spotifyTokenInfo) {
         this.spotifyTokenInfo = spotifyTokenInfo;
     }
 

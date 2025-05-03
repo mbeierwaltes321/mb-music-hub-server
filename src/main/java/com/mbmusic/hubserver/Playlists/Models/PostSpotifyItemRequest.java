@@ -1,8 +1,8 @@
-package com.mbmusic.backend.Playlists.Models;
+package com.mbmusic.hubserver.Playlists.Models;
 
 import java.util.List;
 
-import com.mbmusic.backend.Connections.Models.SpotifyTokenInfo;
+import com.mbmusic.hubserver.Connections.Models.SpotifyTokenInfo;
 
 //This class models the request body for the post spotify item endpoint
 public class PostSpotifyItemRequest {

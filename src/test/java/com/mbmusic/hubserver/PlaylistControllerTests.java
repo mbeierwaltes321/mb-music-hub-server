@@ -1,4 +1,4 @@
-package com.mbmusic.backend;
+package com.mbmusic.hubserver;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -23,10 +23,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.jayway.jsonpath.JsonPath;
-import com.mbmusic.backend.Connections.SpotifyApiConnection;
-import com.mbmusic.backend.Connections.Models.SpotifyTokenInfo;
-import com.mbmusic.backend.Playlists.PlaylistController;
-import com.mbmusic.backend.Playlists.Models.PostSpotifyPlaylistRequest;
+import com.mbmusic.hubserver.Connections.SpotifyApiConnection;
+import com.mbmusic.hubserver.Connections.Models.SpotifyTokenInfo;
+import com.mbmusic.hubserver.Playlists.PlaylistController;
+import com.mbmusic.hubserver.Playlists.Models.PostSpotifyPlaylistRequest;
 
 import se.michaelthelin.spotify.SpotifyApi;
 import se.michaelthelin.spotify.model_objects.specification.Playlist;
@@ -144,7 +144,7 @@ public class PlaylistControllerTests {
         final int prevCount = initialPlaylist.getTracks().getTotal();
 
         //Create the request body object
-        com.mbmusic.backend.Playlists.Models.PostSpotifyItemRequest body = new com.mbmusic.backend.Playlists.Models.PostSpotifyItemRequest();
+        com.mbmusic.hubserver.Playlists.Models.PostSpotifyItemRequest body = new com.mbmusic.hubserver.Playlists.Models.PostSpotifyItemRequest();
 
         //Set the body information
         body.setAuthTokens(authTokens);

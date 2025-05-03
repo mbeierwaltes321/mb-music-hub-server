@@ -1,4 +1,4 @@
-package com.mbmusic.backend;
+package com.mbmusic.hubserver;
 
 import org.junit.jupiter.api.Test;
 

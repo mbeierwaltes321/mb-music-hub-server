@@ -1,4 +1,4 @@
-package com.mbmusic.backend;
+package com.mbmusic.hubserver;
 
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;

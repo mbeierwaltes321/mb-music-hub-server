@@ -1,4 +1,4 @@
-package com.mbmusic.backend.Connections.Models;
+package com.mbmusic.hubserver.Connections.Models;
 
 //This class models the return object containing the Spotify login
 //url and the state used to verify the request

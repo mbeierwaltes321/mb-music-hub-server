@@ -1,4 +1,4 @@
-package com.mbmusic.backend.Connections.Models;
+package com.mbmusic.hubserver.Connections.Models;
 
 import java.time.LocalDateTime;
 

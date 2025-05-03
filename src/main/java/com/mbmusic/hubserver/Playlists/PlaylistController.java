@@ -1,4 +1,4 @@
-package com.mbmusic.backend.Playlists;
+package com.mbmusic.hubserver.Playlists;
 
 import java.util.List;
 
@@ -11,12 +11,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.mbmusic.backend.Common.Models.ApiResponse;
-import com.mbmusic.backend.Connections.SpotifyApiConnection;
-import com.mbmusic.backend.Connections.Models.SpotifyTokenInfo;
-import com.mbmusic.backend.Playlists.Models.PostSpotifyItemRequest;
-import com.mbmusic.backend.Playlists.Models.PostSpotifyPlaylistRequest;
-import com.mbmusic.backend.Playlists.Models.PostSpotifyPlaylistResponse;
+import com.mbmusic.hubserver.Common.Models.ApiResponse;
+import com.mbmusic.hubserver.Connections.SpotifyApiConnection;
+import com.mbmusic.hubserver.Connections.Models.SpotifyTokenInfo;
+import com.mbmusic.hubserver.Playlists.Models.PostSpotifyItemRequest;
+import com.mbmusic.hubserver.Playlists.Models.PostSpotifyPlaylistRequest;
+import com.mbmusic.hubserver.Playlists.Models.PostSpotifyPlaylistResponse;
 
 import se.michaelthelin.spotify.SpotifyApi;
 import se.michaelthelin.spotify.model_objects.special.SnapshotResult;
