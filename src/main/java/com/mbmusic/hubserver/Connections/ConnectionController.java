@@ -13,10 +13,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.view.RedirectView;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.mbmusic.hubserver.Connections.Models.SpotifyLoginAuth;
 import com.mbmusic.hubserver.Connections.Models.SpotifyTokenInfo;
 
 import jakarta.servlet.http.Cookie;
@@ -37,7 +37,7 @@ public class ConnectionController {
     //#region " Methods "
     /**This method generates the login URI for authenticating the user into Spotify */
     @PostMapping("/spotifylogin")
-    public String postSpotifyLogin() throws Exception {
+    public RedirectView postSpotifyLogin() throws Exception {
      
         // Generate a state
         // choose a Character random from this String 
@@ -92,7 +92,7 @@ public class ConnectionController {
             throw new Exception("Access denied: State did not match");
         }
 
-        return "redirect:/" + authUri.toString();
+        return new RedirectView(authUri.toString());
 
     }
 
@@ -106,7 +106,7 @@ public class ConnectionController {
      * @param state The state-specific code used to identify the user and session
      */
     @GetMapping("/redirect")
-    public String generateSpotifyAuthToken(@RequestParam(name="code") String code, 
+    public RedirectView generateSpotifyAuthToken(@RequestParam(name="code") String code, 
                                            @RequestParam(name="state") String state,
                                            HttpServletResponse response) throws Exception {
         
@@ -146,7 +146,7 @@ public class ConnectionController {
 
         //TODO - Add the token information to the Redis database after it is implemented
         ObjectMapper jsonMapper = new ObjectMapper();
-        System.out.print("Token Information" + jsonMapper.writeValueAsString(newTokenInfo));
+        //System.out.print("Token Information" + jsonMapper.writeValueAsString(newTokenInfo));
 
         //Build frontend redirect url
         redirectUrl = UriComponentsBuilder.fromUriString("http://localhost:5173/")
@@ -154,7 +154,7 @@ public class ConnectionController {
                         .toUri()
                         .toURL();
 
-        return "redirect:/" + redirectUrl.toString();
+        return new RedirectView(redirectUrl.toString());
 
     }
 
