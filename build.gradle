@@ -16,15 +16,22 @@ repositories {
 }
 
 dependencies {
+	//Spring Boot
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
 	runtimeOnly 'com.h2database:h2'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+
+	//Spotiy API
 	// https://mvnrepository.com/artifact/se.michaelthelin.spotify/spotify-web-api-java
 	implementation group: 'se.michaelthelin.spotify', name: 'spotify-web-api-java', version: '8.3.5'
 	// https://mvnrepository.com/artifact/com.fasterxml.jackson.datatype/jackson-datatype-jsr310
 	implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.16.1'
+	
+	//Valkey
+	implementation group: 'io.valkey', name: 'valkey-glide', version: '1.+', classifier: 'linux-x86_64'
+
 
 }
 
