@@ -1,12 +1,20 @@
 package com.mbmusic.hubserver.Configuration;
 
-import org.springframework.stereotype.Component;
+import java.util.concurrent.ExecutionException;
+
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import glide.api.GlideClient;
+import glide.api.models.configuration.GlideClientConfiguration;
+import glide.api.models.configuration.NodeAddress;
 
 /**
  * This class contains the necessary information to connect to Valkey
  */
-@Component
+@Configuration
 public class ValkeyConfig {
+
+    //#region Members
 
     private String valkeyHost = System.getenv("ValkeyHost");
     
@@ -14,16 +22,26 @@ public class ValkeyConfig {
 
     private boolean useSsl = Boolean.parseBoolean("ValkeySsl");
 
-    public String getValkeyHost() {
-        return valkeyHost;
+    /**
+     * The base valkey client object to be used for queries
+     */
+    @Bean
+    public GlideClient valkeyClient() throws ExecutionException, InterruptedException {
+
+        NodeAddress address = NodeAddress.builder()
+                                .host(valkeyHost)
+                                .port(Integer.parseInt(valkeyPort))
+                                .build();
+
+        GlideClientConfiguration config = GlideClientConfiguration.builder()
+                                            .address(address)
+                                            .useTLS(useSsl)
+                                            .requestTimeout(500)
+                                            .build();
+
+        return GlideClient.createClient(config).get();
     }
 
-    public String getValkeyPort() {
-        return valkeyPort;
-    }
+    //#endregion
 
-    public boolean isUseSsl() {
-        return useSsl;
-    }
-    
 }
