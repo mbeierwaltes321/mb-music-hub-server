@@ -1,6 +1,7 @@
 package com.mbmusic.hubserver.Connections.Clients;
 
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,7 +42,7 @@ public class ValkeyClient {
      * @throws JsonMappingException
      * @throws JsonProcessingException
      */
-    public SpotifyTokenInfo getSpotifyAPIToken(UUID sessionID) throws InterruptedException, ExecutionException, JsonMappingException, JsonProcessingException {
+    public CompletableFuture<SpotifyTokenInfo> getSpotifyAPIToken(UUID sessionID) throws InterruptedException, ExecutionException, JsonMappingException, JsonProcessingException {
 
         //Validate the incoming session id
         if (sessionID == null || sessionID.equals(UUID.fromString("00000000-0000-0000-0000-000000000000"))) {
@@ -50,18 +51,29 @@ public class ValkeyClient {
         }
 
         //Retrieve the Spotify API Token
-        GlideString serializedToken = this.valkeyGlide.get(GlideString.gs(SESSION_PREFIX + sessionID.toString())).get();
+        CompletableFuture<SpotifyTokenInfo> t = this.valkeyGlide.get(GlideString.gs(SESSION_PREFIX + sessionID.toString()))
+        .thenApply((GlideString serializedToken) -> {
 
-        if (serializedToken == null) {
-            //No token retruend. Return null
-            return null;
-        }
+            if (serializedToken == null) {
+                //No token retruend. Return null
+                return null;
+            }
 
-        //Build the spotify token information
-        ObjectMapper mapper = new ObjectMapper();
-        SpotifyTokenInfo tokenInfo = mapper.readValue(serializedToken.getString(), SpotifyTokenInfo.class);
+            SpotifyTokenInfo tokenInfo;
+            try {
+                //Build the spotify token information
+                ObjectMapper mapper = new ObjectMapper();
+                tokenInfo = mapper.readValue(serializedToken.getString(), SpotifyTokenInfo.class);
+            }
+            catch(Exception e) {
+                System.out.println(e.getMessage());
+                return null;
+            }
 
-        return tokenInfo;
+            return tokenInfo;
+        });
+
+        return t;
     }
 
 
@@ -74,12 +86,12 @@ public class ValkeyClient {
      * @throws InterruptedException
      * @throws ExecutionException
      */
-    public boolean insertSpotifyAPIToken(UUID sessionID, SpotifyTokenInfo tokenInfo) throws JsonProcessingException, InterruptedException, ExecutionException {
+    public CompletableFuture<Boolean> insertSpotifyAPIToken(UUID sessionID, SpotifyTokenInfo tokenInfo) throws JsonProcessingException, InterruptedException, ExecutionException {
 
         //Validate the input parameters
         if (sessionID == null || sessionID.equals(UUID.fromString("00000000-0000-0000-0000-000000000000")) || tokenInfo == null) {
             //No session id. Failed
-            return false;
+            return CompletableFuture.completedFuture(false);
         }
 
         //Serialize the token information
@@ -91,14 +103,17 @@ public class ValkeyClient {
                                     .build();
 
         //Add the token to Valkey
-        String setResponse = this.valkeyGlide.set(GlideString.gs(SESSION_PREFIX + sessionID.toString()), GlideString.gs(spotifyTokenJson), setOptions).get();
+        return this.valkeyGlide.set(GlideString.gs(SESSION_PREFIX + sessionID.toString()), GlideString.gs(spotifyTokenJson), setOptions)
+                .thenApply((String setResponse) -> {
+                    if (setResponse == null || setResponse.length() == 0 || setResponse != "OK") {
+                        //Error setting. Failed;
+                        return false;
+                    }
 
-        if (setResponse == null || setResponse.length() == 0 || setResponse != "OK") {
-            //Error setting. Failed;
-            return false;
-        }
+                    return true;
+                });
 
-        return true;
+
     }
 
 
