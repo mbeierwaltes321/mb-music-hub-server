@@ -6,6 +6,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.HashMap;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -16,7 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.view.RedirectView;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mbmusic.hubserver.Connections.Clients.ValkeyClient;
 import com.mbmusic.hubserver.Connections.Models.SpotifyTokenInfo;
 
 import jakarta.servlet.http.Cookie;
@@ -33,6 +34,9 @@ public class ConnectionController {
 
     @Autowired
     SpotifyApiConnection spotifyConnection;
+
+    @Autowired 
+    ValkeyClient valkeyClient;
 
     //#region " Methods "
     /**This method generates the login URI for authenticating the user into Spotify */
@@ -106,13 +110,10 @@ public class ConnectionController {
      * @param state The state-specific code used to identify the user and session
      */
     @GetMapping("/redirect")
-    public RedirectView generateSpotifyAuthToken(@RequestParam(name="code") String code, 
+    public CompletableFuture<RedirectView> generateSpotifyAuthToken(@RequestParam(name="code") String code, 
                                            @RequestParam(name="state") String state,
                                            HttpServletResponse response) throws Exception {
-        
-        //Declare the URL object used to redirect to the frontend application
-        URL redirectUrl = null;
-
+    
         //Create an authorization code request object for retrieving the access/refresh tokens
         final AuthorizationCodeRequest request = spotifyConnection.getApiClient().authorizationCode(code).build();
 
@@ -144,17 +145,23 @@ public class ConnectionController {
 
         response.addCookie(cookie);
 
-        //TODO - Add the token information to the Redis database after it is implemented
-        ObjectMapper jsonMapper = new ObjectMapper();
-        //System.out.print("Token Information" + jsonMapper.writeValueAsString(newTokenInfo));
-
-        //Build frontend redirect url
-        redirectUrl = UriComponentsBuilder.fromUriString("http://localhost:5173/")
+        //Declare the URL object used to redirect to the frontend application
+        URL redirectUrl = UriComponentsBuilder.fromUriString("http://localhost:5173/")
                         .build()
                         .toUri()
                         .toURL();
 
-        return new RedirectView(redirectUrl.toString());
+        //Add the token information to the Valkey database
+        CompletableFuture<RedirectView> redirect = valkeyClient.insertSpotifyAPITokenAsync(newSessionId, newTokenInfo)
+                                                    .thenApply(inserted -> {
+                                                        if (!inserted) {
+                                                            return new RedirectView(redirectUrl.toString() + "/error");
+                                                        }
+
+                                                        return new RedirectView(redirectUrl.toString()); 
+                                                    });
+
+        return redirect;
 
     }
 

@@ -26,7 +26,7 @@ public class ValkeyConfig {
      * The base valkey client object to be used for queries
      */
     @Bean
-    public GlideClient valkeyClient() throws ExecutionException, InterruptedException {
+    public GlideClient valkeyGlideClient() throws ExecutionException, InterruptedException {
 
         NodeAddress address = NodeAddress.builder()
                                 .host(valkeyHost)
