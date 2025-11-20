@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -18,6 +19,7 @@ import com.mbmusic.hubserver.Playlists.Models.PostSpotifyItemRequest;
 import com.mbmusic.hubserver.Playlists.Models.PostSpotifyPlaylistRequest;
 import com.mbmusic.hubserver.Playlists.Models.PostSpotifyPlaylistResponse;
 
+import jakarta.servlet.http.Cookie;
 import se.michaelthelin.spotify.SpotifyApi;
 import se.michaelthelin.spotify.model_objects.special.SnapshotResult;
 import se.michaelthelin.spotify.model_objects.specification.Paging;
@@ -33,58 +35,39 @@ import se.michaelthelin.spotify.requests.data.playlists.GetListOfCurrentUsersPla
 @RequestMapping("playlists")
 public class PlaylistController {
 
-    //#region " Members "
+    //#region Members
     
     //The client to the spotify API
     private final SpotifyApiConnection spotifyConnection;
 
     //#endregion
 
-    //#region " Constructor "
+    //#region Constructor
     public PlaylistController(SpotifyApiConnection connection) {
         this.spotifyConnection = connection;
     }
 
     //#endregion
 
-    //#region " Methods "
+    //#region Methods
 
-    //#region " GET "
+    //#region GET
 
     //This method gets all of the Spotify playlists created by the current user
+    //TODO - Make the cookie name "__Secure-SpotifySessionId" a static string 
     @GetMapping("/spotify-playlists")
-    public ResponseEntity<ApiResponse<Paging<PlaylistSimplified>>> getUserSpotifyPlaylists(SpotifyTokenInfo authTokens, @RequestParam(required = false)Integer offset) 
-        throws Exception {
+    public ResponseEntity<Paging<PlaylistSimplified>> getUserSpotifyPlaylists(@CookieValue(name = "__Secure-SpotifySessionId") Cookie sessionIdCookie, @RequestParam(required = false) Integer offset) throws Exception {
 
-        //First obtain the spotify client from the connection
-        SpotifyApi spotifyApi = this.spotifyConnection.getApiClient(authTokens);
-
-        //Now create a requet builder to get the playlists for the current user
-        GetListOfCurrentUsersPlaylistsRequest.Builder requestBuilder = spotifyApi.getListOfCurrentUsersPlaylists();
-
-        //Now determine if there is an offset applied
-        if (offset != null) {
-            //Offset isn't null. Add it
-            requestBuilder.offset(offset);
-        }
-
-        //Finally build the request
-        final GetListOfCurrentUsersPlaylistsRequest request = requestBuilder.build();
-
-        //Execute the request to obtain the playlists
-        Paging<PlaylistSimplified> playlists = request.execute();
-
-        ApiResponse<Paging<PlaylistSimplified>> response = new ApiResponse<Paging<PlaylistSimplified>>();
-
-        //Set the response content
-        response.setResponseContent(playlists);
-
-        //Set the token information
-        response.setSpotifyTokenInfo(authTokens);
+        PlaylistDA da = new PlaylistDA(sessionIdCookie.getValue());
+        Paging<PlaylistSimplified> playlists = da.retrieveUserPlaylists(offset);
 
         //return the response
-        return new ResponseEntity<ApiResponse<Paging<PlaylistSimplified>>>(response, HttpStatus.OK);
+        return new ResponseEntity<Paging<PlaylistSimplified>>(playlists, HttpStatus.OK);
     }
+
+    //#endregion
+
+    //#region POST
 
     //This method adds the provided spotify items to the selected playlist
     @PostMapping("/spotify-items")
@@ -101,7 +84,7 @@ public class PlaylistController {
         List<String> spotifyItems = requestBody.getSpotifyItems();
             
         //First obtain the spotify client from the connection
-        SpotifyApi spotifyApi = this.spotifyConnection.getApiClient(authTokens);
+        SpotifyApi spotifyApi = this.spotifyConnection.createApiClient(authTokens);
 
         //Create the request object
         final AddItemsToPlaylistRequest addItemsToPlaylistRequest = spotifyApi
@@ -154,7 +137,7 @@ public class PlaylistController {
         boolean isPublic = requestBody.getIsPublic();
             
         //Now obtain the spotify client from the connection
-        SpotifyApi spotifyApi = this.spotifyConnection.getApiClient(authTokens);
+        SpotifyApi spotifyApi = this.spotifyConnection.createApiClient(authTokens);
 
         //Get the current user's profile
         User currentUser = spotifyApi.getCurrentUsersProfile()

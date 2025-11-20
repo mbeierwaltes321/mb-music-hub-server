@@ -133,7 +133,7 @@ public class PlaylistControllerTests {
         SpotifyApiConnection spotifyApi = new SpotifyApiConnection();
 
         //Get a Spotify API
-        SpotifyApi api = spotifyApi.getApiClient(authTokens);
+        SpotifyApi api = spotifyApi.createApiClient(authTokens);
 
         //First obtain a count of the songs in the playlist
         Playlist initialPlaylist = api.getPlaylist(playlistId)
@@ -221,7 +221,7 @@ public class PlaylistControllerTests {
         SpotifyApiConnection spotifyApi = new SpotifyApiConnection();
 
         //Get a Spotify API
-        SpotifyApi api = spotifyApi.getApiClient(authTokens);
+        SpotifyApi api = spotifyApi.createApiClient(authTokens);
 
         List<String> songs = new ArrayList<String>();
         

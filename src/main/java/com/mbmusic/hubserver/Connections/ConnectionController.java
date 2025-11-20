@@ -39,7 +39,11 @@ public class ConnectionController {
     ValkeyClient valkeyClient;
 
     //#region " Methods "
-    /**This method generates the login URI for authenticating the user into Spotify */
+    /**
+     * This method generates the login URI for authenticating the user into Spotify
+     * @return A {@link RedirectView} that redirects to the authentication window for the user on successful login
+     * @throws Exception when something goes wrong with the initial authentication
+     */
     @PostMapping("/spotifylogin")
     public RedirectView postSpotifyLogin() throws Exception {
      
@@ -67,11 +71,12 @@ public class ConnectionController {
 
         //Build the authorization request
         AuthorizationCodeUriRequest request;
-        request = spotifyConnection.getApiClient().authorizationCodeUri()
-                    .state(stateSb.toString())
-                    .response_type("code")
-                    .scope("user-library-read playlist-read-private playlist-modify-public playlist-modify-private")
-                    .build();
+        request = spotifyConnection.createApiClient()
+            .authorizationCodeUri()
+            .state(stateSb.toString())
+            .response_type("code")
+            .scope("user-library-read playlist-read-private playlist-modify-public playlist-modify-private")
+            .build();
 
         final URI authUri = request.execute();
 
@@ -100,9 +105,6 @@ public class ConnectionController {
 
     }
 
-    //This method is called by the Spotify API
-    //NOTE: When the state is returned to the client, you
-    //must verify that the state in the browser matches the state passed here
     /**
      * This method is called by the Spotify API. It is used to generate an authorization and referesh token
      * @note When the state is returned to the client, you must verify that the state in the browser matches the state passed here
@@ -115,7 +117,7 @@ public class ConnectionController {
                                            HttpServletResponse response) throws Exception {
     
         //Create an authorization code request object for retrieving the access/refresh tokens
-        final AuthorizationCodeRequest request = spotifyConnection.getApiClient().authorizationCode(code).build();
+        final AuthorizationCodeRequest request = spotifyConnection.createApiClient().authorizationCode(code).build();
 
         //Grab the credentails
         // Attempt to obtain the credentails
@@ -147,19 +149,19 @@ public class ConnectionController {
 
         //Declare the URL object used to redirect to the frontend application
         URL redirectUrl = UriComponentsBuilder.fromUriString("http://localhost:5173/")
-                        .build()
-                        .toUri()
-                        .toURL();
+            .build()
+            .toUri()
+            .toURL();
 
         //Add the token information to the Valkey database
         CompletableFuture<RedirectView> redirect = valkeyClient.insertSpotifyAPITokenAsync(newSessionId, newTokenInfo)
-                                                    .thenApply(inserted -> {
-                                                        if (!inserted) {
-                                                            return new RedirectView(redirectUrl.toString() + "/error");
-                                                        }
+            .thenApply(inserted -> {
+                if (!inserted) {
+                    return new RedirectView(redirectUrl.toString() + "/error");
+                }
 
-                                                        return new RedirectView(redirectUrl.toString()); 
-                                                    });
+                return new RedirectView(redirectUrl.toString()); 
+            });
 
         return redirect;
 
