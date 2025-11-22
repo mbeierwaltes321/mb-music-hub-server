@@ -1,7 +1,9 @@
 package com.mbmusic.hubserver.Playlists;
 
+import java.io.IOException;
 import java.util.List;
 
+import org.apache.hc.core5.http.ParseException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CookieValue;
@@ -21,6 +23,7 @@ import com.mbmusic.hubserver.Playlists.Models.PostSpotifyPlaylistResponse;
 
 import jakarta.servlet.http.Cookie;
 import se.michaelthelin.spotify.SpotifyApi;
+import se.michaelthelin.spotify.exceptions.SpotifyWebApiException;
 import se.michaelthelin.spotify.model_objects.special.SnapshotResult;
 import se.michaelthelin.spotify.model_objects.specification.Paging;
 import se.michaelthelin.spotify.model_objects.specification.Playlist;
@@ -71,53 +74,16 @@ public class PlaylistController {
 
     //This method adds the provided spotify items to the selected playlist
     @PostMapping("/spotify-items")
-    public ResponseEntity<ApiResponse<Boolean>> postSpotifyItems(
-        @RequestBody(required = true) PostSpotifyItemRequest requestBody
-    ) throws Exception {
+    public ResponseEntity<Boolean> postSpotifyItems( @CookieValue(name = "__Secure-SpotifySessionId") Cookie sessionIdCookie, @RequestBody(required = true) PostSpotifyItemRequest requestBody) throws Exception {
 
-        //First create the return variable
-        boolean itemsAdded = false;
-
-        //Grab the fields from the request body
-        SpotifyTokenInfo authTokens = requestBody.getAuthTokens();
-        String playlistId = requestBody.getPlaylistId();
-        List<String> spotifyItems = requestBody.getSpotifyItems();
-            
-        //First obtain the spotify client from the connection
-        SpotifyApi spotifyApi = this.spotifyConnection.createApiClient(authTokens);
-
-        //Create the request object
-        final AddItemsToPlaylistRequest addItemsToPlaylistRequest = spotifyApi
-        .addItemsToPlaylist(playlistId, spotifyItems.toArray(new String[0]))
-        .build();
-
-        //Run the request
-        SnapshotResult snapshot = addItemsToPlaylistRequest.execute();
-
-        //Check if the reques succeeded
-        if (snapshot != null) {
-            //Success! Set return object to true
-            itemsAdded = true;
+        PlaylistDA da = new PlaylistDA(sessionIdCookie.getValue());
+        
+        if (!da.addItemsToPlaylist(requestBody.getPlaylistId(), requestBody.getSpotifyItems())) {
+            return new ResponseEntity<Boolean>(false, HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
-        //Finally create the result object
-        ApiResponse<Boolean> resultObject = new ApiResponse<Boolean>();
-        ResponseEntity<ApiResponse<Boolean>> response;
+        return new ResponseEntity<Boolean>(true, HttpStatus.OK);
 
-        //Determine what is returned depending on the success
-        if (!itemsAdded) {
-            //Failure, return false
-            resultObject.setResponseContent(false);
-            response = new ResponseEntity<ApiResponse<Boolean>>(resultObject, HttpStatus.INTERNAL_SERVER_ERROR);
-
-        } else {
-            //Success
-            resultObject.setResponseContent(itemsAdded);
-            resultObject.setSpotifyTokenInfo(authTokens);
-            response = new ResponseEntity<ApiResponse<Boolean>>(resultObject, HttpStatus.OK);
-        }
-
-        return response;
     }
 
     @PostMapping("/spotify-playlists")

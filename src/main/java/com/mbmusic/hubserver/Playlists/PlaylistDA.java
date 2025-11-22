@@ -1,14 +1,17 @@
 package com.mbmusic.hubserver.Playlists;
 
 import java.io.IOException;
+import java.util.List;
 
 import org.apache.hc.core5.http.ParseException;
 
 import com.mbmusic.hubserver.Common.DataAccessBase;
 
 import se.michaelthelin.spotify.exceptions.SpotifyWebApiException;
+import se.michaelthelin.spotify.model_objects.special.SnapshotResult;
 import se.michaelthelin.spotify.model_objects.specification.Paging;
 import se.michaelthelin.spotify.model_objects.specification.PlaylistSimplified;
+import se.michaelthelin.spotify.requests.data.playlists.AddItemsToPlaylistRequest;
 import se.michaelthelin.spotify.requests.data.playlists.GetListOfCurrentUsersPlaylistsRequest;
 
 public class PlaylistDA extends DataAccessBase {
@@ -50,6 +53,29 @@ public class PlaylistDA extends DataAccessBase {
 
         return playlists;
 
+    }
+
+
+    /**
+     * This method adds spotify items (tracks, podcast episodes, etc.) to a specified playlist
+     * @param playlistId The ID of the spotify playlist for which to add the spotify items
+     * @param spotifyItems The spotify items (tracks, podcast episodes, etc.) to add.
+     * @return True on success. False otherwise
+     * @throws ParseException
+     * @throws SpotifyWebApiException
+     * @throws IOException
+     */
+    public boolean addItemsToPlaylist(String playlistId, List<String> spotifyItems) throws ParseException, SpotifyWebApiException, IOException {
+
+        final AddItemsToPlaylistRequest addItemsToPlaylistRequest = spotifyClient.addItemsToPlaylist(playlistId, spotifyItems.toArray(new String[0]))
+        .build();
+
+        //Check if the items were added
+        SnapshotResult snapshot = addItemsToPlaylistRequest.execute();
+        if (snapshot == null)
+            return false;
+
+        return true;
     }
 
     //#endregion
