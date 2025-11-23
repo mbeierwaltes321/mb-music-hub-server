@@ -203,7 +203,7 @@ public class PlaylistControllerTests {
         final String requestBodyJson = mapper.writeValueAsString(requestBody);
 
         //Run the endpoint, get the result
-        mvc.perform(post("/playlists/spotify-playlists")
+        mvc.perform(post("/playlists/spotify-playlist")
         .contentType(MediaType.APPLICATION_JSON)
         .content(requestBodyJson))
         .andExpect(status().isCreated());
@@ -241,7 +241,7 @@ public class PlaylistControllerTests {
         final String requestBodyJson = mapper.writeValueAsString(requestBody);
 
         //Run the endpoint, get the result
-        MvcResult mvcResult = mvc.perform(post("/playlists/spotify-playlists")
+        MvcResult mvcResult = mvc.perform(post("/playlists/spotify-playlist")
         .contentType(MediaType.APPLICATION_JSON)
         .content(requestBodyJson))
         .andExpect(status().isCreated())
@@ -263,6 +263,8 @@ public class PlaylistControllerTests {
             //Check that each item in the returned playlist is in the initial songs list
             assertThat(songs.contains(playlistTrack.getTrack().getUri()));
         }
+
+        //TODO - Unfollow, or "delete" the playlist
     }
 
     //#endregion

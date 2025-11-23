@@ -16,11 +16,11 @@ public class ValkeyConfig {
 
     //#region Members
 
-    private String valkeyHost = System.getenv("ValkeyHost");
+    private final String valkeyHost = System.getenv("ValkeyHost");
     
-    private String valkeyPort = System.getenv("ValkeyPort");
+    private final String valkeyPort = System.getenv("ValkeyPort");
 
-    private boolean useSsl = Boolean.parseBoolean("ValkeySsl");
+    private final boolean useSsl = Boolean.parseBoolean("ValkeySsl");
 
     /**
      * The base valkey client object to be used for queries
@@ -29,15 +29,15 @@ public class ValkeyConfig {
     public GlideClient valkeyGlideClient() throws ExecutionException, InterruptedException {
 
         NodeAddress address = NodeAddress.builder()
-                                .host(valkeyHost)
-                                .port(Integer.parseInt(valkeyPort))
-                                .build();
+            .host(valkeyHost)
+            .port(Integer.parseInt(valkeyPort))
+            .build();
 
         GlideClientConfiguration config = GlideClientConfiguration.builder()
-                                            .address(address)
-                                            .useTLS(useSsl)
-                                            .requestTimeout(500)
-                                            .build();
+            .address(address)
+            .useTLS(useSsl)
+            .requestTimeout(500)
+            .build();
 
         return GlideClient.createClient(config).get();
     }

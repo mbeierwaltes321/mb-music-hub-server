@@ -138,7 +138,7 @@ public class ConnectionController {
 
         //Create the session id for the user, and add the session cookie
         UUID newSessionId = UUID.randomUUID();
-        Cookie cookie = new Cookie("__Secure-SpotifySessionId", newSessionId.toString());
+        Cookie cookie = new Cookie(ConnectionUtils.SPOTIFY_COOKIE_NAME, newSessionId.toString());
         cookie.setSecure(true);
         cookie.setHttpOnly(true);
         cookie.setPath("/api/");
@@ -148,6 +148,7 @@ public class ConnectionController {
         response.addCookie(cookie);
 
         //Declare the URL object used to redirect to the frontend application
+        //TODO - Make this an environment variable?
         URL redirectUrl = UriComponentsBuilder.fromUriString("http://localhost:5173/")
             .build()
             .toUri()

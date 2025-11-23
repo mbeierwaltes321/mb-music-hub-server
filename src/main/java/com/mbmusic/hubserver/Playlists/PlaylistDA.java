@@ -83,12 +83,12 @@ public class PlaylistDA extends DataAccessBase {
     }
 
     /**
-     * 
-     * @param playlistName
-     * @param playlistDescription
-     * @param spotifyURIs
-     * @param isPublic
-     * @return
+     * This method attempts to create a playlist in Spotify and subsequently add items in there, if provided
+     * @param playlistName The name of the playlist to create
+     * @param playlistDescription The description in the playlist to create
+     * @param spotifyURIs URIs containing the spotify items to include in the playlist
+     * @param isPublic Flag indicating whether the sptoify playlist should be public or not
+     * @return A {@link PostSpotifyPlaylistResponse} object indiciating success or failure. If there was a failure, then the error message is populated with the reason
      * @throws Exception
      */
     public PostSpotifyPlaylistResponse createSpotifyPlaylist(String playlistName, String playlistDescription, List<String> spotifyURIs, boolean isPublic) throws Exception {

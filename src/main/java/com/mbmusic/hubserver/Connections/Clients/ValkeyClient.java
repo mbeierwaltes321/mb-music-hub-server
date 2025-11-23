@@ -110,14 +110,14 @@ public class ValkeyClient {
 
         //Add the token to Valkey
         return this.valkeyGlide.set(GlideString.gs(SESSION_PREFIX + sessionID.toString()), GlideString.gs(spotifyTokenJson), setOptions)
-                .thenApply((String setResponse) -> {
-                    if (setResponse == null || setResponse.length() == 0 || setResponse != "OK") {
-                        //Error setting. Failed;
-                        return false;
-                    }
+            .thenApply((String setResponse) -> {
+                if (setResponse == null || setResponse.length() == 0 || setResponse != "OK") {
+                    //Error setting. Failed;
+                    return false;
+                }
 
-                    return true;
-                });
+                return true;
+            });
 
 
     }
