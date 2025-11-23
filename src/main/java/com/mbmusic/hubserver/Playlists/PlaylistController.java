@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.mbmusic.hubserver.Common.Models.ApiResponse;
 import com.mbmusic.hubserver.Connections.SpotifyApiConnection;
 import com.mbmusic.hubserver.Connections.Models.SpotifyTokenInfo;
 import com.mbmusic.hubserver.Playlists.Models.PostSpotifyItemRequest;
@@ -87,86 +86,17 @@ public class PlaylistController {
     }
 
     @PostMapping("/spotify-playlists")
-    public ResponseEntity<ApiResponse<PostSpotifyPlaylistResponse>> postSpotifyPlaylist(
-        @RequestBody(required = true) PostSpotifyPlaylistRequest requestBody
-    ) throws Exception {
+    public ResponseEntity<PostSpotifyPlaylistResponse> postSpotifyPlaylist(@CookieValue(name = "__Secure-SpotifySessionId") Cookie sessionIdCookie, @RequestBody(required = true) PostSpotifyPlaylistRequest requestBody) throws Exception {
 
-        //First declare the return object and status
-        ApiResponse<PostSpotifyPlaylistResponse> response = new ApiResponse<PostSpotifyPlaylistResponse>();
-        HttpStatus statusCode;
+        PlaylistDA da = new PlaylistDA(sessionIdCookie.getValue());
 
-        //Grab the fields from the request body
-        SpotifyTokenInfo authTokens = requestBody.getAuthTokens();
-        String playlistName = requestBody.getPlaylistName();
-        String playlistDescription = requestBody.getPlaylistDescription();
-        List<String> spotifyURIs = requestBody.getSpotifyURIs();
-        boolean isPublic = requestBody.getIsPublic();
-            
-        //Now obtain the spotify client from the connection
-        SpotifyApi spotifyApi = this.spotifyConnection.createApiClient(authTokens);
+        var response = da.createSpotifyPlaylist(requestBody.getPlaylistName(), requestBody.getPlaylistDescription(), requestBody.getSpotifyURIs(), requestBody.getIsPublic());
 
-        //Get the current user's profile
-        User currentUser = spotifyApi.getCurrentUsersProfile()
-        .build()
-        .execute();
-
-        //Now get the user's Spotify ID
-        String userId = currentUser.getId();
-
-        //Make sure the userId is valid
-        if (userId != null && !userId.isBlank()) {
-
-            //Now create a playlist request
-            CreatePlaylistRequest createPlaylist = spotifyApi.createPlaylist(userId, playlistName)
-            .description(playlistDescription)
-            .public_(isPublic)  //NOTE: the Spotify API is outdated, and you cannot create a private playlist at the moment :(
-            .build();
-
-            //Execute the playlist request
-            Playlist newPlaylist = createPlaylist.execute();
-
-            //Check that the playlist was created
-            if(newPlaylist != null) {
-
-                //Playlist created. Get the id
-                final String newPlaylistId = newPlaylist.getId();
-
-                //Now check if there were any spotify items to add to the playlist
-                if (spotifyURIs != null && !spotifyURIs.isEmpty()) {
-
-                    //Now create a playlist insert request
-                    final AddItemsToPlaylistRequest addItems = spotifyApi.addItemsToPlaylist(newPlaylistId, spotifyURIs.toArray(new String[0]))
-                    .build();
-                    
-                    //Insert the items
-                    addItems.execute();
-                }
-
-                //Create the return content
-                PostSpotifyPlaylistResponse content = new PostSpotifyPlaylistResponse(true, newPlaylistId);
-
-                //Populate the return object
-                response.setResponseContent(content);
-                response.setSpotifyTokenInfo(authTokens);
-                statusCode = HttpStatus.CREATED;
-
-            } else {
-                //The playlist wasn't created, return an error
-                PostSpotifyPlaylistResponse errorResponse = new PostSpotifyPlaylistResponse(false, "", "Unable to create a Spotify Playlist");
-                
-                statusCode = HttpStatus.INTERNAL_SERVER_ERROR;
-                response.setResponseContent(errorResponse);
-            }
-
-        } else {
-            //The user is not valid. Return error
-            PostSpotifyPlaylistResponse errorResponse = new PostSpotifyPlaylistResponse(false, "", "User ID was invalid when getting user's profile");
-            
-            statusCode = HttpStatus.INTERNAL_SERVER_ERROR;
-            response.setResponseContent(errorResponse);
+        if (!response.getSuccess()) {
+            return new ResponseEntity<PostSpotifyPlaylistResponse>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
-        return new ResponseEntity<ApiResponse<PostSpotifyPlaylistResponse>>(response, statusCode);
+        return new ResponseEntity<PostSpotifyPlaylistResponse>(response, HttpStatus.OK);
 
     }
 

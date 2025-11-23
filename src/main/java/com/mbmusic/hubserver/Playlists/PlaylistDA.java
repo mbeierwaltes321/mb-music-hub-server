@@ -6,12 +6,16 @@ import java.util.List;
 import org.apache.hc.core5.http.ParseException;
 
 import com.mbmusic.hubserver.Common.DataAccessBase;
+import com.mbmusic.hubserver.Playlists.Models.PostSpotifyPlaylistResponse;
 
 import se.michaelthelin.spotify.exceptions.SpotifyWebApiException;
 import se.michaelthelin.spotify.model_objects.special.SnapshotResult;
 import se.michaelthelin.spotify.model_objects.specification.Paging;
+import se.michaelthelin.spotify.model_objects.specification.Playlist;
 import se.michaelthelin.spotify.model_objects.specification.PlaylistSimplified;
+import se.michaelthelin.spotify.model_objects.specification.User;
 import se.michaelthelin.spotify.requests.data.playlists.AddItemsToPlaylistRequest;
+import se.michaelthelin.spotify.requests.data.playlists.CreatePlaylistRequest;
 import se.michaelthelin.spotify.requests.data.playlists.GetListOfCurrentUsersPlaylistsRequest;
 
 public class PlaylistDA extends DataAccessBase {
@@ -76,6 +80,56 @@ public class PlaylistDA extends DataAccessBase {
             return false;
 
         return true;
+    }
+
+    /**
+     * 
+     * @param playlistName
+     * @param playlistDescription
+     * @param spotifyURIs
+     * @param isPublic
+     * @return
+     * @throws Exception
+     */
+    public PostSpotifyPlaylistResponse createSpotifyPlaylist(String playlistName, String playlistDescription, List<String> spotifyURIs, boolean isPublic) throws Exception {
+
+        User currentUser = spotifyClient.getCurrentUsersProfile()
+            .build()
+            .execute();
+
+        String userId = currentUser.getId();
+
+        //Validate the userId
+        if (userId == null || userId.isBlank()) {
+            return new PostSpotifyPlaylistResponse(false, "", "User ID was invalid when getting user's profile");
+        }
+
+        //Now create a playlist request
+        CreatePlaylistRequest createPlaylist = spotifyClient.createPlaylist(userId, playlistName)
+            .description(playlistDescription)
+            .public_(isPublic)  //NOTE: the Spotify API is outdated, and you cannot create a private playlist at the moment :(
+            .build();
+
+        Playlist newPlaylist = createPlaylist.execute();
+
+        if (newPlaylist == null) {
+            return new PostSpotifyPlaylistResponse(false, "", "Unable to create a Spotify Playlist");
+        }
+
+        String newPlaylistId = newPlaylist.getId();
+
+        //Add spotify items to the newly created playlist
+        if (spotifyURIs != null && !spotifyURIs.isEmpty()) {
+            //Now create a playlist insert request
+            final AddItemsToPlaylistRequest addItems = spotifyClient.addItemsToPlaylist(newPlaylistId, spotifyURIs.toArray(new String[0]))
+            .build();
+            
+            //Insert the items
+            addItems.execute();
+        }
+
+        return new PostSpotifyPlaylistResponse(true, newPlaylistId);
+
     }
 
     //#endregion
