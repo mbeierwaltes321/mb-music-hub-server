@@ -19,8 +19,12 @@ public abstract class DataAccessBase {
 
     //#region Members
 
-    @Autowired
     private SpotifyApiConnection spotifyApiConnection;
+
+    @Autowired
+    public final void setSpotifyApiConnection(SpotifyApiConnection spotifyApiConnection) {
+        this.spotifyApiConnection = spotifyApiConnection;
+    }
 
     protected SpotifyApi spotifyClient;
     

@@ -123,4 +123,24 @@ public class ValkeyClient {
     }
 
 
+    /**
+     * This method attempts to delete the token information associated with the provided session id
+     * @param sessionId The ID of the session to delete
+     * @return A {@link CompletableFuture} with a boolean value indicating success
+     */
+    public CompletableFuture<Boolean> removeTokenAsync(UUID sessionId) {
+
+        if (sessionId == null || sessionId.equals(UUID.fromString("00000000-0000-0000-0000-000000000000"))) {
+            return CompletableFuture.completedFuture(false);
+        }
+
+        GlideString[] keys = new GlideString[1];
+        keys[0] = GlideString.gs(SESSION_PREFIX + sessionId.toString());
+    
+        return this.valkeyGlide.del(keys)
+            .thenApply(numDeleted -> numDeleted.longValue() > 0);
+
+    }
+
+
 }

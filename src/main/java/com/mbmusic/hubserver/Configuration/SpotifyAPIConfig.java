@@ -24,7 +24,7 @@ public class SpotifyAPIConfig {
 
     //The redirection URI for authorization requests
     //TODO - Eventually set this to an environment variable
-    private static final URI redirectUri = SpotifyHttpManager.makeUri("http://localhost:8080/api/conn/redirect"); 
+    private static final URI redirectUri = SpotifyHttpManager.makeUri("http://127.0.0.1:8080/api/conn/redirect"); 
 
     //The api object that contains the connection information
     private final SpotifyApi.Builder spotifyApiClientBuilder = new SpotifyApi.Builder()

@@ -20,7 +20,7 @@ public class ValkeyConfig {
     
     private final String valkeyPort = System.getenv("ValkeyPort");
 
-    private final boolean useSsl = Boolean.parseBoolean("ValkeySsl");
+    private final boolean useSsl = Boolean.parseBoolean(System.getenv("ValkeySsl"));
 
     /**
      * The base valkey client object to be used for queries
