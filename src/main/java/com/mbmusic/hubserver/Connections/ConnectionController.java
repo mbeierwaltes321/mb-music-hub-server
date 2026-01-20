@@ -141,6 +141,7 @@ public class ConnectionController {
         //So it looks like the cookie requirements are as follows during development:
         //1. For Safari: setSecure should be false; cookie cannot have __Secure if setSecure is false. Otherwise it will not show
         //2. For Edge: setSecure will work, but it doesn't like that it's being combined with SameSite: none
+        //3. We need to find the best way to handle this
         UUID newSessionId = UUID.randomUUID();
         Cookie cookie = new Cookie(ConnectionUtils.SPOTIFY_COOKIE_NAME, newSessionId.toString());
         cookie.setSecure(false);
