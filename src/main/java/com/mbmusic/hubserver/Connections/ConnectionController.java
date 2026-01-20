@@ -9,11 +9,11 @@ import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.view.RedirectView;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -21,6 +21,7 @@ import com.mbmusic.hubserver.Connections.Clients.ValkeyClient;
 import com.mbmusic.hubserver.Connections.Models.SpotifyTokenInfo;
 
 import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import se.michaelthelin.spotify.model_objects.credentials.AuthorizationCodeCredentials;
@@ -28,7 +29,7 @@ import se.michaelthelin.spotify.requests.authorization.authorization_code.Author
 import se.michaelthelin.spotify.requests.authorization.authorization_code.AuthorizationCodeUriRequest;
 
 //This controller is responsible for handling any requests related to API connections
-@Controller
+@RestController
 @RequestMapping("conn")
 public class ConnectionController {
 
@@ -112,16 +113,16 @@ public class ConnectionController {
      * @param state The state-specific code used to identify the user and session
      */
     @GetMapping("/redirect")
-    public CompletableFuture<RedirectView> generateSpotifyAuthToken(@RequestParam(name="code") String code, 
+    public CompletableFuture<Void> generateSpotifyAuthToken(@RequestParam(name="code") String code, 
                                            @RequestParam(name="state") String state,
                                            HttpServletResponse response) throws Exception {
     
         //Create an authorization code request object for retrieving the access/refresh tokens
-        final AuthorizationCodeRequest request = spotifyConnection.createApiClient().authorizationCode(code).build();
+        final AuthorizationCodeRequest authRequest = spotifyConnection.createApiClient().authorizationCode(code).build();
 
         //Grab the credentails
         // Attempt to obtain the credentails
-        final AuthorizationCodeCredentials authorizationCodeCredentials = request.execute();
+        final AuthorizationCodeCredentials authorizationCodeCredentials = authRequest.execute();
         
         //Create time zone obbject to get current time in UTC
         ZoneId UTC = ZoneId.of("UTC");
@@ -137,35 +138,51 @@ public class ConnectionController {
         newTokenInfo.setExpiresIn(authorizationCodeCredentials.getExpiresIn());
 
         //Create the session id for the user, and add the session cookie
+        //So it looks like the cookie requirements are as follows during development:
+        //1. For Safari: setSecure should be false; cookie cannot have __Secure if setSecure is false. Otherwise it will not show
+        //2. For Edge: setSecure will work, but it doesn't like that it's being combined with SameSite: none
         UUID newSessionId = UUID.randomUUID();
         Cookie cookie = new Cookie(ConnectionUtils.SPOTIFY_COOKIE_NAME, newSessionId.toString());
-        cookie.setSecure(true);
+        cookie.setSecure(false);
+        cookie.setDomain("127.0.0.1");  //NOTE: For testing, you must use 127.0.0.1 instead of "localhost" to match what Spotify requests
         cookie.setHttpOnly(true);
-        cookie.setPath("/api/");
-        cookie.setAttribute("SameSite", "Strict");
-        cookie.setMaxAge(-1); //TODO - Configure this with "Remember Me" at one point
+        cookie.setPath("/");
+        cookie.setAttribute("SameSite", "None");
+        cookie.setMaxAge(60 * 60 * 24 * 7); //TODO - Configure this with "Remember Me" at one point
 
         response.addCookie(cookie);
+        // response.setHeader("Set-Cookie", ConnectionUtils.SPOTIFY_COOKIE_NAME + "=" + newSessionId.toString());
 
         //Declare the URL object used to redirect to the frontend application
         //TODO - Make this an environment variable?
-        URL redirectUrl = UriComponentsBuilder.fromUriString("http://localhost:5173/")
+        URL redirectUrl = UriComponentsBuilder.fromUriString("http://127.0.0.1:5173/")
             .build()
             .toUri()
             .toURL();
 
-        //Add the token information to the Valkey database
-        CompletableFuture<RedirectView> redirect = valkeyClient.insertSpotifyAPITokenAsync(newSessionId, newTokenInfo)
-            .thenApply(inserted -> {
-                if (!inserted) {
-                    return new RedirectView(redirectUrl.toString() + "/error");
+        // //Add the token information to the Valkey database
+        // CompletableFuture<RedirectView> redirect = valkeyClient.insertSpotifyAPITokenAsync(newSessionId, newTokenInfo)
+        //     .thenApply(inserted -> {
+        //         if (!inserted) {
+        //             return new RedirectView(redirectUrl.toString() + "/error");
+        //         }
+
+        //         return new RedirectView(redirectUrl.toString()); 
+        //     });
+
+        // return redirect;
+
+        return valkeyClient.insertSpotifyAPITokenAsync(newSessionId, newTokenInfo)
+            .thenAccept(inserted -> {
+                try {
+                    if (!inserted){
+                        response.sendRedirect(redirectUrl.toString() + "/error");
+                    }
+                    response.sendRedirect(redirectUrl.toString());
+                } catch (Exception e) {
+                    System.out.println(e.getMessage());
                 }
-
-                return new RedirectView(redirectUrl.toString()); 
             });
-
-        return redirect;
-
     }
 
     //#endregion
