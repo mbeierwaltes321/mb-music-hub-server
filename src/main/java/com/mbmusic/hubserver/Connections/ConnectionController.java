@@ -21,7 +21,6 @@ import com.mbmusic.hubserver.Connections.Clients.ValkeyClient;
 import com.mbmusic.hubserver.Connections.Models.SpotifyTokenInfo;
 
 import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import se.michaelthelin.spotify.model_objects.credentials.AuthorizationCodeCredentials;
