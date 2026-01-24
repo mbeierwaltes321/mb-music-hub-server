@@ -5,6 +5,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -12,6 +13,7 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.mbmusic.hubserver.Common.Utilities.TimeUtils;
 import com.mbmusic.hubserver.Connections.Models.SpotifyTokenInfo;
 
 import glide.api.GlideClient;
@@ -25,8 +27,6 @@ public class ValkeyClient {
     private GlideClient valkeyGlide;
 
     private final String SESSION_PREFIX = "sessionID:";
-
-    private final long WEEK_SECONDS = 604800;
 
     @Autowired
     public ValkeyClient(GlideClient valkeyGlide) {
@@ -44,7 +44,7 @@ public class ValkeyClient {
      * @throws JsonMappingException
      * @throws JsonProcessingException
      */
-    public CompletableFuture<SpotifyTokenInfo> getSpotifyAPITokenAsync(UUID sessionID) throws InterruptedException, ExecutionException, JsonMappingException, JsonProcessingException {
+    public CompletableFuture<Pair<UUID, SpotifyTokenInfo>> getSpotifyAPITokenAsync(UUID sessionID) throws InterruptedException, ExecutionException, JsonMappingException, JsonProcessingException {
 
         //Validate the incoming session id
         if (sessionID == null || sessionID.equals(UUID.fromString("00000000-0000-0000-0000-000000000000"))) {
@@ -53,7 +53,7 @@ public class ValkeyClient {
         }
 
         //Retrieve the Spotify API Token
-        CompletableFuture<SpotifyTokenInfo> t = this.valkeyGlide.get(GlideString.gs(SESSION_PREFIX + sessionID.toString()))
+        CompletableFuture<Pair<UUID, SpotifyTokenInfo>> t = this.valkeyGlide.get(GlideString.gs(SESSION_PREFIX + sessionID.toString()))
         .thenApply((GlideString serializedToken) -> {
 
             if (serializedToken == null) {
@@ -73,7 +73,7 @@ public class ValkeyClient {
                 return null;
             }
 
-            return tokenInfo;
+            return Pair.of(sessionID, tokenInfo);
         });
 
         return t;
@@ -89,7 +89,7 @@ public class ValkeyClient {
      * @throws InterruptedException
      * @throws ExecutionException
      */
-    public CompletableFuture<Boolean> insertSpotifyAPITokenAsync(UUID sessionID, SpotifyTokenInfo tokenInfo) throws JsonProcessingException, InterruptedException, ExecutionException {
+    public CompletableFuture<Boolean> upsertSpotifyAPITokenAsync(UUID sessionID, SpotifyTokenInfo tokenInfo) throws JsonProcessingException, InterruptedException, ExecutionException {
 
         //Validate the input parameters
         if (sessionID == null || sessionID.equals(UUID.fromString("00000000-0000-0000-0000-000000000000")) || tokenInfo == null) {
@@ -106,7 +106,7 @@ public class ValkeyClient {
 
         //TODO - This may or may not need to change depending on any "remember me" functionality
         SetOptions setOptions = SetOptions.builder()
-                                    .expiry(Expiry.Seconds(WEEK_SECONDS))
+                                    .expiry(Expiry.Seconds((long)TimeUtils.WEEK_SECONDS))
                                     .build();
 
         //Add the token to Valkey

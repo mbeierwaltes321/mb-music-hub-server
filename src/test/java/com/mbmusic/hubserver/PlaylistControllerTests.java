@@ -70,7 +70,7 @@ public class PlaylistControllerTests extends TestBase {
     public void prepareValkey() throws JsonProcessingException, InterruptedException, ExecutionException {
         mockSessionId = UUID.randomUUID();
         ValkeyClient valkeyClient = getValkeyClient();
-        valkeyClient.insertSpotifyAPITokenAsync(mockSessionId, getTestSpotifyTokenInfo()).get();
+        valkeyClient.upsertSpotifyAPITokenAsync(mockSessionId, getTestSpotifyTokenInfo()).get();
     }
 
     @AfterAll

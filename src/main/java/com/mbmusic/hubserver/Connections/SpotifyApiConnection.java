@@ -9,6 +9,7 @@ import java.util.concurrent.CompletionException;
 import java.util.concurrent.ExecutionException;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Component;
 
 import com.mbmusic.hubserver.Connections.Clients.ValkeyClient;
@@ -49,22 +50,25 @@ public class SpotifyApiConnection {
         UUID sessionUuid = UUID.fromString(sessionId);
 
         return valkeyClient.getSpotifyAPITokenAsync(sessionUuid)
-        .thenApply(this::buildClientFromTokens);
+        .thenApply(this::buildSpotifyClientFromTokens);
     }
 
     /**
      * This method creates a Spotify API client with the provided authorization token information. It handles token refreshing if necessary.
-     * @param authTokens The authorization token information to set to the Spotify API Client
+     * @param authTokenInfo The authorization token information to set to the Spotify API Client
      * @return The Spotify API Client object
      * @throws IOException
      * @throws SpotifyWebApiException
      * @throws org.apache.hc.core5.http.ParseException
      */
-    private SpotifyApi buildClientFromTokens(SpotifyTokenInfo authTokens) {
+    private SpotifyApi buildSpotifyClientFromTokens(Pair<UUID, SpotifyTokenInfo> authTokenInfo) {
 
         try {
-            if (authTokens == null)
+            if (authTokenInfo == null || authTokenInfo.getFirst() == null || authTokenInfo.getSecond() == null)
                 return null;
+
+            UUID sessionId = authTokenInfo.getFirst();
+            SpotifyTokenInfo authTokens = authTokenInfo.getSecond();
             
             final SpotifyApi apiClient = createApiClient();
 
@@ -81,8 +85,10 @@ public class SpotifyApiConnection {
             final ZoneId UTC = ZoneId.of("UTC");
             final LocalDateTime currentTimeUTC = LocalDateTime.now(UTC);
 
+            final LocalDateTime tempTimeUTC = LocalDateTime.MAX;
+
             //Determine whether the token is expired and needs to be refreshed
-            boolean tokenExpired = currentTimeUTC.isAfter(authDateTime.plusSeconds(authTokens.getExpiresIn()));
+            boolean tokenExpired = tempTimeUTC.isAfter(authDateTime.plusSeconds(authTokens.getExpiresIn()));
             if (tokenExpired) {
                 //Create an authorization code refresh request
                 final AuthorizationCodeRefreshRequest refreshRequest = apiClient.authorizationCodeRefresh().build();
@@ -97,6 +103,10 @@ public class SpotifyApiConnection {
                 authTokens.setTokenGeneratedAt(currentTimeUTC);
                 authTokens.setExpiresIn(newCreds.getExpiresIn());
                 authTokens.setAccessToken(apiClient.getAccessToken());
+
+                //Update the token information in valkey
+                if (!valkeyClient.upsertSpotifyAPITokenAsync(sessionId, authTokens).get())
+                    return null;
 
             }
             

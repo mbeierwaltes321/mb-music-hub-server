@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.view.RedirectView;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import com.mbmusic.hubserver.Common.Utilities.TimeUtils;
 import com.mbmusic.hubserver.Connections.Clients.ValkeyClient;
 import com.mbmusic.hubserver.Connections.Models.SpotifyTokenInfo;
 
@@ -148,7 +149,7 @@ public class ConnectionController {
         cookie.setHttpOnly(true);
         cookie.setPath("/");
         cookie.setAttribute("SameSite", "Lax");
-        cookie.setMaxAge(60 * 60 * 24 * 7); //TODO - Configure this with "Remember Me" at one point
+        cookie.setMaxAge(TimeUtils.WEEK_SECONDS); //TODO - Configure this with "Remember Me" at one point
 
         response.addCookie(cookie);
 
@@ -159,7 +160,7 @@ public class ConnectionController {
             .toUri()
             .toURL();
 
-        return valkeyClient.insertSpotifyAPITokenAsync(newSessionId, newTokenInfo)
+        return valkeyClient.upsertSpotifyAPITokenAsync(newSessionId, newTokenInfo)
             .thenAccept(inserted -> {
                 try {
                     if (!inserted){
