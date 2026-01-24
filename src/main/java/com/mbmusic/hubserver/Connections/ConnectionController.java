@@ -147,7 +147,7 @@ public class ConnectionController {
         cookie.setDomain("127.0.0.1");  //NOTE: For testing, you must use 127.0.0.1 instead of "localhost" to match what Spotify requests
         cookie.setHttpOnly(true);
         cookie.setPath("/");
-        cookie.setAttribute("SameSite", "None");
+        cookie.setAttribute("SameSite", "Lax");
         cookie.setMaxAge(60 * 60 * 24 * 7); //TODO - Configure this with "Remember Me" at one point
 
         response.addCookie(cookie);
