@@ -28,16 +28,6 @@ public class PlaylistDA {
     @Autowired
     private DataAccess da;
 
-    private String sessionId;
-
-    //#endregion
-
-    //#region Getters / Setters
-
-    public void setSessionId(String sessionId) {
-        this.sessionId = sessionId;
-    }
-
     //#endregion
 
     //#region Methods
@@ -50,7 +40,7 @@ public class PlaylistDA {
      * @throws SpotifyWebApiException 
      * @throws ParseException 
      */
-    public Paging<PlaylistSimplified> retrieveUserPlaylists(Integer offset) throws ParseException, SpotifyWebApiException, IOException {
+    public Paging<PlaylistSimplified> retrieveUserPlaylists(String sessionId, Integer offset) throws ParseException, SpotifyWebApiException, IOException {
 
         //Now create a requet builder to get the playlists for the current user
         GetListOfCurrentUsersPlaylistsRequest.Builder requestBuilder = da.getSpotifyClient(sessionId).getListOfCurrentUsersPlaylists();
@@ -81,7 +71,7 @@ public class PlaylistDA {
      * @throws SpotifyWebApiException
      * @throws IOException
      */
-    public boolean addItemsToPlaylist(String playlistId, List<String> spotifyItems) throws ParseException, SpotifyWebApiException, IOException {
+    public boolean addItemsToPlaylist(String sessionId, String playlistId, List<String> spotifyItems) throws ParseException, SpotifyWebApiException, IOException {
 
         final AddItemsToPlaylistRequest addItemsToPlaylistRequest = da.getSpotifyClient(sessionId).addItemsToPlaylist(playlistId, spotifyItems.toArray(new String[0]))
         .build();
@@ -103,7 +93,7 @@ public class PlaylistDA {
      * @return A {@link PostSpotifyPlaylistResponse} object indiciating success or failure. If there was a failure, then the error message is populated with the reason
      * @throws Exception
      */
-    public PostSpotifyPlaylistResponse createSpotifyPlaylist(String playlistName, String playlistDescription, List<String> spotifyURIs, boolean isPublic) throws Exception {
+    public PostSpotifyPlaylistResponse createSpotifyPlaylist(String sessionId, String playlistName, String playlistDescription, List<String> spotifyURIs, boolean isPublic) throws Exception {
 
         User currentUser = da.getSpotifyClient(sessionId).getCurrentUsersProfile()
             .build()

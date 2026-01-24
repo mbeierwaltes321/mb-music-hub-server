@@ -40,8 +40,10 @@ public class PlaylistController {
     @GetMapping("/spotify-playlists")
     public ResponseEntity<Paging<PlaylistSimplified>> getUserSpotifyPlaylists(@CookieValue(ConnectionUtils.SPOTIFY_COOKIE_NAME) Cookie sessionIdCookie, @RequestParam(required = false) Integer offset) throws Exception {
 
-        playlistDA.setSessionId(sessionIdCookie.getValue());
-        Paging<PlaylistSimplified> playlists = playlistDA.retrieveUserPlaylists(offset);
+        if (sessionIdCookie.getValue() == null || sessionIdCookie.getValue() == "")
+            return new ResponseEntity<Paging<PlaylistSimplified>>(HttpStatus.UNAUTHORIZED);
+
+        Paging<PlaylistSimplified> playlists = playlistDA.retrieveUserPlaylists(sessionIdCookie.getValue(), offset);
 
         //return the response
         return new ResponseEntity<Paging<PlaylistSimplified>>(playlists, HttpStatus.OK);
@@ -55,9 +57,10 @@ public class PlaylistController {
     @PostMapping("/spotify-items")
     public ResponseEntity<Boolean> postSpotifyItems( @CookieValue(name = ConnectionUtils.SPOTIFY_COOKIE_NAME) Cookie sessionIdCookie, @RequestBody(required = true) PostSpotifyItemRequest requestBody) throws Exception {
 
-        playlistDA.setSessionId(sessionIdCookie.getValue());
+        if (sessionIdCookie.getValue() == null || sessionIdCookie.getValue() == "")
+            return new ResponseEntity<Boolean>(HttpStatus.UNAUTHORIZED);
         
-        if (!playlistDA.addItemsToPlaylist(requestBody.getPlaylistId(), requestBody.getSpotifyItems())) {
+        if (!playlistDA.addItemsToPlaylist(sessionIdCookie.getValue(), requestBody.getPlaylistId(), requestBody.getSpotifyItems())) {
             return new ResponseEntity<Boolean>(false, HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
@@ -68,16 +71,16 @@ public class PlaylistController {
     @PostMapping("/spotify-playlist")
     public ResponseEntity<PostSpotifyPlaylistResponse> postSpotifyPlaylist(@CookieValue(name = ConnectionUtils.SPOTIFY_COOKIE_NAME) Cookie sessionIdCookie, @RequestBody(required = true) PostSpotifyPlaylistRequest requestBody) throws Exception {
 
-        playlistDA.setSessionId(sessionIdCookie.getValue());
+        if (sessionIdCookie.getValue() == null || sessionIdCookie.getValue() == "")
+            return new ResponseEntity<PostSpotifyPlaylistResponse>(HttpStatus.UNAUTHORIZED);
 
-        var response = playlistDA.createSpotifyPlaylist(requestBody.getPlaylistName(), requestBody.getPlaylistDescription(), requestBody.getSpotifyURIs(), requestBody.getIsPublic());
+        var response = playlistDA.createSpotifyPlaylist(sessionIdCookie.getValue(), requestBody.getPlaylistName(), requestBody.getPlaylistDescription(), requestBody.getSpotifyURIs(), requestBody.getIsPublic());
 
         if (!response.getSuccess()) {
             return new ResponseEntity<PostSpotifyPlaylistResponse>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
         return new ResponseEntity<PostSpotifyPlaylistResponse>(response, HttpStatus.OK);
-
     }
 
     //#endregion

@@ -100,8 +100,8 @@ public class SpotifyApiConnection {
 
             }
             
-        //Return the api client
-        return apiClient;
+            //Return the api client
+            return apiClient;
 
         } catch (Exception e) {
             throw new CompletionException(e);

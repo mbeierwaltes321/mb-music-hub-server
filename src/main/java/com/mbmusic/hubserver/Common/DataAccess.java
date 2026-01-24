@@ -20,8 +20,6 @@ public class DataAccess {
     //#region Members
 
     private SpotifyApiConnection spotifyApiConnection;
-
-    private SpotifyApi spotifyClient;
     
     //#endregion
 
@@ -34,8 +32,7 @@ public class DataAccess {
 
     public SpotifyApi getSpotifyClient(String sessionIdString) {
         try {
-            prepareSpotifyClient(sessionIdString);
-            return spotifyClient;
+            return prepareSpotifyClient(sessionIdString);
         } catch (Exception e) {
             return null;
         }
@@ -52,12 +49,12 @@ public class DataAccess {
      * @throws SpotifyWebApiException 
      * @throws ParseException 
      */
-    public void prepareSpotifyClient(String sessionIdString) throws InterruptedException, ExecutionException, ParseException, SpotifyWebApiException, IOException {
+    public SpotifyApi prepareSpotifyClient(String sessionIdString) throws InterruptedException, ExecutionException, ParseException, SpotifyWebApiException, IOException {
         if (sessionIdString == null)
-            spotifyClient = null;
+            return null;
         
         //Retrieve the token and prepare the Spotify API Client
-        spotifyClient = spotifyApiConnection.createApiClient(sessionIdString).get();
+        return spotifyApiConnection.createApiClient(sessionIdString).get();
     }
 
     //#endregion

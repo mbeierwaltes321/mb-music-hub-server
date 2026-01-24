@@ -65,6 +65,7 @@ public class ValkeyClient {
             try {
                 //Build the spotify token information
                 ObjectMapper mapper = new ObjectMapper();
+                mapper.registerModule(new JavaTimeModule());
                 tokenInfo = mapper.readValue(serializedToken.getString(), SpotifyTokenInfo.class);
             }
             catch(Exception e) {
