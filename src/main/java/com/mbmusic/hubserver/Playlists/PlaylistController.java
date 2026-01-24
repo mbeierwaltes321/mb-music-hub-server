@@ -1,5 +1,6 @@
 package com.mbmusic.hubserver.Playlists;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CookieValue;
@@ -24,16 +25,23 @@ import se.michaelthelin.spotify.model_objects.specification.PlaylistSimplified;
 @RequestMapping("playlists")
 public class PlaylistController {
 
+    //#region Members
+
+    @Autowired
+    private PlaylistDA playlistDA;
+
+    //#endregion
+
     //#region Methods
 
     //#region GET
 
     //This method gets all of the Spotify playlists created by the current user
     @GetMapping("/spotify-playlists")
-    public ResponseEntity<Paging<PlaylistSimplified>> getUserSpotifyPlaylists(@CookieValue(name = ConnectionUtils.SPOTIFY_COOKIE_NAME) Cookie sessionIdCookie, @RequestParam(required = false) Integer offset) throws Exception {
+    public ResponseEntity<Paging<PlaylistSimplified>> getUserSpotifyPlaylists(@CookieValue(ConnectionUtils.SPOTIFY_COOKIE_NAME) Cookie sessionIdCookie, @RequestParam(required = false) Integer offset) throws Exception {
 
-        PlaylistDA da = new PlaylistDA(sessionIdCookie.getValue());
-        Paging<PlaylistSimplified> playlists = da.retrieveUserPlaylists(offset);
+        playlistDA.setSessionId(sessionIdCookie.getValue());
+        Paging<PlaylistSimplified> playlists = playlistDA.retrieveUserPlaylists(offset);
 
         //return the response
         return new ResponseEntity<Paging<PlaylistSimplified>>(playlists, HttpStatus.OK);
@@ -47,9 +55,9 @@ public class PlaylistController {
     @PostMapping("/spotify-items")
     public ResponseEntity<Boolean> postSpotifyItems( @CookieValue(name = ConnectionUtils.SPOTIFY_COOKIE_NAME) Cookie sessionIdCookie, @RequestBody(required = true) PostSpotifyItemRequest requestBody) throws Exception {
 
-        PlaylistDA da = new PlaylistDA(sessionIdCookie.getValue());
+        playlistDA.setSessionId(sessionIdCookie.getValue());
         
-        if (!da.addItemsToPlaylist(requestBody.getPlaylistId(), requestBody.getSpotifyItems())) {
+        if (!playlistDA.addItemsToPlaylist(requestBody.getPlaylistId(), requestBody.getSpotifyItems())) {
             return new ResponseEntity<Boolean>(false, HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
@@ -60,9 +68,9 @@ public class PlaylistController {
     @PostMapping("/spotify-playlist")
     public ResponseEntity<PostSpotifyPlaylistResponse> postSpotifyPlaylist(@CookieValue(name = ConnectionUtils.SPOTIFY_COOKIE_NAME) Cookie sessionIdCookie, @RequestBody(required = true) PostSpotifyPlaylistRequest requestBody) throws Exception {
 
-        PlaylistDA da = new PlaylistDA(sessionIdCookie.getValue());
+        playlistDA.setSessionId(sessionIdCookie.getValue());
 
-        var response = da.createSpotifyPlaylist(requestBody.getPlaylistName(), requestBody.getPlaylistDescription(), requestBody.getSpotifyURIs(), requestBody.getIsPublic());
+        var response = playlistDA.createSpotifyPlaylist(requestBody.getPlaylistName(), requestBody.getPlaylistDescription(), requestBody.getSpotifyURIs(), requestBody.getIsPublic());
 
         if (!response.getSuccess()) {
             return new ResponseEntity<PostSpotifyPlaylistResponse>(response, HttpStatus.INTERNAL_SERVER_ERROR);

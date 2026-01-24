@@ -4,8 +4,10 @@ import java.io.IOException;
 import java.util.List;
 
 import org.apache.hc.core5.http.ParseException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
-import com.mbmusic.hubserver.Common.DataAccessBase;
+import com.mbmusic.hubserver.Common.DataAccess;
 import com.mbmusic.hubserver.Playlists.Models.PostSpotifyPlaylistResponse;
 
 import se.michaelthelin.spotify.exceptions.SpotifyWebApiException;
@@ -18,12 +20,22 @@ import se.michaelthelin.spotify.requests.data.playlists.AddItemsToPlaylistReques
 import se.michaelthelin.spotify.requests.data.playlists.CreatePlaylistRequest;
 import se.michaelthelin.spotify.requests.data.playlists.GetListOfCurrentUsersPlaylistsRequest;
 
-public class PlaylistDA extends DataAccessBase {
+@Component
+public class PlaylistDA {
 
-    //#region Constructor
+    //#region Members
 
-    protected PlaylistDA(String sessionIdString) throws Exception {
-        super(sessionIdString);
+    @Autowired
+    private DataAccess da;
+
+    private String sessionId;
+
+    //#endregion
+
+    //#region Getters / Setters
+
+    public void setSessionId(String sessionId) {
+        this.sessionId = sessionId;
     }
 
     //#endregion
@@ -41,7 +53,7 @@ public class PlaylistDA extends DataAccessBase {
     public Paging<PlaylistSimplified> retrieveUserPlaylists(Integer offset) throws ParseException, SpotifyWebApiException, IOException {
 
         //Now create a requet builder to get the playlists for the current user
-        GetListOfCurrentUsersPlaylistsRequest.Builder requestBuilder = spotifyClient.getListOfCurrentUsersPlaylists();
+        GetListOfCurrentUsersPlaylistsRequest.Builder requestBuilder = da.getSpotifyClient(sessionId).getListOfCurrentUsersPlaylists();
 
         //Now determine if there is an offset applied
         if (offset != null) {
@@ -71,7 +83,7 @@ public class PlaylistDA extends DataAccessBase {
      */
     public boolean addItemsToPlaylist(String playlistId, List<String> spotifyItems) throws ParseException, SpotifyWebApiException, IOException {
 
-        final AddItemsToPlaylistRequest addItemsToPlaylistRequest = spotifyClient.addItemsToPlaylist(playlistId, spotifyItems.toArray(new String[0]))
+        final AddItemsToPlaylistRequest addItemsToPlaylistRequest = da.getSpotifyClient(sessionId).addItemsToPlaylist(playlistId, spotifyItems.toArray(new String[0]))
         .build();
 
         //Check if the items were added
@@ -93,7 +105,7 @@ public class PlaylistDA extends DataAccessBase {
      */
     public PostSpotifyPlaylistResponse createSpotifyPlaylist(String playlistName, String playlistDescription, List<String> spotifyURIs, boolean isPublic) throws Exception {
 
-        User currentUser = spotifyClient.getCurrentUsersProfile()
+        User currentUser = da.getSpotifyClient(sessionId).getCurrentUsersProfile()
             .build()
             .execute();
 
@@ -105,7 +117,7 @@ public class PlaylistDA extends DataAccessBase {
         }
 
         //Now create a playlist request
-        CreatePlaylistRequest createPlaylist = spotifyClient.createPlaylist(userId, playlistName)
+        CreatePlaylistRequest createPlaylist = da.getSpotifyClient(sessionId).createPlaylist(userId, playlistName)
             .description(playlistDescription)
             .public_(isPublic)  //NOTE: the Spotify API is outdated, and you cannot create a private playlist at the moment :(
             .build();
@@ -121,7 +133,7 @@ public class PlaylistDA extends DataAccessBase {
         //Add spotify items to the newly created playlist
         if (spotifyURIs != null && !spotifyURIs.isEmpty()) {
             //Now create a playlist insert request
-            final AddItemsToPlaylistRequest addItems = spotifyClient.addItemsToPlaylist(newPlaylistId, spotifyURIs.toArray(new String[0]))
+            final AddItemsToPlaylistRequest addItems = da.getSpotifyClient(sessionId).addItemsToPlaylist(newPlaylistId, spotifyURIs.toArray(new String[0]))
             .build();
             
             //Insert the items

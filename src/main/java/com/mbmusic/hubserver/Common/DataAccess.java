@@ -15,39 +15,35 @@ import se.michaelthelin.spotify.exceptions.SpotifyWebApiException;
  * This class provides base functionality for all data access classes
  */
 @Component
-public abstract class DataAccessBase {
+public class DataAccess {
 
     //#region Members
 
     private SpotifyApiConnection spotifyApiConnection;
 
-    @Autowired
-    public final void setSpotifyApiConnection(SpotifyApiConnection spotifyApiConnection) {
-        this.spotifyApiConnection = spotifyApiConnection;
-    }
-
-    protected SpotifyApi spotifyClient;
+    private SpotifyApi spotifyClient;
     
     //#endregion
 
-    //#region Methods
+    @Autowired(required = true)
+    public DataAccess(SpotifyApiConnection spotifyApiConnection) {
+        this.spotifyApiConnection = spotifyApiConnection;
+    }
 
-    /**
-     * This constructor performs all operations necessary priror to retrieving data
-     * @param sessionIdString String representation of the session id being passed in from the user
-     * @throws Exception 
-     * @throws ExecutionException 
-     * @throws InterruptedException 
-     * @throws JsonProcessingException 
-     * @throws JsonMappingException 
-     */
-    protected DataAccessBase(String sessionIdString) throws Exception {
+    //#region Getters/Setters
+
+    public SpotifyApi getSpotifyClient(String sessionIdString) {
         try {
             prepareSpotifyClient(sessionIdString);
+            return spotifyClient;
         } catch (Exception e) {
-            throw e;
+            return null;
         }
-    } 
+    }
+
+    //#endregion
+
+    //#region Methods
 
     /**
      * This method retrieves the Spotify Token information necessary for reaching out to the Spotify API
@@ -56,7 +52,7 @@ public abstract class DataAccessBase {
      * @throws SpotifyWebApiException 
      * @throws ParseException 
      */
-    private void prepareSpotifyClient(String sessionIdString) throws InterruptedException, ExecutionException, ParseException, SpotifyWebApiException, IOException {
+    public void prepareSpotifyClient(String sessionIdString) throws InterruptedException, ExecutionException, ParseException, SpotifyWebApiException, IOException {
         if (sessionIdString == null)
             spotifyClient = null;
         

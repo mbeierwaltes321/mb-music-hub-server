@@ -151,7 +151,6 @@ public class ConnectionController {
         cookie.setMaxAge(60 * 60 * 24 * 7); //TODO - Configure this with "Remember Me" at one point
 
         response.addCookie(cookie);
-        // response.setHeader("Set-Cookie", ConnectionUtils.SPOTIFY_COOKIE_NAME + "=" + newSessionId.toString());
 
         //Declare the URL object used to redirect to the frontend application
         //TODO - Make this an environment variable?
@@ -159,18 +158,6 @@ public class ConnectionController {
             .build()
             .toUri()
             .toURL();
-
-        // //Add the token information to the Valkey database
-        // CompletableFuture<RedirectView> redirect = valkeyClient.insertSpotifyAPITokenAsync(newSessionId, newTokenInfo)
-        //     .thenApply(inserted -> {
-        //         if (!inserted) {
-        //             return new RedirectView(redirectUrl.toString() + "/error");
-        //         }
-
-        //         return new RedirectView(redirectUrl.toString()); 
-        //     });
-
-        // return redirect;
 
         return valkeyClient.insertSpotifyAPITokenAsync(newSessionId, newTokenInfo)
             .thenAccept(inserted -> {
