@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 import com.mbmusic.hubserver.Common.DataAccess;
 import com.mbmusic.hubserver.Playlists.Models.PostSpotifyPlaylistResponse;
 
+import se.michaelthelin.spotify.SpotifyApi;
 import se.michaelthelin.spotify.exceptions.SpotifyWebApiException;
 import se.michaelthelin.spotify.model_objects.special.SnapshotResult;
 import se.michaelthelin.spotify.model_objects.specification.Paging;
@@ -95,7 +96,9 @@ public class PlaylistDA {
      */
     public PostSpotifyPlaylistResponse createSpotifyPlaylist(String sessionId, String playlistName, String playlistDescription, List<String> spotifyURIs, boolean isPublic) throws Exception {
 
-        User currentUser = da.getSpotifyClient(sessionId).getCurrentUsersProfile()
+        SpotifyApi spotifyApi = da.getSpotifyClient(sessionId);
+
+        User currentUser = spotifyApi.getCurrentUsersProfile()
             .build()
             .execute();
 
@@ -107,7 +110,7 @@ public class PlaylistDA {
         }
 
         //Now create a playlist request
-        CreatePlaylistRequest createPlaylist = da.getSpotifyClient(sessionId).createPlaylist(userId, playlistName)
+        CreatePlaylistRequest createPlaylist = spotifyApi.createPlaylist(userId, playlistName)
             .description(playlistDescription)
             .public_(isPublic)  //NOTE: the Spotify API is outdated, and you cannot create a private playlist at the moment :(
             .build();
@@ -123,7 +126,7 @@ public class PlaylistDA {
         //Add spotify items to the newly created playlist
         if (spotifyURIs != null && !spotifyURIs.isEmpty()) {
             //Now create a playlist insert request
-            final AddItemsToPlaylistRequest addItems = da.getSpotifyClient(sessionId).addItemsToPlaylist(newPlaylistId, spotifyURIs.toArray(new String[0]))
+            final AddItemsToPlaylistRequest addItems = spotifyApi.addItemsToPlaylist(newPlaylistId, spotifyURIs.toArray(new String[0]))
             .build();
             
             //Insert the items
