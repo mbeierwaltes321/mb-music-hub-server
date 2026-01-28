@@ -72,7 +72,8 @@ public class PlaylistControllerTests {
         GetListOfCurrentUsersPlaylistsRequest.Builder mockBuilder = mock(GetListOfCurrentUsersPlaylistsRequest.Builder.class);
         GetListOfCurrentUsersPlaylistsRequest mockApiCall = mock(GetListOfCurrentUsersPlaylistsRequest.class);
 
-        File playlistFile = new File("Fixtures/Playlists.json");
+        
+        File playlistFile = new File("src/test/java/com/mbmusic/hubserver/Playlists/Fixtures/Playlists.json");
         if (!playlistFile.canRead())
             fail();
 
@@ -80,12 +81,14 @@ public class PlaylistControllerTests {
 
         when(mockDA.getSpotifyClient("test")).thenReturn(mockApi);
         when(mockApi.getListOfCurrentUsersPlaylists()).thenReturn(mockBuilder);
-        when(mockApiCall.execute()).thenReturn(null);
+        when(mockBuilder.build()).thenReturn(mockApiCall);
+        when(mockApiCall.execute()).thenReturn(playlists);
 
         //Create the mock cookie
         Cookie mockSessionCookie = new Cookie(ConnectionUtils.SPOTIFY_COOKIE_NAME, "test"); 
 
         //Now call the endpoint
+        //TODO - Verify that the content is equal to the playlists fixture
         this.mvc.perform(get("/playlists/spotify-playlists")
             .cookie(mockSessionCookie))
             .andExpect(status().isOk());
