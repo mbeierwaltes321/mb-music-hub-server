@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.io.File;
@@ -12,7 +13,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -88,10 +88,10 @@ public class PlaylistControllerTests {
         Cookie mockSessionCookie = new Cookie(ConnectionUtils.SPOTIFY_COOKIE_NAME, "test"); 
 
         //Now call the endpoint
-        //TODO - Verify that the content is equal to the playlists fixture
         this.mvc.perform(get("/playlists/spotify-playlists")
             .cookie(mockSessionCookie))
-            .andExpect(status().isOk());
+            .andExpect(status().isOk())
+            .andExpect(content().json(mapper.writeValueAsString(playlists)));
     }
 
     // //This method gets playlists from the spotify-playlists GET request and verifies
