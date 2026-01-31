@@ -19,6 +19,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.mbmusic.hubserver.BaseTest;
 import com.mbmusic.hubserver.Common.DataAccess;
 import com.mbmusic.hubserver.Connections.ConnectionUtils;
 import jakarta.servlet.http.Cookie;
@@ -30,7 +31,7 @@ import se.michaelthelin.spotify.requests.data.playlists.GetListOfCurrentUsersPla
 //This class handles test cases for the playlist controller
 @SpringBootTest
 @AutoConfigureMockMvc
-public class PlaylistControllerTests {
+public class PlaylistControllerTests extends BaseTest {
 
     //#region " Members "
     
