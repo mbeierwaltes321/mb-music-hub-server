@@ -9,6 +9,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.io.File;
+import java.util.concurrent.CompletableFuture;
+
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -20,8 +23,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.mbmusic.hubserver.BaseTest;
-import com.mbmusic.hubserver.Common.DataAccess;
 import com.mbmusic.hubserver.Connections.ConnectionUtils;
+import com.mbmusic.hubserver.Connections.SpotifyApiConnection;
+
 import jakarta.servlet.http.Cookie;
 import se.michaelthelin.spotify.SpotifyApi;
 import se.michaelthelin.spotify.model_objects.specification.Paging;
@@ -43,8 +47,15 @@ public class PlaylistControllerTests extends BaseTest {
     @Autowired
 	private PlaylistController controller;
 
+    //Mock for the spotify api connection
     @MockitoBean
-    private DataAccess mockDA;
+    private SpotifyApiConnection mockedSpotifyApiConnection;
+
+    private SpotifyApi mockApi = mock(SpotifyApi.class);
+
+    private String SUCCESSFUL_SESSION_COOKIE_VALUE = "Success";
+
+    private String UNSUCCESSFUL_SESSION_COOKIE_VALUE = "Failure";
 
     //Object mapper for interpreting results
     ObjectMapper mapper = new ObjectMapper()
@@ -55,6 +66,18 @@ public class PlaylistControllerTests extends BaseTest {
     //#endregion
 
     //#region " Tests "
+
+    @BeforeEach
+    public void mockSpotifyConnection() {
+
+        try {
+            when(mockedSpotifyApiConnection.createApiClient(SUCCESSFUL_SESSION_COOKIE_VALUE))
+            .thenReturn(CompletableFuture.completedFuture(mockApi));
+        } catch (Exception e) {
+            fail(e.getMessage());
+        }
+                
+    }
 
     //#region " GET "
 
@@ -69,7 +92,6 @@ public class PlaylistControllerTests extends BaseTest {
     public void shouldGetPlaylists() throws Exception {
 
         //Mock the Sptoify API
-        SpotifyApi mockApi = mock(SpotifyApi.class);
         GetListOfCurrentUsersPlaylistsRequest.Builder mockBuilder = mock(GetListOfCurrentUsersPlaylistsRequest.Builder.class);
         GetListOfCurrentUsersPlaylistsRequest mockApiCall = mock(GetListOfCurrentUsersPlaylistsRequest.class);
 
@@ -80,13 +102,12 @@ public class PlaylistControllerTests extends BaseTest {
 
         Paging<PlaylistSimplified> playlists = mapper.readValue(playlistFile, Paging.class);
 
-        when(mockDA.getSpotifyClient("test")).thenReturn(mockApi);
         when(mockApi.getListOfCurrentUsersPlaylists()).thenReturn(mockBuilder);
         when(mockBuilder.build()).thenReturn(mockApiCall);
         when(mockApiCall.execute()).thenReturn(playlists);
 
         //Create the mock cookie
-        Cookie mockSessionCookie = new Cookie(ConnectionUtils.SPOTIFY_COOKIE_NAME, "test"); 
+        Cookie mockSessionCookie = new Cookie(ConnectionUtils.SPOTIFY_COOKIE_NAME, SUCCESSFUL_SESSION_COOKIE_VALUE); 
 
         //Now call the endpoint
         this.mvc.perform(get("/playlists/spotify-playlists")

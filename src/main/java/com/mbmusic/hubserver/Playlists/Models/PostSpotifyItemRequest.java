@@ -2,15 +2,10 @@ package com.mbmusic.hubserver.Playlists.Models;
 
 import java.util.List;
 
-import com.mbmusic.hubserver.Connections.Models.SpotifyTokenInfo;
-
 //This class models the request body for the post spotify item endpoint
 public class PostSpotifyItemRequest {
     
     //#region " Members "
-
-    //The token information associated with the request
-    private SpotifyTokenInfo authTokens;
 
     //The ID of the playlist which the items will be added
     private String playlistId;
@@ -21,14 +16,6 @@ public class PostSpotifyItemRequest {
     //#endregion
 
     //#region " Getters / Setters "
-
-    public SpotifyTokenInfo getAuthTokens() {
-        return authTokens;
-    }
-
-    public void setAuthTokens(SpotifyTokenInfo authTokens) {
-        this.authTokens = authTokens;
-    }
 
     public String getPlaylistId() {
         return playlistId;
