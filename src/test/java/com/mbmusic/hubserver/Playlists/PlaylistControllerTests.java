@@ -5,8 +5,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.asyncDispatch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.request;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.io.File;
@@ -26,6 +28,7 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.mbmusic.hubserver.BaseTest;
 import com.mbmusic.hubserver.Connections.ConnectionUtils;
 import com.mbmusic.hubserver.Connections.SpotifyApiConnection;
+import com.mbmusic.hubserver.Connections.Exceptions.InvalidSessionIdException;
 
 import jakarta.servlet.http.Cookie;
 import se.michaelthelin.spotify.SpotifyApi;
@@ -54,9 +57,9 @@ public class PlaylistControllerTests extends BaseTest {
 
     private SpotifyApi mockApi = mock(SpotifyApi.class);
 
-    private String SUCCESSFUL_SESSION_COOKIE_VALUE = "Success";
+    final private String SUCCESSFUL_SESSION_COOKIE_VALUE = "Success";
 
-    private String UNSUCCESSFUL_SESSION_COOKIE_VALUE = "Failure";
+    final private String UNSUCCESSFUL_SESSION_COOKIE_VALUE = "Failure";
 
     //Object mapper for interpreting results
     ObjectMapper mapper = new ObjectMapper()
@@ -102,19 +105,24 @@ public class PlaylistControllerTests extends BaseTest {
             fail();
 
         Paging<PlaylistSimplified> playlists = mapper.readValue(playlistFile, Paging.class);
+        String playlistsJson = mapper.writeValueAsString(playlists);
 
         when(mockApi.getListOfCurrentUsersPlaylists()).thenReturn(mockBuilder);
         when(mockBuilder.build()).thenReturn(mockApiCall);
-        when(mockApiCall.execute()).thenReturn(playlists);
+        when(mockApiCall.executeAsync()).thenReturn(CompletableFuture.completedFuture(playlists));
 
         //Create the mock cookie
         Cookie mockSessionCookie = new Cookie(ConnectionUtils.SPOTIFY_COOKIE_NAME, SUCCESSFUL_SESSION_COOKIE_VALUE); 
 
-        //Now call the endpoint
-        this.mvc.perform(get("/playlists/spotify-playlists")
+        var mvcResult = this.mvc.perform(get("/playlists/spotify-playlists")
             .cookie(mockSessionCookie))
+            .andExpect(request().asyncStarted())
+            .andReturn();
+
+        this.mvc.perform(asyncDispatch(mvcResult))
             .andExpect(status().isOk())
-            .andExpect(content().json(mapper.writeValueAsString(playlists)));
+            .andExpect(content().json(playlistsJson));
+
     }
 
     /**
@@ -130,7 +138,7 @@ public class PlaylistControllerTests extends BaseTest {
         //Now call the endpoint
         this.mvc.perform(get("/playlists/spotify-playlists")
             .cookie(mockSessionCookie))
-            .andExpect(result -> assertTrue(result.getResolvedException() instanceof Exception));
+            .andExpect(result -> assertTrue(result.getResolvedException() instanceof InvalidSessionIdException));
     }
 
     //#endregion
