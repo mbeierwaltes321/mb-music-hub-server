@@ -1,8 +1,8 @@
 package com.mbmusic.hubserver.Playlists;
 
+import java.util.concurrent.CompletableFuture;
+
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.mbmusic.hubserver.Connections.ConnectionUtils;
+import com.mbmusic.hubserver.Connections.Exceptions.InvalidSessionIdException;
 import com.mbmusic.hubserver.Playlists.Models.PostSpotifyItemRequest;
 import com.mbmusic.hubserver.Playlists.Models.PostSpotifyPlaylistRequest;
 import com.mbmusic.hubserver.Playlists.Models.PostSpotifyPlaylistResponse;
@@ -38,15 +39,12 @@ public class PlaylistController {
 
     //This method gets all of the Spotify playlists created by the current user
     @GetMapping("/spotify-playlists")
-    public ResponseEntity<Paging<PlaylistSimplified>> getUserSpotifyPlaylists(@CookieValue(ConnectionUtils.SPOTIFY_COOKIE_NAME) Cookie sessionIdCookie, @RequestParam(required = false) Integer offset) throws Exception {
+    public CompletableFuture<Paging<PlaylistSimplified>> getUserSpotifyPlaylists(@CookieValue(ConnectionUtils.SPOTIFY_COOKIE_NAME) Cookie sessionIdCookie, @RequestParam(required = false) Integer offset) throws Exception {
 
         if (sessionIdCookie.getValue() == null || sessionIdCookie.getValue() == "")
-            return new ResponseEntity<Paging<PlaylistSimplified>>(HttpStatus.UNAUTHORIZED);
+            throw new InvalidSessionIdException("Invalid Session ID");
 
-        Paging<PlaylistSimplified> playlists = playlistDA.retrieveUserPlaylists(sessionIdCookie.getValue(), offset);
-
-        //return the response
-        return new ResponseEntity<Paging<PlaylistSimplified>>(playlists, HttpStatus.OK);
+        return playlistDA.retrieveUserPlaylists(sessionIdCookie.getValue(), offset);
     }
 
     //#endregion
@@ -55,32 +53,27 @@ public class PlaylistController {
 
     //This method adds the provided spotify items to the selected playlist
     @PostMapping("/spotify-items")
-    public ResponseEntity<Boolean> postSpotifyItems( @CookieValue(name = ConnectionUtils.SPOTIFY_COOKIE_NAME) Cookie sessionIdCookie, @RequestBody(required = true) PostSpotifyItemRequest requestBody) throws Exception {
+    public CompletableFuture<Boolean> postSpotifyItems( @CookieValue(name = ConnectionUtils.SPOTIFY_COOKIE_NAME) Cookie sessionIdCookie, @RequestBody(required = true) PostSpotifyItemRequest requestBody) throws Exception {
 
         if (sessionIdCookie.getValue() == null || sessionIdCookie.getValue() == "")
-            return new ResponseEntity<Boolean>(HttpStatus.UNAUTHORIZED);
-        
-        if (!playlistDA.addItemsToPlaylist(sessionIdCookie.getValue(), requestBody.getPlaylistId(), requestBody.getSpotifyItems())) {
-            return new ResponseEntity<Boolean>(false, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+            throw new InvalidSessionIdException("Invalid Session ID");
 
-        return new ResponseEntity<Boolean>(true, HttpStatus.OK);
+        return playlistDA.addItemsToPlaylist(sessionIdCookie.getValue(), requestBody.getPlaylistId(), requestBody.getSpotifyItems());
 
     }
 
     @PostMapping("/spotify-playlist")
-    public ResponseEntity<PostSpotifyPlaylistResponse> postSpotifyPlaylist(@CookieValue(name = ConnectionUtils.SPOTIFY_COOKIE_NAME) Cookie sessionIdCookie, @RequestBody(required = true) PostSpotifyPlaylistRequest requestBody) throws Exception {
+    public CompletableFuture<PostSpotifyPlaylistResponse> postSpotifyPlaylist(
+        @CookieValue(name = ConnectionUtils.SPOTIFY_COOKIE_NAME) Cookie sessionIdCookie, 
+        @RequestBody(required = true) PostSpotifyPlaylistRequest requestBody) throws Exception {
 
         if (sessionIdCookie.getValue() == null || sessionIdCookie.getValue() == "")
-            return new ResponseEntity<PostSpotifyPlaylistResponse>(HttpStatus.UNAUTHORIZED);
+            throw new InvalidSessionIdException("Invalid Session ID");
 
-        var response = playlistDA.createSpotifyPlaylist(sessionIdCookie.getValue(), requestBody.getPlaylistName(), requestBody.getPlaylistDescription(), requestBody.getSpotifyURIs(), requestBody.getIsPublic());
+        var response = playlistDA.createSpotifyPlaylist(sessionIdCookie.getValue(), requestBody.getPlaylistName(), 
+            requestBody.getPlaylistDescription(), requestBody.getSpotifyURIs(), requestBody.getIsPublic());
 
-        if (!response.getSuccess()) {
-            return new ResponseEntity<PostSpotifyPlaylistResponse>(response, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-
-        return new ResponseEntity<PostSpotifyPlaylistResponse>(response, HttpStatus.OK);
+        return response;
     }
 
     //#endregion

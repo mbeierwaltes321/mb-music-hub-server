@@ -2,8 +2,7 @@ package com.mbmusic.hubserver.Connections.Clients;
 
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
-
+import java.util.concurrent.CompletionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Component;
@@ -14,6 +13,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.mbmusic.hubserver.Common.Utilities.TimeUtils;
+import com.mbmusic.hubserver.Connections.Exceptions.InvalidSessionIdException;
 import com.mbmusic.hubserver.Connections.Models.SpotifyTokenInfo;
 
 import glide.api.GlideClient;
@@ -34,32 +34,20 @@ public class ValkeyClient {
     }
 
     /**
-     * This method attempts to retrieve the Spotify API Token information given
-     * the generated session id
+     * This method attempts to retrieve the Spotify API Token information given the generated session id
      * @param sessionID The ID of the session generated at authentication
-     * @return The Spotify Token Information needed for requests. 
-     * Null if there is no token information, or the record doesn't exist
-     * @throws InterruptedException
-     * @throws ExecutionException
-     * @throws JsonMappingException
-     * @throws JsonProcessingException
+     * @return The Spotify Token Information needed for requests.
+     * @throws InvalidSessionIdException Thrown if the provided Session ID is invalid
      */
-    public CompletableFuture<Pair<UUID, SpotifyTokenInfo>> getSpotifyAPITokenAsync(UUID sessionID) throws InterruptedException, ExecutionException, JsonMappingException, JsonProcessingException {
+    public CompletableFuture<Pair<UUID, SpotifyTokenInfo>> getSpotifyAPITokenAsync(UUID sessionID) throws InvalidSessionIdException {
 
         //Validate the incoming session id
-        if (sessionID == null || sessionID.equals(UUID.fromString("00000000-0000-0000-0000-000000000000"))) {
-            //No session id. Return null
-            return null;
-        }
+        if (sessionID == null || sessionID.equals(UUID.fromString("00000000-0000-0000-0000-000000000000")))
+            throw new InvalidSessionIdException("Provided Session ID Invalid");
 
         //Retrieve the Spotify API Token
-        CompletableFuture<Pair<UUID, SpotifyTokenInfo>> t = this.valkeyGlide.get(GlideString.gs(SESSION_PREFIX + sessionID.toString()))
+        CompletableFuture<Pair<UUID, SpotifyTokenInfo>> tokenRetrievalFuture = this.valkeyGlide.get(GlideString.gs(SESSION_PREFIX + sessionID.toString()))
         .thenApply((GlideString serializedToken) -> {
-
-            if (serializedToken == null) {
-                //No token retruend. Return null
-                return null;
-            }
 
             SpotifyTokenInfo tokenInfo;
             try {
@@ -67,16 +55,16 @@ public class ValkeyClient {
                 ObjectMapper mapper = new ObjectMapper();
                 mapper.registerModule(new JavaTimeModule());
                 tokenInfo = mapper.readValue(serializedToken.getString(), SpotifyTokenInfo.class);
-            }
-            catch(Exception e) {
-                System.out.println(e.getMessage());
-                return null;
+            } catch(JsonMappingException e) {
+                throw new CompletionException(e);
+            } catch(JsonProcessingException e) {
+                throw new CompletionException(e);
             }
 
             return Pair.of(sessionID, tokenInfo);
         });
 
-        return t;
+        return tokenRetrievalFuture;
     }
 
 
@@ -86,15 +74,14 @@ public class ValkeyClient {
      * @param tokenInfo The token informaiton for Spotify
      * @return True on success. False otherwise.
      * @throws JsonProcessingException
-     * @throws InterruptedException
-     * @throws ExecutionException
+     * @throws InvalidSessionIdException
      */
-    public CompletableFuture<Boolean> upsertSpotifyAPITokenAsync(UUID sessionID, SpotifyTokenInfo tokenInfo) throws JsonProcessingException, InterruptedException, ExecutionException {
+    public CompletableFuture<Boolean> upsertSpotifyAPITokenAsync(UUID sessionID, SpotifyTokenInfo tokenInfo) throws JsonProcessingException, InvalidSessionIdException {
 
         //Validate the input parameters
         if (sessionID == null || sessionID.equals(UUID.fromString("00000000-0000-0000-0000-000000000000")) || tokenInfo == null) {
             //No session id. Failed
-            return CompletableFuture.completedFuture(false);
+            throw new InvalidSessionIdException("Provided Session ID Invalid");
         }
 
         //Serialize the token information
@@ -106,8 +93,8 @@ public class ValkeyClient {
 
         //TODO - This may or may not need to change depending on any "remember me" functionality
         SetOptions setOptions = SetOptions.builder()
-                                    .expiry(Expiry.Seconds((long)TimeUtils.WEEK_SECONDS))
-                                    .build();
+            .expiry(Expiry.Seconds((long)TimeUtils.WEEK_SECONDS))
+            .build();
 
         //Add the token to Valkey
         return this.valkeyGlide.set(GlideString.gs(SESSION_PREFIX + sessionID.toString()), GlideString.gs(spotifyTokenJson), setOptions)
@@ -119,8 +106,6 @@ public class ValkeyClient {
 
                 return true;
             });
-
-
     }
 
 

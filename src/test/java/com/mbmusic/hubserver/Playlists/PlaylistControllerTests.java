@@ -1,6 +1,7 @@
 package com.mbmusic.hubserver.Playlists;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -87,7 +88,7 @@ public class PlaylistControllerTests extends BaseTest {
 		assertThat(controller).isNotNull();
 	}
 
-    //This method tests that playlists are returned
+    //This method tests that spotify-playlists returns playlists
     @Test
     public void shouldGetPlaylists() throws Exception {
 
@@ -116,36 +117,21 @@ public class PlaylistControllerTests extends BaseTest {
             .andExpect(content().json(mapper.writeValueAsString(playlists)));
     }
 
-    // //This method gets playlists from the spotify-playlists GET request and verifies
-    // //that the information returned is true
-    // @Test
-    // public void playlistContentCorrect() throws Exception {
+    /**
+     * This method tests an attempt to cal GET spotify-playlists with an improper cookie
+     * @throws Exception
+     */
+    @Test
+    public void shouldFailToGetPlaylists() throws Exception {
 
-    //     //Get the token information to make the API Call
-    //     SpotifyTokenInfo authTokens = TestBase.getSpotifyTokenInfo();
+        //Create the mock cookie
+        Cookie mockSessionCookie = new Cookie(ConnectionUtils.SPOTIFY_COOKIE_NAME, UNSUCCESSFUL_SESSION_COOKIE_VALUE); 
 
-    //     final LinkedMultiValueMap<String, String> parms = new LinkedMultiValueMap<String, String>();
-    //     parms.add("accessToken", authTokens.getAccessToken());
-    //     parms.add("refreshToken", authTokens.getRefreshToken());
-    //     parms.add("expiresIn", authTokens.getExpiresIn() + "");
-    //     parms.add("tokenGeneratedAt", authTokens.getTokenGeneratedAt().format(DateTimeFormatter.ISO_DATE_TIME));
-
-    //     //Now call the endpoint
-    //     final MvcResult result = this.mvc.perform(get("/playlists/spotify-playlists")
-    //     .queryParams(parms))
-    //     .andExpect(status().isOk())
-    //     .andReturn();
-
-    //     //Get the resulting JSON
-    //     final String resultJson = result.getResponse().getContentAsString();
-        
-    //     //Grab the spotify id of the owner
-    //     final String requestUrl = JsonPath.read(resultJson, "$.responseContent.href");
-
-    //     //Finally, assert that the response href contains my id
-    //     assertTrue(requestUrl.contains("users/1256937600"));
-
-    // } 
+        //Now call the endpoint
+        this.mvc.perform(get("/playlists/spotify-playlists")
+            .cookie(mockSessionCookie))
+            .andExpect(result -> assertTrue(result.getResolvedException() instanceof Exception));
+    }
 
     //#endregion
 

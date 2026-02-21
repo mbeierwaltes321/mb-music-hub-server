@@ -1,5 +1,7 @@
 package com.mbmusic.hubserver;
 
+import java.util.concurrent.CompletionException;
+
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -9,17 +11,29 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.mbmusic.hubserver.Connections.Exceptions.InvalidSessionIdException;
+import com.mbmusic.hubserver.Connections.Exceptions.SpotifyClientBuildException;
+
 import se.michaelthelin.spotify.exceptions.SpotifyWebApiException;
 import se.michaelthelin.spotify.exceptions.detailed.*;
 
-//This class is responsible for handling errors from controllers and returning appropriate responses to the user
+/**
+ * This class is responseible for handling exceptions throughout the whole application
+ */
 @ControllerAdvice
-public class SpotifyResponseEntityExceptionHandler
+public class GlobalExceptionHandler
     extends ResponseEntityExceptionHandler {
 
-    //This method should handle all exceptions rooting from the SpotifyWebApiException class
+    /**
+     * This method should handle all exceptions rooting from the SpotifyWebApiException class
+     * @param ex The base spotify exception to handle
+     * @param request The web request that threw the exception
+     * @return The proper response code
+     */
     @ExceptionHandler(value = {SpotifyWebApiException.class})
-    protected ResponseEntity<Object> handleConflict(SpotifyWebApiException ex, @NonNull WebRequest request) {
+    protected ResponseEntity<Object> handleSpotifyExceptions(SpotifyWebApiException ex, @NonNull WebRequest request) {
 
         //Declare message body variable
         String responseMessage = "";
@@ -78,4 +92,27 @@ public class SpotifyResponseEntityExceptionHandler
         return handleExceptionInternal(ex, responseMessage, new HttpHeaders(), status, request);
 
     }
+
+    /**
+     * This method handles completion exceptions by handling its inner exception
+     * @param ex The CompletionException to handle
+     * @param request The request that threw the exception
+     * @return The proper response code
+     */
+    protected ResponseEntity<Object> handleCompletionExceptions(CompletionException ex, WebRequest request) {
+        Throwable innerException = ex.getCause();
+
+        if (innerException instanceof JsonMappingException) 
+            return handleExceptionInternal((JsonMappingException)innerException, innerException.getMessage(), null, HttpStatus.INTERNAL_SERVER_ERROR, request);
+        else if (innerException instanceof JsonProcessingException)
+            return handleExceptionInternal((JsonProcessingException)innerException, innerException.getMessage(), null, HttpStatus.INTERNAL_SERVER_ERROR, request);
+        else if (innerException instanceof SpotifyClientBuildException)
+            return handleExceptionInternal((SpotifyClientBuildException)innerException, innerException.getMessage(), null, HttpStatus.INTERNAL_SERVER_ERROR, request);
+        else if (innerException instanceof InvalidSessionIdException)
+            return handleExceptionInternal((InvalidSessionIdException)innerException, innerException.getMessage(), null, HttpStatus.UNAUTHORIZED, request);
+
+        //Catch all
+        return handleExceptionInternal(ex, innerException.getMessage(), new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR, request);
+    }
+    
 }
