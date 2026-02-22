@@ -33,9 +33,6 @@ public class DataAccess {
      * @param sessionIdString The ID of the front end session for which to retrieve the SpotifyTokenInformation
      */
     public CompletableFuture<SpotifyApi> getSpotifyClient(String sessionIdString) throws InvalidSessionIdException {
-        if (sessionIdString == null)
-            throw new InvalidSessionIdException("Invalid Session Id");
-        
         //Retrieve the token and prepare the Spotify API Client
         return spotifyApiConnection.createApiClient(sessionIdString);
     }

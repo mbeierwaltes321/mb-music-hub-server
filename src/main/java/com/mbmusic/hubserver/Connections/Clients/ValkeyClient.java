@@ -39,14 +39,16 @@ public class ValkeyClient {
      * @return The Spotify Token Information needed for requests.
      * @throws InvalidSessionIdException Thrown if the provided Session ID is invalid
      */
-    public CompletableFuture<Pair<UUID, SpotifyTokenInfo>> getSpotifyAPITokenAsync(UUID sessionID) throws InvalidSessionIdException {
+    public CompletableFuture<Pair<UUID, SpotifyTokenInfo>> getSpotifyAPITokenAsync(UUID sessionID)
+        throws InvalidSessionIdException {
 
         //Validate the incoming session id
         if (sessionID == null || sessionID.equals(UUID.fromString("00000000-0000-0000-0000-000000000000")))
             throw new InvalidSessionIdException("Provided Session ID Invalid");
 
         //Retrieve the Spotify API Token
-        CompletableFuture<Pair<UUID, SpotifyTokenInfo>> tokenRetrievalFuture = this.valkeyGlide.get(GlideString.gs(SESSION_PREFIX + sessionID.toString()))
+        CompletableFuture<Pair<UUID, SpotifyTokenInfo>> tokenRetrievalFuture =
+            this.valkeyGlide.get(GlideString.gs(SESSION_PREFIX + sessionID.toString()))
         .thenApply((GlideString serializedToken) -> {
 
             SpotifyTokenInfo tokenInfo;

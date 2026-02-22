@@ -45,8 +45,11 @@ public class SpotifyApiConnection {
     }
 
     public CompletableFuture<SpotifyApi> createApiClient(String sessionId) throws InvalidSessionIdException {
-        UUID sessionUuid = UUID.fromString(sessionId);
+        if (sessionId == null || sessionId.isEmpty()) {
+            throw new InvalidSessionIdException("Invalid Session Id");
+        }
 
+        UUID sessionUuid = UUID.fromString(sessionId);
         return valkeyClient.getSpotifyAPITokenAsync(sessionUuid)
         .thenCompose(this::buildSpotifyClientFromTokens);
     }
@@ -58,9 +61,10 @@ public class SpotifyApiConnection {
 å     */
     private CompletableFuture<SpotifyApi> buildSpotifyClientFromTokens(Pair<UUID, SpotifyTokenInfo> authTokenInfo) {
 
-        if (authTokenInfo == null || authTokenInfo.getFirst() == null || authTokenInfo.getSecond() == null)
+        if (authTokenInfo == null || authTokenInfo.getFirst() == null || authTokenInfo.getSecond() == null) {
             throw new SpotifyClientBuildException("Invalid token information for Spotify Client");
-
+        }
+        
         UUID sessionId = authTokenInfo.getFirst();
         SpotifyTokenInfo authTokens = authTokenInfo.getSecond();
         

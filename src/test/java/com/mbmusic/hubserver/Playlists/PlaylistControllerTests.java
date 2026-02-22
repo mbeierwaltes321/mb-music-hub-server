@@ -59,7 +59,7 @@ public class PlaylistControllerTests extends BaseTest {
 
     final private String SUCCESSFUL_SESSION_COOKIE_VALUE = "Success";
 
-    final private String UNSUCCESSFUL_SESSION_COOKIE_VALUE = "Failure";
+    final private String UNSUCCESSFUL_SESSION_COOKIE_VALUE = null;
 
     //Object mapper for interpreting results
     ObjectMapper mapper = new ObjectMapper()
@@ -130,7 +130,7 @@ public class PlaylistControllerTests extends BaseTest {
      * @throws Exception
      */
     @Test
-    public void shouldFailToGetPlaylists() throws Exception {
+    public void shouldFailFromInvalidSessionId() throws Exception {
 
         //Create the mock cookie
         Cookie mockSessionCookie = new Cookie(ConnectionUtils.SPOTIFY_COOKIE_NAME, UNSUCCESSFUL_SESSION_COOKIE_VALUE); 
