@@ -39,7 +39,9 @@ public class PlaylistController {
 
     //This method gets all of the Spotify playlists created by the current user
     @GetMapping("/spotify-playlists")
-    public CompletableFuture<Paging<PlaylistSimplified>> getUserSpotifyPlaylists(@CookieValue(ConnectionUtils.SPOTIFY_COOKIE_NAME) Cookie sessionIdCookie, @RequestParam(required = false) Integer offset) throws Exception {
+    public CompletableFuture<Paging<PlaylistSimplified>> getUserSpotifyPlaylists(
+        @CookieValue(ConnectionUtils.SPOTIFY_COOKIE_NAME) Cookie sessionIdCookie, 
+        @RequestParam(required = false) Integer offset) throws Exception {
 
         if (sessionIdCookie.getValue() == null || sessionIdCookie.getValue() == "")
             throw new InvalidSessionIdException("Invalid Session ID");

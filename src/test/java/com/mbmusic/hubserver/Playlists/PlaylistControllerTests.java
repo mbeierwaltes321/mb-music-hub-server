@@ -3,14 +3,13 @@ package com.mbmusic.hubserver.Playlists;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.asyncDispatch;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.request;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.io.File;
 import java.util.List;
@@ -30,26 +29,34 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.google.gson.JsonArray;
 import com.mbmusic.hubserver.BaseTest;
 import com.mbmusic.hubserver.Connections.ConnectionUtils;
 import com.mbmusic.hubserver.Connections.SpotifyApiConnection;
 import com.mbmusic.hubserver.Connections.Exceptions.InvalidSessionIdException;
 import com.mbmusic.hubserver.Playlists.Models.PostSpotifyItemRequest;
+import com.mbmusic.hubserver.Playlists.Models.PostSpotifyPlaylistRequest;
+import com.mbmusic.hubserver.Playlists.Models.PostSpotifyPlaylistResponse;
 
 import jakarta.servlet.http.Cookie;
 import se.michaelthelin.spotify.SpotifyApi;
 import se.michaelthelin.spotify.model_objects.special.SnapshotResult;
 import se.michaelthelin.spotify.model_objects.specification.Paging;
+import se.michaelthelin.spotify.model_objects.specification.Playlist;
 import se.michaelthelin.spotify.model_objects.specification.PlaylistSimplified;
+import se.michaelthelin.spotify.model_objects.specification.User;
 import se.michaelthelin.spotify.requests.data.playlists.AddItemsToPlaylistRequest;
+import se.michaelthelin.spotify.requests.data.playlists.CreatePlaylistRequest;
 import se.michaelthelin.spotify.requests.data.playlists.GetListOfCurrentUsersPlaylistsRequest;
+import se.michaelthelin.spotify.requests.data.users_profile.GetCurrentUsersProfileRequest;
+import se.michaelthelin.spotify.requests.data.users_profile.GetUsersProfileRequest;
 
 //This class handles test cases for the playlist controller
 @SpringBootTest
 @AutoConfigureMockMvc
 public class PlaylistControllerTests extends BaseTest {
 
-    //#region " Members "
+    //#region Members
     
     //Mock MVC object for calling endpoints
     @Autowired
@@ -77,7 +84,7 @@ public class PlaylistControllerTests extends BaseTest {
 
     //#endregion
 
-    //#region " Tests "
+    //#region Tests
 
     @BeforeEach
     public void mockSpotifyConnection() {
@@ -90,8 +97,6 @@ public class PlaylistControllerTests extends BaseTest {
         }
                 
     }
-
-    //#region " GET "
 
     //Sanity check
 	@Test
@@ -191,12 +196,76 @@ public class PlaylistControllerTests extends BaseTest {
             .andExpect(result -> assertTrue(result.getResolvedException() instanceof InvalidSessionIdException));
     }
 
+    /**
+     * TODO - Implement tests for the following createSpotifyPlaylist scenarios:
+     * 1. Success without spotify items --DONE--
+     * 3. Success with spotify items
+     * 4. Failed to get user id's profile
+     * 5. Failed - new playlist is null (should never happen)
+     */
+
+    @Test
+    public void shouldCreatePlaylistWithoutItems() throws Exception {
+        
+        preparePostSpotifyPlaylist();
+
+        Cookie mockSessionCookie = new Cookie(ConnectionUtils.SPOTIFY_COOKIE_NAME, SUCCESSFUL_SESSION_COOKIE_VALUE); 
+
+        PostSpotifyPlaylistRequest requestBody = new PostSpotifyPlaylistRequest();
+        requestBody.setPlaylistName("NewPlaylist");
+        requestBody.setPlaylistDescription("NewPlaylistDescription");
+        requestBody.setSpotifyURIs(List.of(new String[0]));
+        requestBody.setIsPublic(true);
+
+        PostSpotifyPlaylistResponse expectedResponse = new PostSpotifyPlaylistResponse(true, null);
+
+        var mvcRequest = mvc.perform(post("/playlists/spotify-playlist")
+            .cookie(mockSessionCookie)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(mapper.writeValueAsString(requestBody)))
+            .andExpect(request().asyncStarted())
+            .andReturn();
+            
+        mvc.perform(asyncDispatch(mvcRequest))
+            .andExpect(status().isOk())
+            .andExpect(content().json(mapper.writeValueAsString(expectedResponse)));
+
+    }
+
     //#endregion
 
-    //#region " POST "
+    //#region Private Methods
+
+    /**
+     * This method performs the mocking necessary for all PostSpotifyPlaylist tests
+     */
+    public void preparePostSpotifyPlaylist() {
+        GetCurrentUsersProfileRequest.Builder mockUserRequestBuilder = mock(GetCurrentUsersProfileRequest.Builder.class);
+        GetCurrentUsersProfileRequest mockUserRequest = mock(GetCurrentUsersProfileRequest.class);
+        CreatePlaylistRequest.Builder mockCreatePlaylistRequestBuilder = mock(CreatePlaylistRequest.Builder.class);
+        CreatePlaylistRequest mockCreatePlaylistRequest = mock(CreatePlaylistRequest.class);
+        AddItemsToPlaylistRequest.Builder mockAddToPlaylistBuilder = mock(AddItemsToPlaylistRequest.Builder.class);
+        AddItemsToPlaylistRequest mockAddToPlaylistRequest = mock(AddItemsToPlaylistRequest.class);
+
+        User mockUser = mock(User.class);
+        Playlist mockPlaylist = mock(Playlist.class);
+
+        when(mockApi.getCurrentUsersProfile()).thenReturn(mockUserRequestBuilder);
+        when(mockUserRequestBuilder.build()).thenReturn(mockUserRequest);
+        when(mockUserRequest.executeAsync()).thenReturn(CompletableFuture.completedFuture(mockUser));
+        when(mockUser.getId()).thenReturn("11");
+
+        when(mockApi.createPlaylist(any(), any())).thenReturn(mockCreatePlaylistRequestBuilder);
+        when(mockCreatePlaylistRequestBuilder.description(any())).thenReturn(mockCreatePlaylistRequestBuilder);
+        when(mockCreatePlaylistRequestBuilder.public_(any())).thenReturn(mockCreatePlaylistRequestBuilder);
+        when(mockCreatePlaylistRequestBuilder.build()).thenReturn(mockCreatePlaylistRequest);
+        when(mockCreatePlaylistRequest.executeAsync()).thenReturn(CompletableFuture.completedFuture(mockPlaylist));
+
+        when(mockApi.addItemsToPlaylist(any(), (String[])isNull())).thenReturn(mockAddToPlaylistBuilder);
+        when(mockApi.addItemsToPlaylist(any(), (JsonArray)isNull())).thenReturn(mockAddToPlaylistBuilder);
+        when(mockAddToPlaylistBuilder.build()).thenReturn(mockAddToPlaylistRequest);
+
+    }
 
     //#endregion
-
-    //#endregion
-
 }

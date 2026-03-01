@@ -111,7 +111,6 @@ public class PlaylistDA {
 
             //Validate the userId
             if (userId == null || userId.isBlank()) {
-                //return new PostSpotifyPlaylistResponse(false, "", "User ID was invalid when getting user's profile");
                 throw new RuntimeException("Invalid User ID when obtaining user's profile");
             }
 
@@ -127,7 +126,6 @@ public class PlaylistDA {
             Playlist newPlaylist = apiAndNewPlaylist.getSecond();
 
             if (newPlaylist == null) {
-                //return new PostSpotifyPlaylistResponse(false, "", "Unable to create a Spotify Playlist");
                 throw new RuntimeException("Error creating the spotify playlist");
             }
 
