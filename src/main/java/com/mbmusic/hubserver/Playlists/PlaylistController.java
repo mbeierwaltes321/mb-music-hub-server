@@ -53,7 +53,9 @@ public class PlaylistController {
 
     //This method adds the provided spotify items to the selected playlist
     @PostMapping("/spotify-items")
-    public CompletableFuture<Boolean> postSpotifyItems( @CookieValue(name = ConnectionUtils.SPOTIFY_COOKIE_NAME) Cookie sessionIdCookie, @RequestBody(required = true) PostSpotifyItemRequest requestBody) throws Exception {
+    public CompletableFuture<Boolean> postSpotifyItems(
+        @CookieValue(name = ConnectionUtils.SPOTIFY_COOKIE_NAME) Cookie sessionIdCookie, 
+        @RequestBody(required = true) PostSpotifyItemRequest requestBody) throws InvalidSessionIdException {
 
         if (sessionIdCookie.getValue() == null || sessionIdCookie.getValue() == "")
             throw new InvalidSessionIdException("Invalid Session ID");

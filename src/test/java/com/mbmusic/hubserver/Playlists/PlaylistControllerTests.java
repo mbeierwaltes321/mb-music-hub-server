@@ -7,11 +7,13 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.asyncDispatch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.request;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.io.File;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -19,8 +21,11 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
+
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -29,11 +34,14 @@ import com.mbmusic.hubserver.BaseTest;
 import com.mbmusic.hubserver.Connections.ConnectionUtils;
 import com.mbmusic.hubserver.Connections.SpotifyApiConnection;
 import com.mbmusic.hubserver.Connections.Exceptions.InvalidSessionIdException;
+import com.mbmusic.hubserver.Playlists.Models.PostSpotifyItemRequest;
 
 import jakarta.servlet.http.Cookie;
 import se.michaelthelin.spotify.SpotifyApi;
+import se.michaelthelin.spotify.model_objects.special.SnapshotResult;
 import se.michaelthelin.spotify.model_objects.specification.Paging;
 import se.michaelthelin.spotify.model_objects.specification.PlaylistSimplified;
+import se.michaelthelin.spotify.requests.data.playlists.AddItemsToPlaylistRequest;
 import se.michaelthelin.spotify.requests.data.playlists.GetListOfCurrentUsersPlaylistsRequest;
 
 //This class handles test cases for the playlist controller
@@ -104,7 +112,8 @@ public class PlaylistControllerTests extends BaseTest {
         if (!playlistFile.canRead())
             fail();
 
-        Paging<PlaylistSimplified> playlists = mapper.readValue(playlistFile, Paging.class);
+        Paging<PlaylistSimplified> playlists = mapper.readValue(playlistFile,
+            new TypeReference<Paging<PlaylistSimplified>>() {});
         String playlistsJson = mapper.writeValueAsString(playlists);
 
         when(mockApi.getListOfCurrentUsersPlaylists()).thenReturn(mockBuilder);
@@ -125,6 +134,47 @@ public class PlaylistControllerTests extends BaseTest {
 
     }
 
+    /**
+     * This test should successfully insert tracks into the playlist
+     * @throws Exception 
+     */
+    @Test
+    public void shouldInsertTracksIntoPlaylist() throws Exception {
+        AddItemsToPlaylistRequest.Builder mockBuilder = mock(AddItemsToPlaylistRequest.Builder.class);
+        AddItemsToPlaylistRequest mockApiRequest = mock(AddItemsToPlaylistRequest.class);
+        SnapshotResult mockSnapshotResult = mock(SnapshotResult.class);
+
+        File spotifyItemsFile = new File("src/test/java/com/mbmusic/hubserver/Playlists/Fixtures/SpotifyItems.json");
+        if (!spotifyItemsFile.canRead())
+            fail();
+
+        String mockPlaylistId = "11";
+        String[] spotifyItems = mapper.readValue(spotifyItemsFile, new TypeReference<String[]>(){});
+
+        when(mockApi.addItemsToPlaylist(mockPlaylistId, spotifyItems)).thenReturn(mockBuilder);
+        when(mockBuilder.build()).thenReturn(mockApiRequest);
+        when(mockApiRequest.executeAsync())
+            .thenReturn(CompletableFuture.completedFuture(mockSnapshotResult));
+
+        PostSpotifyItemRequest request = new PostSpotifyItemRequest();
+        request.setPlaylistId(mockPlaylistId);
+        request.setSpotifyItems(List.of(spotifyItems));
+
+        Cookie mockSessionCookie = new Cookie(ConnectionUtils.SPOTIFY_COOKIE_NAME, SUCCESSFUL_SESSION_COOKIE_VALUE);
+
+        var mvcRequest = this.mvc.perform(post("/playlists/spotify-items")
+            .cookie(mockSessionCookie)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(mapper.writeValueAsString(request)))
+            .andExpect(request().asyncStarted())
+            .andReturn();
+
+        this.mvc.perform(asyncDispatch(mvcRequest))
+            .andExpect(status().isOk())
+            .andExpect(content().string("true"));
+    }
+
+    //TODO - This should be put inside a test class for authentication and validation
     /**
      * This method tests an attempt to cal GET spotify-playlists with an improper cookie
      * @throws Exception
