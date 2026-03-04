@@ -99,6 +99,7 @@ public class GlobalExceptionHandler
      * @param request The request that threw the exception
      * @return The proper response code
      */
+    @ExceptionHandler(value = {CompletionException.class})
     protected ResponseEntity<Object> handleCompletionExceptions(CompletionException ex, WebRequest request) {
         Throwable innerException = ex.getCause();
 
