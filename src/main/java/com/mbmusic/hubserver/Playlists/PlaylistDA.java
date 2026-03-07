@@ -10,6 +10,7 @@ import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Component;
 
 import com.mbmusic.hubserver.Common.DataAccess;
+import com.mbmusic.hubserver.Connections.SpotifyApiGateway;
 import com.mbmusic.hubserver.Connections.Exceptions.InvalidSessionIdException;
 import com.mbmusic.hubserver.Playlists.Models.PostSpotifyPlaylistResponse;
 
@@ -47,17 +48,8 @@ public class PlaylistDA {
 
         return da.getSpotifyClient(sessionId)
             .thenCompose(spotifyApi -> {
-                GetListOfCurrentUsersPlaylistsRequest.Builder requestBuilder = spotifyApi.getListOfCurrentUsersPlaylists();
-
-                //Now determine if there is an offset applied
-                if (offset != null) {
-                    //Offset isn't null. Add it
-                    requestBuilder.offset(offset);
-                }
-                
-                GetListOfCurrentUsersPlaylistsRequest request = requestBuilder.build();
-
-                return request.executeAsync();
+                SpotifyApiGateway gateway = new SpotifyApiGateway(spotifyApi);
+                return gateway.retrieveUserPlaylists(sessionId, offset);
             });
     }
 
@@ -66,14 +58,11 @@ public class PlaylistDA {
      * This method adds spotify items (tracks, podcast episodes, etc.) to a specified playlist
      * @param playlistId The ID of the spotify playlist for which to add the spotify items
      * @param spotifyItems The spotify items (tracks, podcast episodes, etc.) to add.
-     * @return True on success. False otherwise
+     * @return
      * @throws InvalidSessionIdException 
      */
     public CompletableFuture<Boolean> addItemsToPlaylist(String sessionId, String playlistId, List<String> spotifyItems)
         throws InvalidSessionIdException {
-
-        // AddItemsToPlaylistRequest addItemsToPlaylistRequest = da.getSpotifyClient(sessionId).addItemsToPlaylist(playlistId, spotifyItems.toArray(new String[0]))
-        // .build();
 
         return da.getSpotifyClient(sessionId)
             .thenCompose(spotifyApi -> {

@@ -4,8 +4,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockConstruction;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -17,6 +19,8 @@ import java.util.concurrent.CompletableFuture;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.MockedConstruction;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -33,6 +37,7 @@ import com.google.gson.JsonArray;
 import com.mbmusic.hubserver.BaseTest;
 import com.mbmusic.hubserver.Connections.ConnectionUtils;
 import com.mbmusic.hubserver.Connections.SpotifyApiConnection;
+import com.mbmusic.hubserver.Connections.SpotifyApiGateway;
 import com.mbmusic.hubserver.Connections.Exceptions.InvalidSessionIdException;
 import com.mbmusic.hubserver.Playlists.Models.PostSpotifyItemRequest;
 import com.mbmusic.hubserver.Playlists.Models.PostSpotifyPlaylistRequest;
@@ -108,11 +113,6 @@ public class PlaylistControllerTests extends BaseTest {
     @Test
     public void shouldGetPlaylists() throws Exception {
 
-        //Mock the Sptoify API
-        GetListOfCurrentUsersPlaylistsRequest.Builder mockBuilder = mock(GetListOfCurrentUsersPlaylistsRequest.Builder.class);
-        GetListOfCurrentUsersPlaylistsRequest mockApiCall = mock(GetListOfCurrentUsersPlaylistsRequest.class);
-
-        
         File playlistFile = new File("src/test/java/com/mbmusic/hubserver/Playlists/Fixtures/Playlists.json");
         if (!playlistFile.canRead())
             fail();
@@ -121,9 +121,15 @@ public class PlaylistControllerTests extends BaseTest {
             new TypeReference<Paging<PlaylistSimplified>>() {});
         String playlistsJson = mapper.writeValueAsString(playlists);
 
-        when(mockApi.getListOfCurrentUsersPlaylists()).thenReturn(mockBuilder);
-        when(mockBuilder.build()).thenReturn(mockApiCall);
-        when(mockApiCall.executeAsync()).thenReturn(CompletableFuture.completedFuture(playlists));
+        //TODO - Have this run before every test
+        MockedConstruction<SpotifyApiGateway> mockedSpotifyGateway = Mockito.mockConstruction(SpotifyApiGateway.class, 
+            (mockGateway, context) -> {
+                when(mockGateway.retrieveUserPlaylists(anyString(), any(Integer.class)))
+                    .thenReturn(CompletableFuture.completedFuture(playlists));
+                when(mockGateway.retrieveUserPlaylists(anyString(), (Integer)isNull()))
+                    .thenReturn(CompletableFuture.completedFuture(playlists));
+            }
+        );
 
         //Create the mock cookie
         Cookie mockSessionCookie = new Cookie(ConnectionUtils.SPOTIFY_COOKIE_NAME, SUCCESSFUL_SESSION_COOKIE_VALUE); 
@@ -137,6 +143,8 @@ public class PlaylistControllerTests extends BaseTest {
             .andExpect(status().isOk())
             .andExpect(content().json(playlistsJson));
 
+        //TODO - Have this run after every test
+        mockedSpotifyGateway.close();
     }
 
     /**
