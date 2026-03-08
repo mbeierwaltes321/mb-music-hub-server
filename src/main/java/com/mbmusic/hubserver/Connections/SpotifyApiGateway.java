@@ -42,11 +42,10 @@ public class SpotifyApiGateway {
 
     /**
      * This method retrieves all the Spotify playlists created by the current user 
-     * @param sessionId Represents the session id of the user logged into Spotify
      * @param offset Represents the offset indicating which page of playlists to return
      * @return A CompletableFuture containing the specified page of playlists 
      */
-    public CompletableFuture<Paging<PlaylistSimplified>> retrieveUserPlaylists(String sessionId, Integer offset) {
+    public CompletableFuture<Paging<PlaylistSimplified>> retrieveUserPlaylists(Integer offset) {
         GetListOfCurrentUsersPlaylistsRequest.Builder requestBuilder = spotifyClient.getListOfCurrentUsersPlaylists();
 
         //Now determine if there is an offset applied
@@ -62,12 +61,11 @@ public class SpotifyApiGateway {
 
     /**
      * This method adds spotify items (tracks, podcast episodes, etc.) to a specified playlist
-     * @param sessionId Represents the session id of the user logged into Spotify
      * @param playlistId The ID of the playlist for which to insert the items
      * @param spotifyItems The items to insert
      * @return
      */
-    public CompletableFuture<Boolean> addItemsToPlaylist(String sessionId, String playlistId, List<String> spotifyItems) {
+    public CompletableFuture<Boolean> addItemsToPlaylist(String playlistId, List<String> spotifyItems) {
 
         AddItemsToPlaylistRequest addItemsToPlaylistRequest = 
             spotifyClient.addItemsToPlaylist(playlistId,spotifyItems.toArray(new String[0]))

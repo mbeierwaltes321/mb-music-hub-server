@@ -49,7 +49,7 @@ public class PlaylistDA {
         return da.getSpotifyClient(sessionId)
             .thenCompose(spotifyApi -> {
                 SpotifyApiGateway gateway = new SpotifyApiGateway(spotifyApi);
-                return gateway.retrieveUserPlaylists(sessionId, offset);
+                return gateway.retrieveUserPlaylists(offset);
             });
     }
 
@@ -66,11 +66,8 @@ public class PlaylistDA {
 
         return da.getSpotifyClient(sessionId)
             .thenCompose(spotifyApi -> {
-                AddItemsToPlaylistRequest addItemsToPlaylistRequest = spotifyApi.addItemsToPlaylist(playlistId,spotifyItems.toArray(new String[0]))
-                    .build();
-
-                return addItemsToPlaylistRequest.executeAsync()
-                    .thenApply(snapshot -> snapshot != null);
+                SpotifyApiGateway gateway = new SpotifyApiGateway(spotifyApi);
+                return gateway.addItemsToPlaylist(playlistId, spotifyItems);
             });
     }
 

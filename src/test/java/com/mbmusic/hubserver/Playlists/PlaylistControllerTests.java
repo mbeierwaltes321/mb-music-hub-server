@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.mock;
@@ -114,37 +115,36 @@ public class PlaylistControllerTests extends BaseTest {
     public void shouldGetPlaylists() throws Exception {
 
         File playlistFile = new File("src/test/java/com/mbmusic/hubserver/Playlists/Fixtures/Playlists.json");
-        if (!playlistFile.canRead())
+        if (!playlistFile.canRead()){
             fail();
+        }
 
         Paging<PlaylistSimplified> playlists = mapper.readValue(playlistFile,
             new TypeReference<Paging<PlaylistSimplified>>() {});
         String playlistsJson = mapper.writeValueAsString(playlists);
 
-        //TODO - Have this run before every test
-        MockedConstruction<SpotifyApiGateway> mockedSpotifyGateway = Mockito.mockConstruction(SpotifyApiGateway.class, 
-            (mockGateway, context) -> {
-                when(mockGateway.retrieveUserPlaylists(anyString(), any(Integer.class)))
-                    .thenReturn(CompletableFuture.completedFuture(playlists));
-                when(mockGateway.retrieveUserPlaylists(anyString(), (Integer)isNull()))
-                    .thenReturn(CompletableFuture.completedFuture(playlists));
-            }
-        );
+        try (MockedConstruction<SpotifyApiGateway> mockedSpotifyGateway =
+                Mockito.mockConstruction(SpotifyApiGateway.class, (mockGateway, context) -> {
+                    when(mockGateway.retrieveUserPlaylists((Integer)isNull()))
+                        .thenReturn(CompletableFuture.completedFuture(playlists));
+                    when(mockGateway.retrieveUserPlaylists(any(Integer.class)))
+                        .thenReturn(CompletableFuture.completedFuture(playlists));
+                })) {
 
-        //Create the mock cookie
-        Cookie mockSessionCookie = new Cookie(ConnectionUtils.SPOTIFY_COOKIE_NAME, SUCCESSFUL_SESSION_COOKIE_VALUE); 
+            //Create the mock cookie
+            Cookie mockSessionCookie = new Cookie(ConnectionUtils.SPOTIFY_COOKIE_NAME, SUCCESSFUL_SESSION_COOKIE_VALUE); 
 
-        var mvcResult = this.mvc.perform(get("/playlists/spotify-playlists")
-            .cookie(mockSessionCookie))
-            .andExpect(request().asyncStarted())
-            .andReturn();
+            var mvcResult = this.mvc.perform(get("/playlists/spotify-playlists")
+                .cookie(mockSessionCookie))
+                .andExpect(request().asyncStarted())
+                .andReturn();
 
-        this.mvc.perform(asyncDispatch(mvcResult))
-            .andExpect(status().isOk())
-            .andExpect(content().json(playlistsJson));
-
-        //TODO - Have this run after every test
-        mockedSpotifyGateway.close();
+            this.mvc.perform(asyncDispatch(mvcResult))
+                .andExpect(status().isOk())
+                .andExpect(content().json(playlistsJson));
+        } catch(Exception e) {
+            fail(e);
+        }
     }
 
     /**
@@ -153,38 +153,41 @@ public class PlaylistControllerTests extends BaseTest {
      */
     @Test
     public void shouldInsertTracksIntoPlaylist() throws Exception {
-        AddItemsToPlaylistRequest.Builder mockBuilder = mock(AddItemsToPlaylistRequest.Builder.class);
-        AddItemsToPlaylistRequest mockApiRequest = mock(AddItemsToPlaylistRequest.class);
-        SnapshotResult mockSnapshotResult = mock(SnapshotResult.class);
 
         File spotifyItemsFile = new File("src/test/java/com/mbmusic/hubserver/Playlists/Fixtures/SpotifyItems.json");
-        if (!spotifyItemsFile.canRead())
+        if (!spotifyItemsFile.canRead()) {
             fail();
+        }
 
         String mockPlaylistId = "11";
         String[] spotifyItems = mapper.readValue(spotifyItemsFile, new TypeReference<String[]>(){});
 
-        when(mockApi.addItemsToPlaylist(mockPlaylistId, spotifyItems)).thenReturn(mockBuilder);
-        when(mockBuilder.build()).thenReturn(mockApiRequest);
-        when(mockApiRequest.executeAsync())
-            .thenReturn(CompletableFuture.completedFuture(mockSnapshotResult));
+        try (MockedConstruction<SpotifyApiGateway> mockedSpotifyGateway =
+            Mockito.mockConstruction(SpotifyApiGateway.class, (mockedGateway, context) -> {
+                when(mockedGateway.addItemsToPlaylist(anyString(), anyList()))
+                    .thenReturn(CompletableFuture.completedFuture(true));   
+            })) {
 
-        PostSpotifyItemRequest request = new PostSpotifyItemRequest();
-        request.setPlaylistId(mockPlaylistId);
-        request.setSpotifyItems(List.of(spotifyItems));
+            PostSpotifyItemRequest request = new PostSpotifyItemRequest();
+            request.setPlaylistId(mockPlaylistId);
+            request.setSpotifyItems(List.of(spotifyItems));
 
-        Cookie mockSessionCookie = new Cookie(ConnectionUtils.SPOTIFY_COOKIE_NAME, SUCCESSFUL_SESSION_COOKIE_VALUE);
+            Cookie mockSessionCookie = new Cookie(ConnectionUtils.SPOTIFY_COOKIE_NAME, SUCCESSFUL_SESSION_COOKIE_VALUE);
 
-        var mvcRequest = this.mvc.perform(post("/playlists/spotify-items")
-            .cookie(mockSessionCookie)
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(mapper.writeValueAsString(request)))
-            .andExpect(request().asyncStarted())
-            .andReturn();
+            var mvcRequest = this.mvc.perform(post("/playlists/spotify-items")
+                .cookie(mockSessionCookie)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(mapper.writeValueAsString(request)))
+                .andExpect(request().asyncStarted())
+                .andReturn();
 
-        this.mvc.perform(asyncDispatch(mvcRequest))
-            .andExpect(status().isOk())
-            .andExpect(content().string("true"));
+            this.mvc.perform(asyncDispatch(mvcRequest))
+                .andExpect(status().isOk())
+                .andExpect(content().string("true"));
+            
+        } catch (Exception e) {
+            fail(e);
+        }
     }
 
     //TODO - This should be put inside a test class for authentication and validation
