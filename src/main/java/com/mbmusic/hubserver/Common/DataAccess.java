@@ -5,9 +5,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.mbmusic.hubserver.Connections.SpotifyApiConnection;
+import com.mbmusic.hubserver.Connections.SpotifyApiGateway;
 import com.mbmusic.hubserver.Connections.Exceptions.InvalidSessionIdException;
-
-import se.michaelthelin.spotify.SpotifyApi;
 
 /**
  * This class provides base functionality for all data access classes
@@ -29,12 +28,13 @@ public class DataAccess {
     //#region Methods
 
     /**
-     * This method retrieves the Spotify Token information necessary for reaching out to the Spotify API
-     * @param sessionIdString The ID of the front end session for which to retrieve the SpotifyTokenInformation
+     * This method builds and retrieves a Spotify Gateway object responsible for reaching out to the Spotify API
+     * @param sessionIdString The ID of the front end session for which to retrieve the Spotify token infromation
      */
-    public CompletableFuture<SpotifyApi> getSpotifyClient(String sessionIdString) throws InvalidSessionIdException {
+    public CompletableFuture<SpotifyApiGateway> getSpotifyApiGatewayAsync(String sessionIdString) throws InvalidSessionIdException {
         //Retrieve the token and prepare the Spotify API Client
-        return spotifyApiConnection.createApiClient(sessionIdString);
+        return spotifyApiConnection.createApiClient(sessionIdString)
+            .thenApply(spotifyApi -> new SpotifyApiGateway(spotifyApi));
     }
 
     //#endregion

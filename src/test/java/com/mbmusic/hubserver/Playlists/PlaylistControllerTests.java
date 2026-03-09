@@ -4,11 +4,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.mockConstruction;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -36,6 +39,7 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.google.gson.JsonArray;
 import com.mbmusic.hubserver.BaseTest;
+import com.mbmusic.hubserver.Common.DataAccess;
 import com.mbmusic.hubserver.Connections.ConnectionUtils;
 import com.mbmusic.hubserver.Connections.SpotifyApiConnection;
 import com.mbmusic.hubserver.Connections.SpotifyApiGateway;
@@ -46,16 +50,13 @@ import com.mbmusic.hubserver.Playlists.Models.PostSpotifyPlaylistResponse;
 
 import jakarta.servlet.http.Cookie;
 import se.michaelthelin.spotify.SpotifyApi;
-import se.michaelthelin.spotify.model_objects.special.SnapshotResult;
 import se.michaelthelin.spotify.model_objects.specification.Paging;
 import se.michaelthelin.spotify.model_objects.specification.Playlist;
 import se.michaelthelin.spotify.model_objects.specification.PlaylistSimplified;
 import se.michaelthelin.spotify.model_objects.specification.User;
 import se.michaelthelin.spotify.requests.data.playlists.AddItemsToPlaylistRequest;
 import se.michaelthelin.spotify.requests.data.playlists.CreatePlaylistRequest;
-import se.michaelthelin.spotify.requests.data.playlists.GetListOfCurrentUsersPlaylistsRequest;
 import se.michaelthelin.spotify.requests.data.users_profile.GetCurrentUsersProfileRequest;
-import se.michaelthelin.spotify.requests.data.users_profile.GetUsersProfileRequest;
 
 //This class handles test cases for the playlist controller
 @SpringBootTest
@@ -72,11 +73,14 @@ public class PlaylistControllerTests extends BaseTest {
     @Autowired
 	private PlaylistController controller;
 
+    @MockitoBean
+    private DataAccess mockDa;
+
     //Mock for the spotify api connection
     @MockitoBean
     private SpotifyApiConnection mockedSpotifyApiConnection;
 
-    private SpotifyApi mockApi = mock(SpotifyApi.class);
+    private SpotifyApiGateway mockGateway;
 
     final private String SUCCESSFUL_SESSION_COOKIE_VALUE = "Success";
 
@@ -93,15 +97,14 @@ public class PlaylistControllerTests extends BaseTest {
     //#region Tests
 
     @BeforeEach
-    public void mockSpotifyConnection() {
-
+    public void SpotifyApiGateway() {
         try {
-            when(mockedSpotifyApiConnection.createApiClient(SUCCESSFUL_SESSION_COOKIE_VALUE))
-            .thenReturn(CompletableFuture.completedFuture(mockApi));
+            mockGateway = mock(SpotifyApiGateway.class);
+            when(mockDa.getSpotifyApiGatewayAsync(anyString()))
+                .thenReturn(CompletableFuture.completedFuture(mockGateway));
         } catch (Exception e) {
-            fail(e.getMessage());
+            fail(e);
         }
-                
     }
 
     //Sanity check
@@ -123,28 +126,22 @@ public class PlaylistControllerTests extends BaseTest {
             new TypeReference<Paging<PlaylistSimplified>>() {});
         String playlistsJson = mapper.writeValueAsString(playlists);
 
-        try (MockedConstruction<SpotifyApiGateway> mockedSpotifyGateway =
-                Mockito.mockConstruction(SpotifyApiGateway.class, (mockGateway, context) -> {
-                    when(mockGateway.retrieveUserPlaylists((Integer)isNull()))
-                        .thenReturn(CompletableFuture.completedFuture(playlists));
-                    when(mockGateway.retrieveUserPlaylists(any(Integer.class)))
-                        .thenReturn(CompletableFuture.completedFuture(playlists));
-                })) {
+        when(mockGateway.retrieveUserPlaylists((Integer)isNull()))
+            .thenReturn(CompletableFuture.completedFuture(playlists));
+        when(mockGateway.retrieveUserPlaylists(anyInt()))
+            .thenReturn(CompletableFuture.completedFuture(playlists));
 
-            //Create the mock cookie
-            Cookie mockSessionCookie = new Cookie(ConnectionUtils.SPOTIFY_COOKIE_NAME, SUCCESSFUL_SESSION_COOKIE_VALUE); 
+        //Create the mock cookie
+        Cookie mockSessionCookie = new Cookie(ConnectionUtils.SPOTIFY_COOKIE_NAME, SUCCESSFUL_SESSION_COOKIE_VALUE); 
 
-            var mvcResult = this.mvc.perform(get("/playlists/spotify-playlists")
-                .cookie(mockSessionCookie))
-                .andExpect(request().asyncStarted())
-                .andReturn();
+        var mvcResult = this.mvc.perform(get("/playlists/spotify-playlists")
+            .cookie(mockSessionCookie))
+            .andExpect(request().asyncStarted())
+            .andReturn();
 
-            this.mvc.perform(asyncDispatch(mvcResult))
-                .andExpect(status().isOk())
-                .andExpect(content().json(playlistsJson));
-        } catch(Exception e) {
-            fail(e);
-        }
+        this.mvc.perform(asyncDispatch(mvcResult))
+            .andExpect(status().isOk())
+            .andExpect(content().json(playlistsJson));
     }
 
     /**
@@ -162,32 +159,25 @@ public class PlaylistControllerTests extends BaseTest {
         String mockPlaylistId = "11";
         String[] spotifyItems = mapper.readValue(spotifyItemsFile, new TypeReference<String[]>(){});
 
-        try (MockedConstruction<SpotifyApiGateway> mockedSpotifyGateway =
-            Mockito.mockConstruction(SpotifyApiGateway.class, (mockedGateway, context) -> {
-                when(mockedGateway.addItemsToPlaylist(anyString(), anyList()))
-                    .thenReturn(CompletableFuture.completedFuture(true));   
-            })) {
+        when(mockGateway.addItemsToPlaylist(anyString(), anyList())).thenReturn(CompletableFuture.completedFuture(true));
 
-            PostSpotifyItemRequest request = new PostSpotifyItemRequest();
-            request.setPlaylistId(mockPlaylistId);
-            request.setSpotifyItems(List.of(spotifyItems));
+        PostSpotifyItemRequest request = new PostSpotifyItemRequest();
+        request.setPlaylistId(mockPlaylistId);
+        request.setSpotifyItems(List.of(spotifyItems));
 
-            Cookie mockSessionCookie = new Cookie(ConnectionUtils.SPOTIFY_COOKIE_NAME, SUCCESSFUL_SESSION_COOKIE_VALUE);
+        Cookie mockSessionCookie = new Cookie(ConnectionUtils.SPOTIFY_COOKIE_NAME, SUCCESSFUL_SESSION_COOKIE_VALUE);
 
-            var mvcRequest = this.mvc.perform(post("/playlists/spotify-items")
-                .cookie(mockSessionCookie)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(mapper.writeValueAsString(request)))
-                .andExpect(request().asyncStarted())
-                .andReturn();
+        var mvcRequest = this.mvc.perform(post("/playlists/spotify-items")
+            .cookie(mockSessionCookie)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(mapper.writeValueAsString(request)))
+            .andExpect(request().asyncStarted())
+            .andReturn();
 
-            this.mvc.perform(asyncDispatch(mvcRequest))
-                .andExpect(status().isOk())
-                .andExpect(content().string("true"));
-            
-        } catch (Exception e) {
-            fail(e);
-        }
+        this.mvc.perform(asyncDispatch(mvcRequest))
+            .andExpect(status().isOk())
+            .andExpect(content().string("true"));
+
     }
 
     //TODO - This should be put inside a test class for authentication and validation
@@ -217,9 +207,7 @@ public class PlaylistControllerTests extends BaseTest {
 
     @Test
     public void shouldCreatePlaylistWithoutItems() throws Exception {
-        
-        preparePostSpotifyPlaylist();
-
+  
         Cookie mockSessionCookie = new Cookie(ConnectionUtils.SPOTIFY_COOKIE_NAME, SUCCESSFUL_SESSION_COOKIE_VALUE); 
 
         PostSpotifyPlaylistRequest requestBody = new PostSpotifyPlaylistRequest();
@@ -229,6 +217,15 @@ public class PlaylistControllerTests extends BaseTest {
         requestBody.setIsPublic(true);
 
         PostSpotifyPlaylistResponse expectedResponse = new PostSpotifyPlaylistResponse(true, null);
+
+        var mockUser = mock(User.class);
+        var mockPlaylist = mock(Playlist.class);
+        
+        when(mockGateway.getCurrentSpotifyUserProfile()).thenReturn(CompletableFuture.completedFuture(mockUser));
+        when(mockUser.getId()).thenReturn("NotNull");   //Pass null check
+        when(mockGateway.createNewSpotifyPlaylist(anyString(), anyString(), anyString(), anyBoolean()))
+            .thenReturn(CompletableFuture.completedFuture(mockPlaylist));
+            
 
         var mvcRequest = mvc.perform(post("/playlists/spotify-playlist")
             .cookie(mockSessionCookie)
@@ -241,6 +238,8 @@ public class PlaylistControllerTests extends BaseTest {
             .andExpect(status().isOk())
             .andExpect(content().json(mapper.writeValueAsString(expectedResponse)));
 
+        verify(mockGateway, times(0)).addItemsToPlaylist(anyString(), anyList());
+
     }
 
     //#endregion
@@ -251,31 +250,6 @@ public class PlaylistControllerTests extends BaseTest {
      * This method performs the mocking necessary for all PostSpotifyPlaylist tests
      */
     public void preparePostSpotifyPlaylist() {
-        GetCurrentUsersProfileRequest.Builder mockUserRequestBuilder = mock(GetCurrentUsersProfileRequest.Builder.class);
-        GetCurrentUsersProfileRequest mockUserRequest = mock(GetCurrentUsersProfileRequest.class);
-        CreatePlaylistRequest.Builder mockCreatePlaylistRequestBuilder = mock(CreatePlaylistRequest.Builder.class);
-        CreatePlaylistRequest mockCreatePlaylistRequest = mock(CreatePlaylistRequest.class);
-        AddItemsToPlaylistRequest.Builder mockAddToPlaylistBuilder = mock(AddItemsToPlaylistRequest.Builder.class);
-        AddItemsToPlaylistRequest mockAddToPlaylistRequest = mock(AddItemsToPlaylistRequest.class);
-
-        User mockUser = mock(User.class);
-        Playlist mockPlaylist = mock(Playlist.class);
-
-        when(mockApi.getCurrentUsersProfile()).thenReturn(mockUserRequestBuilder);
-        when(mockUserRequestBuilder.build()).thenReturn(mockUserRequest);
-        when(mockUserRequest.executeAsync()).thenReturn(CompletableFuture.completedFuture(mockUser));
-        when(mockUser.getId()).thenReturn("11");
-
-        when(mockApi.createPlaylist(any(), any())).thenReturn(mockCreatePlaylistRequestBuilder);
-        when(mockCreatePlaylistRequestBuilder.description(any())).thenReturn(mockCreatePlaylistRequestBuilder);
-        when(mockCreatePlaylistRequestBuilder.public_(any())).thenReturn(mockCreatePlaylistRequestBuilder);
-        when(mockCreatePlaylistRequestBuilder.build()).thenReturn(mockCreatePlaylistRequest);
-        when(mockCreatePlaylistRequest.executeAsync()).thenReturn(CompletableFuture.completedFuture(mockPlaylist));
-
-        when(mockApi.addItemsToPlaylist(any(), (String[])isNull())).thenReturn(mockAddToPlaylistBuilder);
-        when(mockApi.addItemsToPlaylist(any(), (JsonArray)isNull())).thenReturn(mockAddToPlaylistBuilder);
-        when(mockAddToPlaylistBuilder.build()).thenReturn(mockAddToPlaylistRequest);
-
     }
 
     //#endregion
