@@ -75,9 +75,9 @@ public class PlaylistControllerTests extends BaseTest {
 
     //Object mapper for interpreting results
     ObjectMapper mapper = new ObjectMapper()
-    .registerModule(new JavaTimeModule())
-    .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
-    .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        .registerModule(new JavaTimeModule())
+        .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
+        .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
     //#endregion
 
@@ -229,15 +229,43 @@ public class PlaylistControllerTests extends BaseTest {
 
     }
 
-    //#endregion
+    @Test
+    public void shouldCreatePlaylistWithItems() throws Exception {
+        Cookie mockSessionCookie = new Cookie(ConnectionUtils.SPOTIFY_COOKIE_NAME, SUCCESSFUL_SESSION_COOKIE_VALUE); 
 
-    //#region Private Methods
+        PostSpotifyPlaylistRequest requestBody = new PostSpotifyPlaylistRequest();
+        requestBody.setPlaylistName("NewPlaylist");
+        requestBody.setPlaylistDescription("NewPlaylistDescription");
+        requestBody.setSpotifyURIs(List.of("SpotifyTrack"));
+        requestBody.setIsPublic(true);
 
-    /**
-     * This method performs the mocking necessary for all PostSpotifyPlaylist tests
-     */
-    public void preparePostSpotifyPlaylist() {
+        PostSpotifyPlaylistResponse expectedResponse = new PostSpotifyPlaylistResponse(true, "NotNull");
+
+        var mockUser = mock(User.class);
+        var mockPlaylist = mock(Playlist.class);
+        
+        when(mockGateway.getCurrentSpotifyUserProfile()).thenReturn(CompletableFuture.completedFuture(mockUser));
+        when(mockUser.getId()).thenReturn("NotNull");   //Pass null check
+        when(mockGateway.createNewSpotifyPlaylist(anyString(), anyString(), anyString(), anyBoolean()))
+            .thenReturn(CompletableFuture.completedFuture(mockPlaylist));
+        when(mockPlaylist.getId()).thenReturn("NotNull");
+        when(mockGateway.addItemsToPlaylist(anyString(), anyList())).thenReturn(CompletableFuture.completedFuture(true));
+            
+
+        var mvcRequest = mvc.perform(post("/playlists/spotify-playlist")
+            .cookie(mockSessionCookie)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(mapper.writeValueAsString(requestBody)))
+            .andExpect(request().asyncStarted())
+            .andReturn();
+            
+        mvc.perform(asyncDispatch(mvcRequest))
+            .andExpect(status().isOk())
+            .andExpect(content().json(mapper.writeValueAsString(expectedResponse)));
+
+        verify(mockGateway, times(1)).addItemsToPlaylist(anyString(), anyList());
     }
 
     //#endregion
+
 }
