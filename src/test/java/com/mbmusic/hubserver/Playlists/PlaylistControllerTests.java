@@ -3,7 +3,6 @@ package com.mbmusic.hubserver.Playlists;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyList;
@@ -23,8 +22,6 @@ import java.util.concurrent.CompletableFuture;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.MockedConstruction;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -37,11 +34,9 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.google.gson.JsonArray;
 import com.mbmusic.hubserver.BaseTest;
 import com.mbmusic.hubserver.Common.DataAccess;
 import com.mbmusic.hubserver.Connections.ConnectionUtils;
-import com.mbmusic.hubserver.Connections.SpotifyApiConnection;
 import com.mbmusic.hubserver.Connections.SpotifyApiGateway;
 import com.mbmusic.hubserver.Connections.Exceptions.InvalidSessionIdException;
 import com.mbmusic.hubserver.Playlists.Models.PostSpotifyItemRequest;
@@ -49,14 +44,10 @@ import com.mbmusic.hubserver.Playlists.Models.PostSpotifyPlaylistRequest;
 import com.mbmusic.hubserver.Playlists.Models.PostSpotifyPlaylistResponse;
 
 import jakarta.servlet.http.Cookie;
-import se.michaelthelin.spotify.SpotifyApi;
 import se.michaelthelin.spotify.model_objects.specification.Paging;
 import se.michaelthelin.spotify.model_objects.specification.Playlist;
 import se.michaelthelin.spotify.model_objects.specification.PlaylistSimplified;
 import se.michaelthelin.spotify.model_objects.specification.User;
-import se.michaelthelin.spotify.requests.data.playlists.AddItemsToPlaylistRequest;
-import se.michaelthelin.spotify.requests.data.playlists.CreatePlaylistRequest;
-import se.michaelthelin.spotify.requests.data.users_profile.GetCurrentUsersProfileRequest;
 
 //This class handles test cases for the playlist controller
 @SpringBootTest
@@ -75,10 +66,6 @@ public class PlaylistControllerTests extends BaseTest {
 
     @MockitoBean
     private DataAccess mockDa;
-
-    //Mock for the spotify api connection
-    @MockitoBean
-    private SpotifyApiConnection mockedSpotifyApiConnection;
 
     private SpotifyApiGateway mockGateway;
 

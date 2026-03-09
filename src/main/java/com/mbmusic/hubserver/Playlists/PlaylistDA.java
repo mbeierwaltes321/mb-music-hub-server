@@ -14,13 +14,11 @@ import com.mbmusic.hubserver.Connections.SpotifyApiGateway;
 import com.mbmusic.hubserver.Connections.Exceptions.InvalidSessionIdException;
 import com.mbmusic.hubserver.Playlists.Models.PostSpotifyPlaylistResponse;
 
-import se.michaelthelin.spotify.SpotifyApi;
 import se.michaelthelin.spotify.exceptions.SpotifyWebApiException;
 import se.michaelthelin.spotify.model_objects.specification.Paging;
 import se.michaelthelin.spotify.model_objects.specification.Playlist;
 import se.michaelthelin.spotify.model_objects.specification.PlaylistSimplified;
 import se.michaelthelin.spotify.model_objects.specification.User;
-import se.michaelthelin.spotify.requests.data.playlists.AddItemsToPlaylistRequest;
 
 @Component
 public class PlaylistDA {
