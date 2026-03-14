@@ -62,6 +62,8 @@ public class PlaylistController {
         if (sessionIdCookie.getValue() == null || sessionIdCookie.getValue() == "")
             throw new InvalidSessionIdException("Invalid Session ID");
 
+        //TODO - Validate the input
+
         return playlistDA.addItemsToPlaylist(sessionIdCookie.getValue(), requestBody.getPlaylistId(), requestBody.getSpotifyItems());
 
     }
@@ -69,14 +71,13 @@ public class PlaylistController {
     @PostMapping("/spotify-playlist")
     public CompletableFuture<PostSpotifyPlaylistResponse> postSpotifyPlaylist(
         @CookieValue(name = ConnectionUtils.SPOTIFY_COOKIE_NAME) Cookie sessionIdCookie, 
-        @RequestBody(required = true) PostSpotifyPlaylistRequest requestBody) throws Exception {
+        @RequestBody(required = true) PostSpotifyPlaylistRequest requestBody) throws InvalidSessionIdException {
 
         if (sessionIdCookie.getValue() == null || sessionIdCookie.getValue() == "")
             throw new InvalidSessionIdException("Invalid Session ID");
 
         var response = playlistDA.createSpotifyPlaylist(sessionIdCookie.getValue(), requestBody.getPlaylistName(), 
             requestBody.getPlaylistDescription(), requestBody.getSpotifyURIs(), requestBody.getIsPublic());
-
         return response;
     }
 

@@ -1,12 +1,14 @@
 package com.mbmusic.hubserver.Playlists;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.contains;
 import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -176,7 +178,8 @@ public class PlaylistControllerTests extends BaseTest {
     public void shouldFailFromInvalidSessionId() throws Exception {
 
         //Create the mock cookie
-        Cookie mockSessionCookie = new Cookie(ConnectionUtils.SPOTIFY_COOKIE_NAME, UNSUCCESSFUL_SESSION_COOKIE_VALUE); 
+        Cookie mockSessionCookie = new Cookie(ConnectionUtils.SPOTIFY_COOKIE_NAME, UNSUCCESSFUL_SESSION_COOKIE_VALUE);
+        when(mockDa.getSpotifyApiGatewayAsync(anyString())).thenThrow(InvalidSessionIdException.class);
 
         //Now call the endpoint
         this.mvc.perform(get("/playlists/spotify-playlists")
@@ -187,11 +190,15 @@ public class PlaylistControllerTests extends BaseTest {
     /**
      * TODO - Implement tests for the following createSpotifyPlaylist scenarios:
      * 1. Success without spotify items --DONE--
-     * 3. Success with spotify items
+     * 3. Success with spotify items --DONE--
      * 4. Failed to get user id's profile
      * 5. Failed - new playlist is null (should never happen)
      */
 
+    /**
+     * This method tests the the POST spotify-playlist endpoint without spotify items
+     * @throws Exception
+     */
     @Test
     public void shouldCreatePlaylistWithoutItems() throws Exception {
   
@@ -229,6 +236,10 @@ public class PlaylistControllerTests extends BaseTest {
 
     }
 
+    /**
+     * This method tests the the POST spotify-playlist endpoint with spotify items
+     * @throws Exception
+     */
     @Test
     public void shouldCreatePlaylistWithItems() throws Exception {
         Cookie mockSessionCookie = new Cookie(ConnectionUtils.SPOTIFY_COOKIE_NAME, SUCCESSFUL_SESSION_COOKIE_VALUE); 
@@ -264,6 +275,43 @@ public class PlaylistControllerTests extends BaseTest {
             .andExpect(content().json(mapper.writeValueAsString(expectedResponse)));
 
         verify(mockGateway, times(1)).addItemsToPlaylist(anyString(), anyList());
+    }
+
+    /**
+     * This method should test the scenario where POST spotify-playlist fails because of a failiure
+     * to retrieve a user playlist
+     */
+    @Test
+    public void shouldFailToCreatePlaylistBecauseOfFaultyUserId() throws Exception {
+        Cookie mockSessionCookie = new Cookie(ConnectionUtils.SPOTIFY_COOKIE_NAME, SUCCESSFUL_SESSION_COOKIE_VALUE); 
+
+        PostSpotifyPlaylistRequest requestBody = new PostSpotifyPlaylistRequest();
+        requestBody.setPlaylistName("NewPlaylist");
+        requestBody.setPlaylistDescription("NewPlaylistDescription");
+        requestBody.setSpotifyURIs(List.of("SpotifyTrack"));
+        requestBody.setIsPublic(true);
+        var mockUser = mock(User.class);
+        
+        when(mockGateway.getCurrentSpotifyUserProfile()).thenReturn(CompletableFuture.completedFuture(mockUser));
+        when(mockUser.getId()).thenReturn(null);
+
+        var asyncCall = mvc.perform(post("/playlists/spotify-playlist")
+            .cookie(mockSessionCookie)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(mapper.writeValueAsString(requestBody)))
+            .andExpect((result) -> {
+                Object exception = result.getAsyncResult();
+                assertInstanceOf(RuntimeException.class, exception);
+                RuntimeException typedException = ((RuntimeException)exception);
+                assertTrue(typedException.getMessage().contains("Invalid User ID when obtaining user's profile"));
+               })
+            .andReturn();
+
+        mvc.perform(asyncDispatch(asyncCall))
+            .andExpect(status().isInternalServerError());
+
+        verify(mockGateway, times(0))
+            .createNewSpotifyPlaylist(anyString(), anyString(), anyString(), anyBoolean());
     }
 
     //#endregion

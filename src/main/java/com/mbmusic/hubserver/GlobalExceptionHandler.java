@@ -32,7 +32,7 @@ public class GlobalExceptionHandler
      * @param request The web request that threw the exception
      * @return The proper response code
      */
-    @ExceptionHandler(value = {SpotifyWebApiException.class})
+    @ExceptionHandler(SpotifyWebApiException.class)
     protected ResponseEntity<Object> handleSpotifyExceptions(SpotifyWebApiException ex, @NonNull WebRequest request) {
 
         //Declare message body variable
@@ -99,7 +99,7 @@ public class GlobalExceptionHandler
      * @param request The request that threw the exception
      * @return The proper response code
      */
-    @ExceptionHandler(value = {CompletionException.class})
+    @ExceptionHandler(CompletionException.class)
     protected ResponseEntity<Object> handleCompletionExceptions(CompletionException ex, WebRequest request) {
         Throwable innerException = ex.getCause();
 
@@ -114,6 +114,11 @@ public class GlobalExceptionHandler
 
         //Catch all
         return handleExceptionInternal(ex, innerException.getMessage(), new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR, request);
+    }
+
+    @ExceptionHandler(RuntimeException.class)
+    protected ResponseEntity<Object> handleRuntimeExceptions(RuntimeException ex, WebRequest request) {
+        return handleExceptionInternal(ex, ex.getMessage(), null, HttpStatus.INTERNAL_SERVER_ERROR, request);
     }
     
 }
