@@ -8,6 +8,7 @@ public class PostSpotifyItemRequest {
     //#region " Members "
 
     //The ID of the playlist which the items will be added
+    
     private String playlistId;
 
     //The array of spotify items that will be added to the playlist
@@ -16,7 +17,6 @@ public class PostSpotifyItemRequest {
     //#endregion
 
     //#region " Getters / Setters "
-
     public String getPlaylistId() {
         return playlistId;
     }

@@ -91,14 +91,15 @@ public class PlaylistDA {
 
             //Now create a playlist request
             return spotifyApiGateway.createNewSpotifyPlaylist(userId, playlistName, playlistDescription, isPublic)
-                    .thenApply(newPlaylist -> Pair.of(spotifyApiGateway, newPlaylist));
+                .thenApply(newPlaylist -> {
+                    if (newPlaylist == null) {
+                        throw new RuntimeException("Error creating the spotify playlist");
+                    }
+                    return Pair.of(spotifyApiGateway, newPlaylist);
+                });
         }).thenCompose(apiAndNewPlaylist -> {
             SpotifyApiGateway spotifyApiGateway = apiAndNewPlaylist.getFirst();
             Playlist newPlaylist = apiAndNewPlaylist.getSecond();
-
-            if (newPlaylist == null) {
-                throw new RuntimeException("Error creating the spotify playlist");
-            }
 
             String newPlaylistId = newPlaylist.getId();
 

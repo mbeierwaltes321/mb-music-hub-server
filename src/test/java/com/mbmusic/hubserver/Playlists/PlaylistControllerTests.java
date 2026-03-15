@@ -191,8 +191,9 @@ public class PlaylistControllerTests extends BaseTest {
      * TODO - Implement tests for the following createSpotifyPlaylist scenarios:
      * 1. Success without spotify items --DONE--
      * 3. Success with spotify items --DONE--
-     * 4. Failed to get user id's profile
-     * 5. Failed - new playlist is null (should never happen)
+     * 4. Failed to get user id's profile --DONE--
+     * 5. Failed - new playlist is null (should never happen) --DONE--
+     * 6. Invlalid request body
      */
 
     /**
@@ -279,7 +280,7 @@ public class PlaylistControllerTests extends BaseTest {
 
     /**
      * This method should test the scenario where POST spotify-playlist fails because of a failiure
-     * to retrieve a user playlist
+     * to retrieve a user's information
      */
     @Test
     public void shouldFailToCreatePlaylistBecauseOfFaultyUserId() throws Exception {
@@ -312,6 +313,44 @@ public class PlaylistControllerTests extends BaseTest {
 
         verify(mockGateway, times(0))
             .createNewSpotifyPlaylist(anyString(), anyString(), anyString(), anyBoolean());
+    }
+
+    /**
+     * This method tests the scenario where the POST spotify-endpoint endpoint fails becuase of a failure
+     * to create the playlist
+     * @throws Exception
+     */
+    @Test
+    public void shouldFailToCreatePlaylistBecauseOfNullPlaylist() throws Exception {
+        Cookie mockSessionCookie = new Cookie(ConnectionUtils.SPOTIFY_COOKIE_NAME, SUCCESSFUL_SESSION_COOKIE_VALUE); 
+
+        PostSpotifyPlaylistRequest requestBody = new PostSpotifyPlaylistRequest();
+        requestBody.setPlaylistName("NewPlaylist");
+        requestBody.setPlaylistDescription("NewPlaylistDescription");
+        requestBody.setSpotifyURIs(List.of("SpotifyTrack"));
+        requestBody.setIsPublic(true);
+        var mockUser = mock(User.class);
+
+        when(mockGateway.getCurrentSpotifyUserProfile()).thenReturn(CompletableFuture.completedFuture(mockUser));
+        when(mockUser.getId()).thenReturn("UserId");
+        when(mockGateway.createNewSpotifyPlaylist(anyString(), anyString(), anyString(), anyBoolean()))
+            .thenReturn(CompletableFuture.completedFuture(null));
+        
+        var mvcRequest = mvc.perform(post("/playlists/spotify-playlist")
+            .cookie(mockSessionCookie)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(mapper.writeValueAsString(requestBody)))
+            .andExpect(request().asyncStarted())
+            .andExpect(result -> {
+                var responseVal = result.getAsyncResult();
+                assertInstanceOf(RuntimeException.class, responseVal);
+                var responseException = (RuntimeException)responseVal;
+                assertTrue(responseException.getMessage().contains("Error creating the spotify playlist"));
+            })
+            .andReturn();
+        
+        mvc.perform(asyncDispatch(mvcRequest))
+            .andExpect(status().isInternalServerError());
     }
 
     //#endregion
