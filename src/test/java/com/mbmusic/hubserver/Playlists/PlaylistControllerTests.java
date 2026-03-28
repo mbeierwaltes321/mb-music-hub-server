@@ -29,6 +29,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -168,7 +169,50 @@ public class PlaylistControllerTests extends BaseTest {
 
     }
 
-    //TODO - Create test that validates input for POST spotify-items
+    /**
+     * This test ensures that invlaid input returns a 400 with the proper message. This tests
+     * the scenarios where the playlist id and spotify items do not contain valid input
+     * @throws Exception 
+     */
+    @Test
+    public void shouldFailToInsertTracksIntoPlaylistFromInvalidInput() throws Exception {
+        Cookie mockSessionCookie = new Cookie(ConnectionUtils.SPOTIFY_COOKIE_NAME, UNSUCCESSFUL_SESSION_COOKIE_VALUE);
+        var invalidRequestBody = new PostSpotifyItemRequest();
+        invalidRequestBody.setPlaylistId(null);
+        invalidRequestBody.setSpotifyItems(List.of("test"));
+
+        mvc.perform(post("/playlists/spotify-items")
+            .contentType(MediaType.APPLICATION_JSON)
+            .cookie(mockSessionCookie)
+            .content(mapper.writeValueAsString(invalidRequestBody)))
+            .andExpect(result -> assertTrue(result.getResolvedException() instanceof MethodArgumentNotValidException))
+            .andExpect(status().is(400))
+            .andExpect(content().string("playlistId: must not be null"));
+
+        invalidRequestBody.setSpotifyItems(null);
+
+        mvc.perform(post("/playlists/spotify-items")
+            .contentType(MediaType.APPLICATION_JSON)
+            .cookie(mockSessionCookie)
+            .content(mapper.writeValueAsString(invalidRequestBody)))
+            .andExpect(result -> assertTrue(result.getResolvedException() instanceof MethodArgumentNotValidException))
+            .andExpect(status().is(400))
+            .andExpect(content().string("spotifyItems: must not be null, and playlistId: must not be null"));
+
+        invalidRequestBody.setPlaylistId("test");
+        invalidRequestBody.setSpotifyItems(List.of());
+
+        mvc.perform(post("/playlists/spotify-items")
+            .contentType(MediaType.APPLICATION_JSON)
+            .cookie(mockSessionCookie)
+            .content(mapper.writeValueAsString(invalidRequestBody)))
+            .andExpect(result -> assertTrue(result.getResolvedException() instanceof MethodArgumentNotValidException))
+            .andExpect(status().is(400))
+            .andExpect(content().string("spotifyItems: size must be between 1 and 2147483647"));
+
+        //spotifyItems: size must be between 1 and 2147483647
+
+    }
 
     //TODO - This should be put inside a test class for authentication and validation
     /**
@@ -361,6 +405,7 @@ public class PlaylistControllerTests extends BaseTest {
             .cookie(mockSessionCookie)
             .contentType(MediaType.APPLICATION_JSON)
             .content(mapper.writeValueAsString(invalidRequestBody)))
+            .andExpect(result -> assertTrue(result.getResolvedException() instanceof MethodArgumentNotValidException))
             .andExpect(status().isBadRequest())
             .andExpect(content().string("playlistName: must not be null"));
 
@@ -370,6 +415,7 @@ public class PlaylistControllerTests extends BaseTest {
             .cookie(mockSessionCookie)
             .contentType(MediaType.APPLICATION_JSON)
             .content(mapper.writeValueAsString(invalidRequestBody)))
+            .andExpect(result -> assertTrue(result.getResolvedException() instanceof MethodArgumentNotValidException))
             .andExpect(status().isBadRequest())
             .andExpect(content().string("playlistName: size must be between 1 and 2147483647"));
     }
