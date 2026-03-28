@@ -2,12 +2,17 @@ package com.mbmusic.hubserver.Playlists.Models;
 
 import java.util.List;
 
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
+
 //This class models the request body for the post spotify playlist endpoint
 public class PostSpotifyPlaylistRequest {
     
     //#region " Members "
 
     //The name of the playlist to create
+    @NotNull
+    @Size(min = 1)
     private String playlistName;
 
     //The description of the playlist to create

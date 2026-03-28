@@ -18,6 +18,7 @@ import com.mbmusic.hubserver.Playlists.Models.PostSpotifyPlaylistRequest;
 import com.mbmusic.hubserver.Playlists.Models.PostSpotifyPlaylistResponse;
 
 import jakarta.servlet.http.Cookie;
+import jakarta.validation.Valid;
 import se.michaelthelin.spotify.model_objects.specification.Paging;
 import se.michaelthelin.spotify.model_objects.specification.PlaylistSimplified;
 
@@ -68,10 +69,17 @@ public class PlaylistController {
 
     }
 
+    /**
+     * This method inserts a new spotify playlist as well as insert tracks if provided
+     * @param sessionIdCookie Cookie containing the session id to access the spotify gateway
+     * @param requestBody The request containing the playlist and track information
+     * @return A {@link PostSpotifyPlaylistResponse} containing information on whether there was a success or not
+     * @throws InvalidSessionIdException
+     */
     @PostMapping("/spotify-playlist")
     public CompletableFuture<PostSpotifyPlaylistResponse> postSpotifyPlaylist(
         @CookieValue(name = ConnectionUtils.SPOTIFY_COOKIE_NAME) Cookie sessionIdCookie, 
-        @RequestBody(required = true) PostSpotifyPlaylistRequest requestBody) throws InvalidSessionIdException {
+        @Valid @RequestBody(required = true) PostSpotifyPlaylistRequest requestBody) throws InvalidSessionIdException {
 
         if (sessionIdCookie.getValue() == null || sessionIdCookie.getValue() == "")
             throw new InvalidSessionIdException("Invalid Session ID");

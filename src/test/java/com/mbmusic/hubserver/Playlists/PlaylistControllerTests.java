@@ -8,7 +8,6 @@ import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.contains;
 import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -86,7 +85,7 @@ public class PlaylistControllerTests extends BaseTest {
     //#region Tests
 
     @BeforeEach
-    public void SpotifyApiGateway() {
+    public void preparePlaylistTests() {
         try {
             mockGateway = mock(SpotifyApiGateway.class);
             when(mockDa.getSpotifyApiGatewayAsync(anyString()))
@@ -169,6 +168,8 @@ public class PlaylistControllerTests extends BaseTest {
 
     }
 
+    //TODO - Create test that validates input for POST spotify-items
+
     //TODO - This should be put inside a test class for authentication and validation
     /**
      * This method tests an attempt to cal GET spotify-playlists with an improper cookie
@@ -186,15 +187,6 @@ public class PlaylistControllerTests extends BaseTest {
             .cookie(mockSessionCookie))
             .andExpect(result -> assertTrue(result.getResolvedException() instanceof InvalidSessionIdException));
     }
-
-    /**
-     * TODO - Implement tests for the following createSpotifyPlaylist scenarios:
-     * 1. Success without spotify items --DONE--
-     * 3. Success with spotify items --DONE--
-     * 4. Failed to get user id's profile --DONE--
-     * 5. Failed - new playlist is null (should never happen) --DONE--
-     * 6. Invlalid request body
-     */
 
     /**
      * This method tests the the POST spotify-playlist endpoint without spotify items
@@ -351,6 +343,35 @@ public class PlaylistControllerTests extends BaseTest {
         
         mvc.perform(asyncDispatch(mvcRequest))
             .andExpect(status().isInternalServerError());
+    }
+
+    /**
+     * This test ensures that invlaid input (empty playlist name) returns a 400 with the proper message. This tests
+     * the scenario where the playlist name is both null and the empty string
+     * @throws Exception 
+     */
+    @Test
+    public void shouldFailToCreatePlaylistBecauseOfInvalidInput() throws Exception {
+        Cookie mockSessionCookie = new Cookie(ConnectionUtils.SPOTIFY_COOKIE_NAME, SUCCESSFUL_SESSION_COOKIE_VALUE); 
+        PostSpotifyPlaylistRequest invalidRequestBody = new PostSpotifyPlaylistRequest();
+        invalidRequestBody.setPlaylistName(null);
+        invalidRequestBody.setSpotifyURIs(null);
+
+        mvc.perform(post("/playlists/spotify-playlist")
+            .cookie(mockSessionCookie)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(mapper.writeValueAsString(invalidRequestBody)))
+            .andExpect(status().isBadRequest())
+            .andExpect(content().string("playlistName: must not be null"));
+
+        invalidRequestBody.setPlaylistName("");
+
+        mvc.perform(post("/playlists/spotify-playlist")
+            .cookie(mockSessionCookie)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(mapper.writeValueAsString(invalidRequestBody)))
+            .andExpect(status().isBadRequest())
+            .andExpect(content().string("playlistName: size must be between 1 and 2147483647"));
     }
 
     //#endregion
