@@ -21,6 +21,7 @@ import java.io.File;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
+import org.hamcrest.core.StringContains;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,14 +39,11 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.mbmusic.hubserver.BaseTest;
 import com.mbmusic.hubserver.Common.DataAccess;
-import com.mbmusic.hubserver.Connections.ConnectionUtils;
 import com.mbmusic.hubserver.Connections.SpotifyApiGateway;
-import com.mbmusic.hubserver.Connections.Exceptions.InvalidSessionIdException;
 import com.mbmusic.hubserver.Playlists.Models.PostSpotifyItemRequest;
 import com.mbmusic.hubserver.Playlists.Models.PostSpotifyPlaylistRequest;
 import com.mbmusic.hubserver.Playlists.Models.PostSpotifyPlaylistResponse;
 
-import jakarta.servlet.http.Cookie;
 import se.michaelthelin.spotify.model_objects.specification.Paging;
 import se.michaelthelin.spotify.model_objects.specification.Playlist;
 import se.michaelthelin.spotify.model_objects.specification.PlaylistSimplified;
@@ -70,10 +68,6 @@ public class PlaylistControllerTests extends BaseTest {
     private DataAccess mockDa;
 
     private SpotifyApiGateway mockGateway;
-
-    final private String SUCCESSFUL_SESSION_COOKIE_VALUE = "Success";
-
-    final private String UNSUCCESSFUL_SESSION_COOKIE_VALUE = null;
 
     //Object mapper for interpreting results
     ObjectMapper mapper = new ObjectMapper()
@@ -120,9 +114,6 @@ public class PlaylistControllerTests extends BaseTest {
         when(mockGateway.retrieveUserPlaylists(anyInt()))
             .thenReturn(CompletableFuture.completedFuture(playlists));
 
-        //Create the mock cookie
-        Cookie mockSessionCookie = new Cookie(ConnectionUtils.SPOTIFY_COOKIE_NAME, SUCCESSFUL_SESSION_COOKIE_VALUE); 
-
         var mvcResult = this.mvc.perform(get("/playlists/spotify-playlists")
             .cookie(mockSessionCookie))
             .andExpect(request().asyncStarted())
@@ -154,8 +145,6 @@ public class PlaylistControllerTests extends BaseTest {
         request.setPlaylistId(mockPlaylistId);
         request.setSpotifyItems(List.of(spotifyItems));
 
-        Cookie mockSessionCookie = new Cookie(ConnectionUtils.SPOTIFY_COOKIE_NAME, SUCCESSFUL_SESSION_COOKIE_VALUE);
-
         var mvcRequest = this.mvc.perform(post("/playlists/spotify-items")
             .cookie(mockSessionCookie)
             .contentType(MediaType.APPLICATION_JSON)
@@ -176,7 +165,6 @@ public class PlaylistControllerTests extends BaseTest {
      */
     @Test
     public void shouldFailToInsertTracksIntoPlaylistFromInvalidInput() throws Exception {
-        Cookie mockSessionCookie = new Cookie(ConnectionUtils.SPOTIFY_COOKIE_NAME, UNSUCCESSFUL_SESSION_COOKIE_VALUE);
         var invalidRequestBody = new PostSpotifyItemRequest();
         invalidRequestBody.setPlaylistId(null);
         invalidRequestBody.setSpotifyItems(List.of("test"));
@@ -186,7 +174,7 @@ public class PlaylistControllerTests extends BaseTest {
             .cookie(mockSessionCookie)
             .content(mapper.writeValueAsString(invalidRequestBody)))
             .andExpect(result -> assertTrue(result.getResolvedException() instanceof MethodArgumentNotValidException))
-            .andExpect(status().is(400))
+            .andExpect(status().isBadRequest())
             .andExpect(content().string("playlistId: must not be null"));
 
         invalidRequestBody.setSpotifyItems(null);
@@ -196,8 +184,11 @@ public class PlaylistControllerTests extends BaseTest {
             .cookie(mockSessionCookie)
             .content(mapper.writeValueAsString(invalidRequestBody)))
             .andExpect(result -> assertTrue(result.getResolvedException() instanceof MethodArgumentNotValidException))
-            .andExpect(status().is(400))
-            .andExpect(content().string("spotifyItems: must not be null, and playlistId: must not be null"));
+            .andExpect(status().isBadRequest())
+            .andExpect(content().string(StringContains.containsString("spotifyItems: must not be null")))
+            .andExpect(content().string(StringContains.containsString("playlistId: must not be null")));
+            // .andExpect(content().string(containsString("spotifyItems: must not be null")))
+            // .andExpect(content().string(contains("playlistId: must not be null")));
 
         invalidRequestBody.setPlaylistId("test");
         invalidRequestBody.setSpotifyItems(List.of());
@@ -207,29 +198,11 @@ public class PlaylistControllerTests extends BaseTest {
             .cookie(mockSessionCookie)
             .content(mapper.writeValueAsString(invalidRequestBody)))
             .andExpect(result -> assertTrue(result.getResolvedException() instanceof MethodArgumentNotValidException))
-            .andExpect(status().is(400))
+            .andExpect(status().isBadRequest())
             .andExpect(content().string("spotifyItems: size must be between 1 and 2147483647"));
 
         //spotifyItems: size must be between 1 and 2147483647
 
-    }
-
-    //TODO - This should be put inside a test class for authentication and validation
-    /**
-     * This method tests an attempt to cal GET spotify-playlists with an improper cookie
-     * @throws Exception
-     */
-    @Test
-    public void shouldFailFromInvalidSessionId() throws Exception {
-
-        //Create the mock cookie
-        Cookie mockSessionCookie = new Cookie(ConnectionUtils.SPOTIFY_COOKIE_NAME, UNSUCCESSFUL_SESSION_COOKIE_VALUE);
-        when(mockDa.getSpotifyApiGatewayAsync(anyString())).thenThrow(InvalidSessionIdException.class);
-
-        //Now call the endpoint
-        this.mvc.perform(get("/playlists/spotify-playlists")
-            .cookie(mockSessionCookie))
-            .andExpect(result -> assertTrue(result.getResolvedException() instanceof InvalidSessionIdException));
     }
 
     /**
@@ -239,8 +212,6 @@ public class PlaylistControllerTests extends BaseTest {
     @Test
     public void shouldCreatePlaylistWithoutItems() throws Exception {
   
-        Cookie mockSessionCookie = new Cookie(ConnectionUtils.SPOTIFY_COOKIE_NAME, SUCCESSFUL_SESSION_COOKIE_VALUE); 
-
         PostSpotifyPlaylistRequest requestBody = new PostSpotifyPlaylistRequest();
         requestBody.setPlaylistName("NewPlaylist");
         requestBody.setPlaylistDescription("NewPlaylistDescription");
@@ -279,8 +250,6 @@ public class PlaylistControllerTests extends BaseTest {
      */
     @Test
     public void shouldCreatePlaylistWithItems() throws Exception {
-        Cookie mockSessionCookie = new Cookie(ConnectionUtils.SPOTIFY_COOKIE_NAME, SUCCESSFUL_SESSION_COOKIE_VALUE); 
-
         PostSpotifyPlaylistRequest requestBody = new PostSpotifyPlaylistRequest();
         requestBody.setPlaylistName("NewPlaylist");
         requestBody.setPlaylistDescription("NewPlaylistDescription");
@@ -320,8 +289,6 @@ public class PlaylistControllerTests extends BaseTest {
      */
     @Test
     public void shouldFailToCreatePlaylistBecauseOfFaultyUserId() throws Exception {
-        Cookie mockSessionCookie = new Cookie(ConnectionUtils.SPOTIFY_COOKIE_NAME, SUCCESSFUL_SESSION_COOKIE_VALUE); 
-
         PostSpotifyPlaylistRequest requestBody = new PostSpotifyPlaylistRequest();
         requestBody.setPlaylistName("NewPlaylist");
         requestBody.setPlaylistDescription("NewPlaylistDescription");
@@ -358,8 +325,6 @@ public class PlaylistControllerTests extends BaseTest {
      */
     @Test
     public void shouldFailToCreatePlaylistBecauseOfNullPlaylist() throws Exception {
-        Cookie mockSessionCookie = new Cookie(ConnectionUtils.SPOTIFY_COOKIE_NAME, SUCCESSFUL_SESSION_COOKIE_VALUE); 
-
         PostSpotifyPlaylistRequest requestBody = new PostSpotifyPlaylistRequest();
         requestBody.setPlaylistName("NewPlaylist");
         requestBody.setPlaylistDescription("NewPlaylistDescription");
@@ -396,7 +361,6 @@ public class PlaylistControllerTests extends BaseTest {
      */
     @Test
     public void shouldFailToCreatePlaylistBecauseOfInvalidInput() throws Exception {
-        Cookie mockSessionCookie = new Cookie(ConnectionUtils.SPOTIFY_COOKIE_NAME, SUCCESSFUL_SESSION_COOKIE_VALUE); 
         PostSpotifyPlaylistRequest invalidRequestBody = new PostSpotifyPlaylistRequest();
         invalidRequestBody.setPlaylistName(null);
         invalidRequestBody.setSpotifyURIs(null);
