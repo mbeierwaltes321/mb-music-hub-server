@@ -187,8 +187,6 @@ public class PlaylistControllerTests extends BaseTest {
             .andExpect(status().isBadRequest())
             .andExpect(content().string(StringContains.containsString("spotifyItems: must not be null")))
             .andExpect(content().string(StringContains.containsString("playlistId: must not be null")));
-            // .andExpect(content().string(containsString("spotifyItems: must not be null")))
-            // .andExpect(content().string(contains("playlistId: must not be null")));
 
         invalidRequestBody.setPlaylistId("test");
         invalidRequestBody.setSpotifyItems(List.of());
@@ -200,8 +198,6 @@ public class PlaylistControllerTests extends BaseTest {
             .andExpect(result -> assertTrue(result.getResolvedException() instanceof MethodArgumentNotValidException))
             .andExpect(status().isBadRequest())
             .andExpect(content().string("spotifyItems: size must be between 1 and 2147483647"));
-
-        //spotifyItems: size must be between 1 and 2147483647
 
     }
 
