@@ -1,5 +1,6 @@
 package com.mbmusic.hubserver.Connections;
 
+import java.io.IOException;
 import java.net.URI;
 import java.net.URL;
 import java.time.LocalDateTime;
@@ -7,7 +8,7 @@ import java.time.ZoneId;
 import java.util.HashMap;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
-
+import org.apache.hc.core5.http.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -19,34 +20,47 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import com.mbmusic.hubserver.Common.Utilities.TimeUtils;
 import com.mbmusic.hubserver.Connections.Clients.ValkeyClient;
+import com.mbmusic.hubserver.Connections.Exceptions.InvalidSessionIdException;
+import com.mbmusic.hubserver.Connections.Exceptions.SpotifyAuthorizationException;
 import com.mbmusic.hubserver.Connections.Models.SpotifyTokenInfo;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
-
+import se.michaelthelin.spotify.exceptions.SpotifyWebApiException;
 import se.michaelthelin.spotify.model_objects.credentials.AuthorizationCodeCredentials;
-import se.michaelthelin.spotify.requests.authorization.authorization_code.AuthorizationCodeRequest;
-import se.michaelthelin.spotify.requests.authorization.authorization_code.AuthorizationCodeUriRequest;
 
 //This controller is responsible for handling any requests related to API connections
 @RestController
 @RequestMapping("conn")
 public class ConnectionController {
 
-    @Autowired
-    SpotifyApiConnection spotifyConnection;
+    //#region Members
+    // private SpotifyApiConnection spotifyConnection;
 
     @Autowired 
-    ValkeyClient valkeyClient;
+    private ValkeyClient valkeyClient;
 
-    //#region " Methods "
+    private SpotifyApiGateway spotifyGateway;
+
+    //#endregion
+
+    //#region Constructor
+
+    public ConnectionController(SpotifyApiConnection spotifyConnection) {
+        // this.spotifyConnection = spotifyConnection;
+        spotifyGateway = new SpotifyApiGateway(spotifyConnection.createApiClient());
+    }
+
+    //#endregion
+
+    //#region Methods
     /**
      * This method generates the login URI for authenticating the user into Spotify
      * @return A {@link RedirectView} that redirects to the authentication window for the user on successful login
      * @throws Exception when something goes wrong with the initial authentication
      */
     @PostMapping("/spotifylogin")
-    public RedirectView postSpotifyLogin() throws Exception {
+    public RedirectView postSpotifyLogin() {
      
         // Generate a state
         // choose a Character random from this String 
@@ -70,18 +84,8 @@ public class ConnectionController {
             .charAt(index)); 
         }  
 
-        //Build the authorization request
-        AuthorizationCodeUriRequest request;
-        request = spotifyConnection.createApiClient()
-            .authorizationCodeUri()
-            .state(stateSb.toString())
-            .response_type("code")
-            .scope("user-library-read playlist-read-private playlist-modify-public playlist-modify-private")
-            .build();
+        final URI authUri = spotifyGateway.createAuthorizationURI(stateSb.toString());
 
-        final URI authUri = request.execute();
-
-        //Check that the state wasn't modified
         String responseQuery = authUri.getQuery();
 
         //Create hash map for organizing the query parms
@@ -91,19 +95,17 @@ public class ConnectionController {
             parmInfo.put(parmValues[0], parmValues[1]);
         }
 
-        //Determine if access was denied
         if (parmInfo.get("error") != null) {
-            throw new Exception("Access denied. Details: " + parmInfo.get("error"));
+            throw new SpotifyAuthorizationException("Access denied. Details: " + parmInfo.get("error"));
         }
 
         //Validate that the state is the same
         String returnedState = parmInfo.get("state");
         if (returnedState == null || !returnedState.equals(stateSb.toString())) {
-            throw new Exception("Access denied: State did not match");
+            throw new SpotifyAuthorizationException("Access denied: State did not match");
         }
 
         return new RedirectView(authUri.toString());
-
     }
 
     /**
@@ -111,26 +113,23 @@ public class ConnectionController {
      * @note When the state is returned to the client, you must verify that the state in the browser matches the state passed here
      * @param code The code returned from the Spotify API used to authenticate the user
      * @param state The state-specific code used to identify the user and session
+     * @throws IOException IO Exceptions performed while obtaining the authorization code
+     * @throws SpotifyWebApiException Exceptions specific to the Spotify API while retrieving the authorization code
+     * @throws ParseException Parsing exception when retrieving the Spotify API codes
+     * @throws InvalidSessionIdException Invalid session id when upserting the new session id to Valkey
      */
     @GetMapping("/redirect")
     public CompletableFuture<Void> generateSpotifyAuthToken(@RequestParam(name="code") String code, 
-                                           @RequestParam(name="state") String state,
-                                           HttpServletResponse response) throws Exception {
-    
-        //Create an authorization code request object for retrieving the access/refresh tokens
-        final AuthorizationCodeRequest authRequest = spotifyConnection.createApiClient().authorizationCode(code).build();
-
-        //Grab the credentails
-        // Attempt to obtain the credentails
-        final AuthorizationCodeCredentials authorizationCodeCredentials = authRequest.execute();
+            @RequestParam(name="state") String state, HttpServletResponse response ) 
+                throws ParseException, SpotifyWebApiException, IOException, InvalidSessionIdException {
+                
+        final AuthorizationCodeCredentials authorizationCodeCredentials = 
+            spotifyGateway.getAuthorizationCodeCredentials(code);
         
-        //Create time zone obbject to get current time in UTC
-        ZoneId UTC = ZoneId.of("UTC");
-
         //Get the current time in UTC
+        ZoneId UTC = ZoneId.of("UTC");
         LocalDateTime generatedTimeUTC = LocalDateTime.now(UTC);
 
-        //Build the token information and add it to token store
         SpotifyTokenInfo newTokenInfo = new SpotifyTokenInfo();
         newTokenInfo.setAccessToken(authorizationCodeCredentials.getAccessToken());
         newTokenInfo.setRefreshToken(authorizationCodeCredentials.getRefreshToken());
@@ -168,7 +167,7 @@ public class ConnectionController {
                     }
                     response.sendRedirect(redirectUrl.toString());
                 } catch (Exception e) {
-                    System.out.println(e.getMessage());
+                    throw new RuntimeException("Error redirecting to the front end");
                 }
             });
     }

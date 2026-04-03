@@ -1,9 +1,17 @@
 package com.mbmusic.hubserver.Connections;
 
+import java.io.IOException;
+import java.net.URI;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
+import org.apache.hc.core5.http.ParseException;
+
+import com.mbmusic.hubserver.Connections.Exceptions.SpotifyAuthorizationException;
+
 import se.michaelthelin.spotify.SpotifyApi;
+import se.michaelthelin.spotify.exceptions.SpotifyWebApiException;
+import se.michaelthelin.spotify.model_objects.credentials.AuthorizationCodeCredentials;
 import se.michaelthelin.spotify.model_objects.specification.Paging;
 import se.michaelthelin.spotify.model_objects.specification.Playlist;
 import se.michaelthelin.spotify.model_objects.specification.PlaylistSimplified;
@@ -34,6 +42,42 @@ public class SpotifyApiGateway {
     //#endregion
 
     //#region Methods
+
+    /**
+     * This method performs the authorization request to Spotify and retruns the authorization
+     * URI for the user to authorize the app
+     * @return The Authorization URI
+     */
+    public URI createAuthorizationURI(String state) {
+        return spotifyClient.authorizationCodeUri()
+            .state(state)
+            .response_type("code")
+            .scope("user-library-read playlist-read-private playlist-modify-public playlist-modify-private")
+            .build()
+            .execute();
+    }
+
+    /**
+     * This method takes a code returned from the Spotify API and returns the authorization
+     * code credentails needed for a Spotify Token
+     * @param code The authorization code given from the Spotify API
+     * @return The authorization code credentials
+     * @throws ParseException
+     * @throws SpotifyWebApiException
+     * @throws IOException
+     */
+    public AuthorizationCodeCredentials getAuthorizationCodeCredentials(String code) 
+        throws ParseException, SpotifyWebApiException, IOException {
+            try {
+                return spotifyClient.authorizationCode(code)
+                    .build()
+                    .execute();
+            } catch (Exception e) {
+                throw new SpotifyAuthorizationException( 
+                    "There was an error retrieving the Spotify Authorization Code Credentials"
+                );
+            }
+    }
 
     /**
      * This method retrieves all the Spotify playlists created by the current user 
