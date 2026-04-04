@@ -35,25 +35,31 @@ import se.michaelthelin.spotify.model_objects.credentials.AuthorizationCodeCrede
 public class ConnectionController {
 
     //#region Members
-    // private SpotifyApiConnection spotifyConnection;
+    private SpotifyApiConnection spotifyConnection;
 
     @Autowired 
     private ValkeyClient valkeyClient;
-
-    private SpotifyApiGateway spotifyGateway;
 
     //#endregion
 
     //#region Constructor
 
     public ConnectionController(SpotifyApiConnection spotifyConnection) {
-        // this.spotifyConnection = spotifyConnection;
-        spotifyGateway = new SpotifyApiGateway(spotifyConnection.createApiClient());
+        this.spotifyConnection = spotifyConnection;
     }
 
     //#endregion
 
     //#region Methods
+
+    /**
+     * This method builds and retrieves a Spotify Gateway object responsible for performing authentication and authorization
+     */
+    private SpotifyApiGateway getSpotifyApiGateway() {
+        //Retrieve the token and prepare the Spotify API Client
+        return new SpotifyApiGateway(spotifyConnection.createApiClient());
+    }
+
     /**
      * This method generates the login URI for authenticating the user into Spotify
      * @return A {@link RedirectView} that redirects to the authentication window for the user on successful login
@@ -84,6 +90,7 @@ public class ConnectionController {
             .charAt(index)); 
         }  
 
+        SpotifyApiGateway spotifyGateway = getSpotifyApiGateway();
         final URI authUri = spotifyGateway.createAuthorizationURI(stateSb.toString());
 
         String responseQuery = authUri.getQuery();
@@ -122,6 +129,8 @@ public class ConnectionController {
     public CompletableFuture<Void> generateSpotifyAuthToken(@RequestParam(name="code") String code, 
             @RequestParam(name="state") String state, HttpServletResponse response ) 
                 throws ParseException, SpotifyWebApiException, IOException, InvalidSessionIdException {
+
+        SpotifyApiGateway spotifyGateway = getSpotifyApiGateway();
                 
         final AuthorizationCodeCredentials authorizationCodeCredentials = 
             spotifyGateway.getAuthorizationCodeCredentials(code);
