@@ -69,12 +69,6 @@ public class PlaylistControllerTests extends BaseTest {
 
     private SpotifyApiGateway mockGateway;
 
-    //Object mapper for interpreting results
-    ObjectMapper mapper = new ObjectMapper()
-        .registerModule(new JavaTimeModule())
-        .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
-        .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-
     //#endregion
 
     //#region Tests
