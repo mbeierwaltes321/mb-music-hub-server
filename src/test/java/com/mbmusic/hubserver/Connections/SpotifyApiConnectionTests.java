@@ -3,6 +3,8 @@ package com.mbmusic.hubserver.Connections;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.time.LocalDateTime;
@@ -87,12 +89,17 @@ public class SpotifyApiConnectionTests extends BaseTest {
 
     }
 
+    /**
+     * This method tests a successful build of the Spotify Client from tokens without a referesh
+     * @throws Exception
+     */
     @Test
     public void shouldBuildSpotifyClientFromTokensWithoutRefresh() throws Exception {
         SpotifyTokenInfo tokenInfo = new SpotifyTokenInfo();
         tokenInfo.setAccessToken("Access Token");
         tokenInfo.setRefreshToken("Refresh Token");
-        tokenInfo.setTokenGeneratedAt(LocalDateTime.now(ZoneId.of("UTC")).plusDays(11));
+        tokenInfo.setTokenGeneratedAt(LocalDateTime.now(ZoneId.of("UTC")));
+        tokenInfo.setExpiresIn(950400); //11 days
 
         var sessionTokenPair = Pair.of(successfulSessionId, tokenInfo);
         when(mockValkeyClient.getSpotifyAPITokenAsync(successfulSessionId))
@@ -106,8 +113,12 @@ public class SpotifyApiConnectionTests extends BaseTest {
         SpotifyApi returnedSpotifyClient = 
             spotifyApiConnection.createApiClientAsync(successfulSessionId.toString()).join();
 
+        //Verify that a token refresh did not happen
+        verify(mockApi, times(0)).authorizationCodeRefresh();
+
         assertTrue(returnedSpotifyClient.getAccessToken() == tokenInfo.getAccessToken() &&
             returnedSpotifyClient.getRefreshToken() == tokenInfo.getRefreshToken());
+
     }
 
     //#endregion
