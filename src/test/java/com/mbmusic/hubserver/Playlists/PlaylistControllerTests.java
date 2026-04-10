@@ -33,10 +33,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.mbmusic.hubserver.BaseTest;
 import com.mbmusic.hubserver.Common.DataAccess;
 import com.mbmusic.hubserver.Connections.SpotifyApiGateway;

@@ -33,7 +33,7 @@ public class DataAccess {
      */
     public CompletableFuture<SpotifyApiGateway> getSpotifyApiGatewayAsync(String sessionIdString) throws InvalidSessionIdException {
         //Retrieve the token and prepare the Spotify API Client
-        return spotifyApiConnection.createApiClient(sessionIdString)
+        return spotifyApiConnection.createApiClientAsync(sessionIdString)
             .thenApply(spotifyApi -> new SpotifyApiGateway(spotifyApi));
     }
 

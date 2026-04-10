@@ -2,15 +2,16 @@ package com.mbmusic.hubserver.Connections;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.util.Pair;
@@ -21,17 +22,21 @@ import com.mbmusic.hubserver.Connections.Clients.ValkeyClient;
 import com.mbmusic.hubserver.Connections.Exceptions.InvalidSessionIdException;
 import com.mbmusic.hubserver.Connections.Models.SpotifyTokenInfo;
 
+import se.michaelthelin.spotify.SpotifyApi;
+
 @SpringBootTest
 @AutoConfigureMockMvc
 public class SpotifyApiConnectionTests extends BaseTest {
 
     //#region Members
 
-    @MockitoBean
-    SpotifyApiConnection mockSpotifyApiConnection;
+    @Autowired
+    SpotifyApiConnection spotifyApiConnection;
 
     @MockitoBean
     ValkeyClient mockValkeyClient;
+
+    private UUID successfulSessionId = UUID.fromString("6356C38E-FA4D-4EBC-8BDB-3628250A998A");
 
     //#endregion
 
@@ -59,25 +64,50 @@ public class SpotifyApiConnectionTests extends BaseTest {
         
     }
 
+    /**
+     * This method tests that invalid input is handled when attempting to create the SpotifyApiClient.
+     * @throws Exception
+     */
     @Test
     public void shouldNotCreateApiClientFromInvalidInput() throws Exception {
         String emptySessionId = "";
         String nullSessionId = null;
 
-        when(mockSpotifyApiConnection.createApiClient(any())).thenCallRealMethod();
-
         InvalidSessionIdException exception = assertThrows(InvalidSessionIdException.class, () -> {
-            mockSpotifyApiConnection.createApiClient(emptySessionId);
+            spotifyApiConnection.createApiClientAsync(emptySessionId);
         });
 
         assertTrue(exception.getMessage().contains("Invalid Session Id"));
 
         exception = assertThrows(InvalidSessionIdException.class, () -> {
-            mockSpotifyApiConnection.createApiClient(nullSessionId);
+            spotifyApiConnection.createApiClientAsync(nullSessionId);
         });
 
         assertTrue(exception.getMessage().contains("Invalid Session Id"));
 
+    }
+
+    @Test
+    public void shouldBuildSpotifyClientFromTokensWithoutRefresh() throws Exception {
+        SpotifyTokenInfo tokenInfo = new SpotifyTokenInfo();
+        tokenInfo.setAccessToken("Access Token");
+        tokenInfo.setRefreshToken("Refresh Token");
+        tokenInfo.setTokenGeneratedAt(LocalDateTime.now(ZoneId.of("UTC")).plusDays(11));
+
+        var sessionTokenPair = Pair.of(successfulSessionId, tokenInfo);
+        when(mockValkeyClient.getSpotifyAPITokenAsync(successfulSessionId))
+            .thenReturn(CompletableFuture.completedFuture(sessionTokenPair));
+
+        SpotifyApi mockApi = mock(SpotifyApi.class);
+        when(mockSpotifyApiBuilder.build()).thenReturn(mockApi);
+        when(mockApi.getAccessToken()).thenReturn(tokenInfo.getAccessToken());
+        when(mockApi.getRefreshToken()).thenReturn(tokenInfo.getRefreshToken());
+
+        SpotifyApi returnedSpotifyClient = 
+            spotifyApiConnection.createApiClientAsync(successfulSessionId.toString()).join();
+
+        assertTrue(returnedSpotifyClient.getAccessToken() == tokenInfo.getAccessToken() &&
+            returnedSpotifyClient.getRefreshToken() == tokenInfo.getRefreshToken());
     }
 
     //#endregion

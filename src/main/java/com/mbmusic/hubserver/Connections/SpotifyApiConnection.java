@@ -44,7 +44,7 @@ public class SpotifyApiConnection {
         return spotifyApiClientBuilder.build();
     }
 
-    public CompletableFuture<SpotifyApi> createApiClient(String sessionId) throws InvalidSessionIdException {
+    public CompletableFuture<SpotifyApi> createApiClientAsync(String sessionId) throws InvalidSessionIdException {
         if (sessionId == null || sessionId.isEmpty()) {
             throw new InvalidSessionIdException("Invalid Session Id");
         }

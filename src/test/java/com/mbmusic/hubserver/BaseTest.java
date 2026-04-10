@@ -18,10 +18,10 @@ public abstract class BaseTest {
 
     //For all tests, we want to have a mock Valkey Client so we don't have to rely on Valkey
     @MockitoBean
-	private GlideClient mockGlideClient;
+	protected GlideClient mockGlideClient;
 
     @MockitoBean
-    private SpotifyApi.Builder mockSpotifyApiBuilder;
+    protected SpotifyApi.Builder mockSpotifyApiBuilder;
 
     final private String SUCCESSFUL_SESSION_COOKIE_VALUE = "Success";
 
