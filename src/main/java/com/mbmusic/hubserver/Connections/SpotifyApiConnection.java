@@ -16,7 +16,6 @@ import com.mbmusic.hubserver.Connections.Models.SpotifyTokenInfo;
 
 import se.michaelthelin.spotify.SpotifyApi;
 import se.michaelthelin.spotify.model_objects.credentials.AuthorizationCodeCredentials;
-import se.michaelthelin.spotify.requests.authorization.authorization_code.AuthorizationCodeRefreshRequest;
 
 /**
  * This class handles building a connection to the Spotify API
@@ -101,11 +100,12 @@ public class SpotifyApiConnection {
     }
 
     private CompletableFuture<SpotifyTokenInfo> refreshSpotifyTokenAync(UUID sessionId, SpotifyTokenInfo authTokens, SpotifyApi apiClient, LocalDateTime currentTimeUTC) {
-        //Create an authorization code refresh request
-        final AuthorizationCodeRefreshRequest refreshRequest = apiClient.authorizationCodeRefresh().build();
+        
+        apiClient.setRefreshToken(authTokens.getRefreshToken());
+        SpotifyApiGateway spotifyApiGateway = new SpotifyApiGateway(apiClient);
 
-        //Perform the refresh
-        CompletableFuture<AuthorizationCodeCredentials> newCredsFuture = refreshRequest.executeAsync();
+        CompletableFuture<AuthorizationCodeCredentials> newCredsFuture = 
+            spotifyApiGateway.refreshAuthorizationTokensAsync(authTokens.getRefreshToken());
 
         return newCredsFuture.thenApply(updatedTokens -> {
 
@@ -116,7 +116,7 @@ public class SpotifyApiConnection {
             authTokens.setRefreshToken(updatedTokens.getRefreshToken());
 
             return authTokens;
-        }).thenCompose((SpotifyTokenInfo updatedTokens) -> {
+        }).thenCompose(updatedTokens -> {
 
             try {
                 return valkeyClient.upsertSpotifyAPITokenAsync(sessionId, updatedTokens)

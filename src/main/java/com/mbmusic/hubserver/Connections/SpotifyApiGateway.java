@@ -67,7 +67,7 @@ public class SpotifyApiGateway {
      * @throws IOException
      */
     public AuthorizationCodeCredentials getAuthorizationCodeCredentials(String code) 
-        throws ParseException, SpotifyWebApiException, IOException {
+        throws SpotifyAuthorizationException {
             try {
                 return spotifyClient.authorizationCode(code)
                     .build()
@@ -77,6 +77,18 @@ public class SpotifyApiGateway {
                     "There was an error retrieving the Spotify Authorization Code Credentials"
                 );
             }
+    }
+
+    /**
+     * This method performs an authorization token refresh and returns the updated credentails
+     * @param refreshToken The old refresh token to exchange for the new credentails
+     * @return
+     */
+    public CompletableFuture<AuthorizationCodeCredentials> refreshAuthorizationTokensAsync(String refreshToken) {
+        return spotifyClient.authorizationCodeRefresh(spotifyClient.getClientId(), 
+            spotifyClient.getClientSecret(), refreshToken)
+                .build()
+                .executeAsync();
     }
 
     /**
