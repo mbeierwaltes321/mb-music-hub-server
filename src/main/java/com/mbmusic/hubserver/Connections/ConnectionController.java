@@ -57,7 +57,7 @@ public class ConnectionController {
      */
     private SpotifyApiGateway getSpotifyApiGateway() {
         //Retrieve the token and prepare the Spotify API Client
-        return new SpotifyApiGateway(spotifyConnection.createApiClient());
+        return new SpotifyApiGateway(spotifyConnection.createEmptyApiClient());
     }
 
     /**

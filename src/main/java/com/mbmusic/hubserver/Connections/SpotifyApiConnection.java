@@ -39,7 +39,7 @@ public class SpotifyApiConnection {
      * Retrieves a new Spotify API Client without any authorization information.
      * @return 
      */
-    public SpotifyApi createApiClient() {
+    public SpotifyApi createEmptyApiClient() {
         return spotifyApiClientBuilder.build();
     }
 
@@ -67,7 +67,7 @@ public class SpotifyApiConnection {
         UUID sessionId = authTokenInfo.getFirst();
         SpotifyTokenInfo authTokens = authTokenInfo.getSecond();
         
-        final SpotifyApi apiClient = createApiClient();
+        final SpotifyApi apiClient = createEmptyApiClient();
 
         //Now see if the authorization token is expired.
         //The LocalDateTime should already be in UTC from the frontend

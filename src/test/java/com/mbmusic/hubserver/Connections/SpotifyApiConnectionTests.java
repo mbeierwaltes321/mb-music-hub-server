@@ -25,6 +25,12 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.util.Pair;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
+import com.fasterxml.jackson.core.JsonGenerationException;
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonLocation;
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.exc.StreamWriteException;
 import com.mbmusic.hubserver.BaseTest;
 import com.mbmusic.hubserver.Connections.Clients.ValkeyClient;
 import com.mbmusic.hubserver.Connections.Exceptions.InvalidSessionIdException;
@@ -147,7 +153,7 @@ public class SpotifyApiConnectionTests extends BaseTest {
 
     }
 
-        /**
+    /**
      * This method tests a successful creation of a Spotify Client with a token refresh
      * @throws Exception
      */
@@ -190,6 +196,46 @@ public class SpotifyApiConnectionTests extends BaseTest {
             //Finally, verify that the updated tokens are updated
             assertTrue(returnedSpotifyClient.getAccessToken() == newTokenInfo.getAccessToken());
         }
+    }
+
+    /**
+     * This method ensures that a JsonProcessingException is handled correctly when refreshing the tokens
+     * @throws Exception
+     */
+    @Test
+    public void shouldHandleJsonProcessingExceptionWhenRefreshingToken() throws Exception {
+        SpotifyApi mockApi = mock(SpotifyApi.class);
+        var tokenInfo = createValidTokenInfo(true);
+
+        when(mockValkeyClient.getSpotifyAPITokenAsync(successfulSessionId))
+            .thenReturn(CompletableFuture.completedFuture(Pair.of(successfulSessionId, tokenInfo)));
+
+        when(mockSpotifyApiBuilder.build()).thenReturn(mockApi);
+
+        var mockCreds = mock(AuthorizationCodeCredentials.class);
+
+        try (MockedConstruction<SpotifyApiGateway> mockGateway = mockConstruction(SpotifyApiGateway.class,
+            (mock, context) -> {
+                when(mock.refreshAuthorizationTokensAsync(any()))
+                    .thenReturn(CompletableFuture.completedFuture(mockCreds));
+            }
+        )) {
+
+            var exception = new JsonGenerationException("Serialization failed", mock(JsonGenerator.class));
+            when(mockValkeyClient.upsertSpotifyAPITokenAsync(successfulSessionId, tokenInfo))
+                .thenThrow(exception);
+
+            var completionException = assertThrows(CompletionException.class, () -> {
+                spotifyApiConnection.createApiClientAsync(successfulSessionId.toString()).join();
+            });
+
+            assertTrue(completionException.getCause().getMessage().contains("Serialization failed"));
+            assertTrue(completionException.getCause().getMessage().contains("JsonGenerationException"));
+            assertInstanceOf(SpotifyClientBuildException.class, completionException.getCause());
+            assertInstanceOf(JsonProcessingException.class, completionException.getCause().getCause());
+        }
+
+
     }
 
     //#endregion
