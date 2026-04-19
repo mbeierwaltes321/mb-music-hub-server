@@ -57,7 +57,7 @@ public class SpotifyApiConnection {
      * This method creates a Spotify API client with the provided authorization token information. It handles token refreshing if necessary.
      * @param authTokenInfo The authorization token information to set to the Spotify API Client
      * @return The Spotify API Client object
-å     */
+     */
     private CompletableFuture<SpotifyApi> buildSpotifyClientFromTokens(Pair<UUID, SpotifyTokenInfo> authTokenInfo) {
 
         if (authTokenInfo == null || authTokenInfo.getFirst() == null || authTokenInfo.getSecond() == null) {

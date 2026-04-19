@@ -1,5 +1,6 @@
 package com.mbmusic.hubserver.Connections;
 
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -14,6 +15,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
 
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedConstruction;
@@ -26,6 +28,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import com.mbmusic.hubserver.BaseTest;
 import com.mbmusic.hubserver.Connections.Clients.ValkeyClient;
 import com.mbmusic.hubserver.Connections.Exceptions.InvalidSessionIdException;
+import com.mbmusic.hubserver.Connections.Exceptions.SpotifyClientBuildException;
 import com.mbmusic.hubserver.Connections.Models.SpotifyTokenInfo;
 
 import se.michaelthelin.spotify.SpotifyApi;
@@ -74,6 +77,77 @@ public class SpotifyApiConnectionTests extends BaseTest {
      */
 
     /**
+     * This method tests that invalid input is handled when attempting to create the SpotifyApiClient.
+     * @throws Exception
+     */
+    @Test
+    public void shouldNotCreateApiClientFromInvalidInput() throws Exception {
+        String emptySessionId = "";
+        String nullSessionId = null;
+
+        InvalidSessionIdException exception = assertThrows(InvalidSessionIdException.class, () -> {
+            spotifyApiConnection.createApiClientAsync(emptySessionId);
+        });
+
+        assertTrue(exception.getMessage().contains("Invalid Session Id"));
+
+        exception = assertThrows(InvalidSessionIdException.class, () -> {
+            spotifyApiConnection.createApiClientAsync(nullSessionId);
+        });
+
+        assertTrue(exception.getMessage().contains("Invalid Session Id"));
+    }
+
+    /**
+     * This method tests the scenario when invalid token info is passed to build the spotify client
+     * @throws Exception
+     */
+    @Test
+    public void shouldNotBuildSpotifyClientBecauseOfInvalidTokens() throws Exception {
+        when(mockValkeyClient.getSpotifyAPITokenAsync(successfulSessionId))
+            .thenReturn(CompletableFuture.completedFuture(null));
+
+        CompletionException exception = assertThrows(CompletionException.class, () -> {
+            spotifyApiConnection.createApiClientAsync(successfulSessionId.toString()).join();
+        });
+
+        assertInstanceOf(SpotifyClientBuildException.class, exception.getCause());
+        assertTrue(exception.getMessage().contains("Invalid token information for Spotify Client"));
+    }
+
+    /**
+     * This method tests a successful build of the Spotify Client from tokens without a referesh
+     * @throws Exception
+     */
+    @Test
+    public void shouldBuildSpotifyClientFromTokensWithoutRefresh() throws Exception {        
+        SpotifyTokenInfo tokenInfo = createValidTokenInfo(false);
+
+        var sessionTokenPair = Pair.of(successfulSessionId, tokenInfo);
+        when(mockValkeyClient.getSpotifyAPITokenAsync(successfulSessionId))
+            .thenReturn(CompletableFuture.completedFuture(sessionTokenPair));
+
+        SpotifyApi api = SpotifyApi
+            .builder()
+            .setAccessToken(tokenInfo.getAccessToken())
+            .setRefreshToken(tokenInfo.getRefreshToken())
+            .build();
+        SpotifyApi spyApi = spy(api);
+        when(mockSpotifyApiBuilder.build()).thenReturn(spyApi);
+
+        SpotifyApi returnedSpotifyClient = 
+            spotifyApiConnection.createApiClientAsync(successfulSessionId.toString()).join();
+
+        //Verify that a token refresh did not happen
+        verify(mockValkeyClient, times(0))
+            .upsertSpotifyAPITokenAsync(any(UUID.class), any(SpotifyTokenInfo.class));
+
+        assertTrue(returnedSpotifyClient.getAccessToken() == tokenInfo.getAccessToken() &&
+            returnedSpotifyClient.getRefreshToken() == tokenInfo.getRefreshToken());
+
+    }
+
+        /**
      * This method tests a successful creation of a Spotify Client with a token refresh
      * @throws Exception
      */
@@ -116,60 +190,6 @@ public class SpotifyApiConnectionTests extends BaseTest {
             //Finally, verify that the updated tokens are updated
             assertTrue(returnedSpotifyClient.getAccessToken() == newTokenInfo.getAccessToken());
         }
-    }
-
-    /**
-     * This method tests a successful build of the Spotify Client from tokens without a referesh
-     * @throws Exception
-     */
-    @Test
-    public void shouldBuildSpotifyClientFromTokensWithoutRefresh() throws Exception {        
-        SpotifyTokenInfo tokenInfo = createValidTokenInfo(false);
-
-        var sessionTokenPair = Pair.of(successfulSessionId, tokenInfo);
-        when(mockValkeyClient.getSpotifyAPITokenAsync(successfulSessionId))
-            .thenReturn(CompletableFuture.completedFuture(sessionTokenPair));
-
-        SpotifyApi api = SpotifyApi
-            .builder()
-            .setAccessToken(tokenInfo.getAccessToken())
-            .setRefreshToken(tokenInfo.getRefreshToken())
-            .build();
-        SpotifyApi spyApi = spy(api);
-        when(mockSpotifyApiBuilder.build()).thenReturn(spyApi);
-
-        SpotifyApi returnedSpotifyClient = 
-            spotifyApiConnection.createApiClientAsync(successfulSessionId.toString()).join();
-
-        //Verify that a token refresh did not happen
-        verify(mockValkeyClient, times(0))
-            .upsertSpotifyAPITokenAsync(any(UUID.class), any(SpotifyTokenInfo.class));
-
-        assertTrue(returnedSpotifyClient.getAccessToken() == tokenInfo.getAccessToken() &&
-            returnedSpotifyClient.getRefreshToken() == tokenInfo.getRefreshToken());
-
-    }
-
-    /**
-     * This method tests that invalid input is handled when attempting to create the SpotifyApiClient.
-     * @throws Exception
-     */
-    @Test
-    public void shouldNotCreateApiClientFromInvalidInput() throws Exception {
-        String emptySessionId = "";
-        String nullSessionId = null;
-
-        InvalidSessionIdException exception = assertThrows(InvalidSessionIdException.class, () -> {
-            spotifyApiConnection.createApiClientAsync(emptySessionId);
-        });
-
-        assertTrue(exception.getMessage().contains("Invalid Session Id"));
-
-        exception = assertThrows(InvalidSessionIdException.class, () -> {
-            spotifyApiConnection.createApiClientAsync(nullSessionId);
-        });
-
-        assertTrue(exception.getMessage().contains("Invalid Session Id"));
     }
 
     //#endregion
