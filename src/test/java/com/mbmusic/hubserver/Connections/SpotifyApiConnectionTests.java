@@ -3,7 +3,6 @@ package com.mbmusic.hubserver.Connections;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockConstruction;
 import static org.mockito.Mockito.spy;
@@ -75,41 +74,39 @@ public class SpotifyApiConnectionTests extends BaseTest {
      */
 
     /**
-     * This method tests a successful build of the Spotify Api Client from tokens with a refresh
+     * This method tests a successful creation of a Spotify Client with a token refresh
      * @throws Exception
      */
     @Test
     public void shouldBuildSpotifyClientFromTokensWithRefresh() throws Exception {
 
-        //TODO - Make this test better; add verify statements and such
         SpotifyTokenInfo oldTokenInfo = createValidTokenInfo(true);
         SpotifyTokenInfo newTokenInfo = createValidTokenInfo(false);
         newTokenInfo.setAccessToken("New Access Token");
-        newTokenInfo.setRefreshToken("New Refresh Token");
 
         var sessionTokenPair = Pair.of(successfulSessionId, oldTokenInfo);
         when(mockValkeyClient.getSpotifyAPITokenAsync(successfulSessionId))
             .thenReturn(CompletableFuture.completedFuture(sessionTokenPair));
 
-        SpotifyApi api = SpotifyApi.builder().build();
-        api.setAccessToken(oldTokenInfo.getAccessToken());
-        api.setRefreshToken(oldTokenInfo.getRefreshToken());
+        SpotifyApi api = SpotifyApi
+            .builder()
+            .setAccessToken(oldTokenInfo.getAccessToken())
+            .setRefreshToken(oldTokenInfo.getRefreshToken())
+            .build();
 
         when(mockSpotifyApiBuilder.build()).thenReturn(api);
         
-        AuthorizationCodeCredentials creds = new AuthorizationCodeCredentials.Builder().build();
-        AuthorizationCodeCredentials credsSpy = spy(creds);
+        AuthorizationCodeCredentials creds = mock(AuthorizationCodeCredentials.class);
 
         try (MockedConstruction<SpotifyApiGateway> mockGateway = mockConstruction(SpotifyApiGateway.class,
             (mock, context) -> {
                 when(mock.refreshAuthorizationTokensAsync(oldTokenInfo.getRefreshToken()))
-                    .thenReturn(CompletableFuture.completedFuture(credsSpy));
+                    .thenReturn(CompletableFuture.completedFuture(creds));
             }
         )) {
 
-            doReturn(ELEVEN_DAYS_SECONDS).when(credsSpy).getExpiresIn();
-            doReturn(newTokenInfo.getAccessToken()).when(credsSpy).getAccessToken();
-            doReturn(newTokenInfo.getRefreshToken()).when(credsSpy).getRefreshToken();
+            when(creds.getExpiresIn()).thenReturn(ELEVEN_DAYS_SECONDS);
+            when(creds.getAccessToken()).thenReturn(newTokenInfo.getAccessToken());
             
             when(mockValkeyClient.upsertSpotifyAPITokenAsync(any(), any()))
                 .thenReturn(CompletableFuture.completedFuture(true));
@@ -117,11 +114,8 @@ public class SpotifyApiConnectionTests extends BaseTest {
             var returnedSpotifyClient = spotifyApiConnection.createApiClientAsync(successfulSessionId.toString()).join();
 
             //Finally, verify that the updated tokens are updated
-            assertTrue(returnedSpotifyClient.getAccessToken() == newTokenInfo.getAccessToken() &&
-                returnedSpotifyClient.getRefreshToken() == newTokenInfo.getRefreshToken());
+            assertTrue(returnedSpotifyClient.getAccessToken() == newTokenInfo.getAccessToken());
         }
-        
-        
     }
 
     /**
@@ -129,24 +123,27 @@ public class SpotifyApiConnectionTests extends BaseTest {
      * @throws Exception
      */
     @Test
-    public void shouldBuildSpotifyClientFromTokensWithoutRefresh() throws Exception {
-        //TODO - Try to improve this test with spites instead of mocks if possible
+    public void shouldBuildSpotifyClientFromTokensWithoutRefresh() throws Exception {        
         SpotifyTokenInfo tokenInfo = createValidTokenInfo(false);
 
         var sessionTokenPair = Pair.of(successfulSessionId, tokenInfo);
         when(mockValkeyClient.getSpotifyAPITokenAsync(successfulSessionId))
             .thenReturn(CompletableFuture.completedFuture(sessionTokenPair));
 
-        SpotifyApi mockApi = mock(SpotifyApi.class);
-        when(mockSpotifyApiBuilder.build()).thenReturn(mockApi);
-        when(mockApi.getAccessToken()).thenReturn(tokenInfo.getAccessToken());
-        when(mockApi.getRefreshToken()).thenReturn(tokenInfo.getRefreshToken());
+        SpotifyApi api = SpotifyApi
+            .builder()
+            .setAccessToken(tokenInfo.getAccessToken())
+            .setRefreshToken(tokenInfo.getRefreshToken())
+            .build();
+        SpotifyApi spyApi = spy(api);
+        when(mockSpotifyApiBuilder.build()).thenReturn(spyApi);
 
         SpotifyApi returnedSpotifyClient = 
             spotifyApiConnection.createApiClientAsync(successfulSessionId.toString()).join();
 
         //Verify that a token refresh did not happen
-        verify(mockApi, times(0)).authorizationCodeRefresh();
+        verify(mockValkeyClient, times(0))
+            .upsertSpotifyAPITokenAsync(any(UUID.class), any(SpotifyTokenInfo.class));
 
         assertTrue(returnedSpotifyClient.getAccessToken() == tokenInfo.getAccessToken() &&
             returnedSpotifyClient.getRefreshToken() == tokenInfo.getRefreshToken());

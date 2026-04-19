@@ -85,8 +85,8 @@ public class SpotifyApiGateway {
      * @return
      */
     public CompletableFuture<AuthorizationCodeCredentials> refreshAuthorizationTokensAsync(String refreshToken) {
-        return spotifyClient.authorizationCodeRefresh(spotifyClient.getClientId(), 
-            spotifyClient.getClientSecret(), refreshToken)
+        return spotifyClient.authorizationCodeRefresh(spotifyClient.getClientId(), spotifyClient.getClientSecret(),
+            refreshToken)
                 .build()
                 .executeAsync();
     }

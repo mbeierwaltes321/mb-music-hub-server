@@ -99,39 +99,50 @@ public class SpotifyApiConnection {
         return CompletableFuture.completedFuture(apiClient);
     }
 
-    private CompletableFuture<SpotifyTokenInfo> refreshSpotifyTokenAync(UUID sessionId, SpotifyTokenInfo authTokens, SpotifyApi apiClient, LocalDateTime currentTimeUTC) {
-        
-        apiClient.setRefreshToken(authTokens.getRefreshToken());
-        SpotifyApiGateway spotifyApiGateway = new SpotifyApiGateway(apiClient);
+    /**
+     * This method performs a token refresh and updates the token information for the provided session id
+     * @param sessionId The ID of the session for which to update the token information
+     * @param authTokens The tokens information to be refereshed
+     * @param apiClient The Spotify API for which to perform the refresh request
+     * @param currentTimeUTC The current time in UTC
+     * @return The spotify token information with updated tokens
+     */
+    private CompletableFuture<SpotifyTokenInfo> refreshSpotifyTokenAync(UUID sessionId, SpotifyTokenInfo authTokens,
+        SpotifyApi apiClient, LocalDateTime currentTimeUTC) {
 
-        CompletableFuture<AuthorizationCodeCredentials> newCredsFuture = 
-            spotifyApiGateway.refreshAuthorizationTokensAsync(authTokens.getRefreshToken());
+            SpotifyApiGateway spotifyApiGateway = new SpotifyApiGateway(apiClient);
 
-        return newCredsFuture.thenApply(updatedTokens -> {
+            CompletableFuture<AuthorizationCodeCredentials> newCredsFuture = 
+                spotifyApiGateway.refreshAuthorizationTokensAsync(authTokens.getRefreshToken());
 
-            //Set the auth token object's fields
-            authTokens.setTokenGeneratedAt(currentTimeUTC);
-            authTokens.setExpiresIn(updatedTokens.getExpiresIn());
-            authTokens.setAccessToken(updatedTokens.getAccessToken());
-            authTokens.setRefreshToken(updatedTokens.getRefreshToken());
+            return newCredsFuture.thenApply(updatedTokens -> {
 
-            return authTokens;
-        }).thenCompose(updatedTokens -> {
+                //Set the auth token object's fields
+                authTokens.setTokenGeneratedAt(currentTimeUTC);
+                authTokens.setExpiresIn(updatedTokens.getExpiresIn());
+                authTokens.setAccessToken(updatedTokens.getAccessToken());
 
-            try {
-                return valkeyClient.upsertSpotifyAPITokenAsync(sessionId, updatedTokens)
-                    .thenApply(inserted -> {
-                        return updatedTokens;
-                    });
-            } catch (InvalidSessionIdException e) {
-                e.printStackTrace();
-                throw new SpotifyClientBuildException(e);
-            } catch (JsonProcessingException e) {
-                e.printStackTrace();
-                throw new SpotifyClientBuildException(e);
-            }
-        });
+                //This request may not return updated refresh tokens; only update it if it did
+                if (updatedTokens.getRefreshToken() != null && !updatedTokens.getRefreshToken().isBlank()) {
+                    authTokens.setRefreshToken(updatedTokens.getRefreshToken());
+                }
 
+                return authTokens;
+            }).thenCompose(updatedTokens -> {
+
+                try {
+                    return valkeyClient.upsertSpotifyAPITokenAsync(sessionId, updatedTokens)
+                        .thenApply(inserted -> {
+                            return updatedTokens;
+                        });
+                } catch (InvalidSessionIdException e) {
+                    e.printStackTrace();
+                    throw new SpotifyClientBuildException(e);
+                } catch (JsonProcessingException e) {
+                    e.printStackTrace();
+                    throw new SpotifyClientBuildException(e);
+                }
+            });
     }
     
     //#endregion
