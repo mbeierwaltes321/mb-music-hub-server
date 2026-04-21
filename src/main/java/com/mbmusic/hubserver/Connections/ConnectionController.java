@@ -172,6 +172,7 @@ public class ConnectionController {
             .thenAccept(inserted -> {
                 try {
                     if (!inserted){
+                        //TODO - eventually decide whether to handle this in this application or the front end
                         response.sendRedirect(redirectUrl.toString() + "/error");
                     }
                     response.sendRedirect(redirectUrl.toString());

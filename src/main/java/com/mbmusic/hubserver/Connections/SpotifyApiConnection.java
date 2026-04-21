@@ -12,6 +12,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.mbmusic.hubserver.Connections.Clients.ValkeyClient;
 import com.mbmusic.hubserver.Connections.Exceptions.InvalidSessionIdException;
 import com.mbmusic.hubserver.Connections.Exceptions.SpotifyClientBuildException;
+import com.mbmusic.hubserver.Connections.Exceptions.ValkeyOperationException;
 import com.mbmusic.hubserver.Connections.Models.SpotifyTokenInfo;
 
 import se.michaelthelin.spotify.SpotifyApi;
@@ -129,18 +130,22 @@ public class SpotifyApiConnection {
 
                 return authTokens;
             }).thenCompose(updatedTokens -> {
-
+                String errorPrefix = String.format("Error updating token information in Valkey for session %s: ", sessionId.toString());
                 try {
                     return valkeyClient.upsertSpotifyAPITokenAsync(sessionId, updatedTokens)
                         .thenApply(inserted -> {
+                            if (!inserted) {
+                                throw new ValkeyOperationException(errorPrefix + "Valkey returned an unsuccessful status");
+                            }
+
                             return updatedTokens;
                         });
                 } catch (InvalidSessionIdException e) {
                     e.printStackTrace();
-                    throw new SpotifyClientBuildException(e);
+                    throw new ValkeyOperationException(errorPrefix + e.getMessage(), e);
                 } catch (JsonProcessingException e) {
                     e.printStackTrace();
-                    throw new SpotifyClientBuildException(e);
+                    throw new ValkeyOperationException(errorPrefix + e.getMessage(), e);
                 }
             });
     }

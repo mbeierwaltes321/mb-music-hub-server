@@ -27,14 +27,12 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import com.fasterxml.jackson.core.JsonGenerationException;
 import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.core.JsonLocation;
-import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.exc.StreamWriteException;
 import com.mbmusic.hubserver.BaseTest;
 import com.mbmusic.hubserver.Connections.Clients.ValkeyClient;
 import com.mbmusic.hubserver.Connections.Exceptions.InvalidSessionIdException;
 import com.mbmusic.hubserver.Connections.Exceptions.SpotifyClientBuildException;
+import com.mbmusic.hubserver.Connections.Exceptions.ValkeyOperationException;
 import com.mbmusic.hubserver.Connections.Models.SpotifyTokenInfo;
 
 import se.michaelthelin.spotify.SpotifyApi;
@@ -69,6 +67,16 @@ public class SpotifyApiConnectionTests extends BaseTest {
         tokenInfo.setExpiresIn(!expired ? ELEVEN_DAYS_SECONDS : 0);
 
         return tokenInfo;
+    }
+
+    private void mockSpotifyApiAndValkey(SpotifyTokenInfo tokenInfo) throws Exception {
+        SpotifyApi mockApi = mock(SpotifyApi.class);
+
+        when(mockValkeyClient.getSpotifyAPITokenAsync(successfulSessionId))
+            .thenReturn(CompletableFuture.completedFuture(Pair.of(successfulSessionId, tokenInfo)));
+
+        when(mockSpotifyApiBuilder.build()).thenReturn(mockApi);
+        
     }
 
     //#endregion
@@ -204,13 +212,8 @@ public class SpotifyApiConnectionTests extends BaseTest {
      */
     @Test
     public void shouldHandleJsonProcessingExceptionWhenRefreshingToken() throws Exception {
-        SpotifyApi mockApi = mock(SpotifyApi.class);
         var tokenInfo = createValidTokenInfo(true);
-
-        when(mockValkeyClient.getSpotifyAPITokenAsync(successfulSessionId))
-            .thenReturn(CompletableFuture.completedFuture(Pair.of(successfulSessionId, tokenInfo)));
-
-        when(mockSpotifyApiBuilder.build()).thenReturn(mockApi);
+        mockSpotifyApiAndValkey(tokenInfo);
 
         var mockCreds = mock(AuthorizationCodeCredentials.class);
 
@@ -230,11 +233,42 @@ public class SpotifyApiConnectionTests extends BaseTest {
             });
 
             assertTrue(completionException.getCause().getMessage().contains("Serialization failed"));
-            assertTrue(completionException.getCause().getMessage().contains("JsonGenerationException"));
-            assertInstanceOf(SpotifyClientBuildException.class, completionException.getCause());
+            assertTrue(completionException.getCause().getMessage().contains(successfulSessionId.toString()));
+            assertInstanceOf(ValkeyOperationException.class, completionException.getCause());
             assertInstanceOf(JsonProcessingException.class, completionException.getCause().getCause());
         }
+    }
 
+    /**
+     * This test handles the scenario where there upsertSpotifyAPITokenAsync returns false
+     * @throws Exception
+     */
+    @Test
+    public void shouldHandleFailureToUpdateRefreshToken() throws Exception {
+        var tokenInfo = createValidTokenInfo(true);
+        mockSpotifyApiAndValkey(tokenInfo);
+
+        var mockCreds = mock(AuthorizationCodeCredentials.class);
+
+        try (MockedConstruction<SpotifyApiGateway> mockGateway = mockConstruction(SpotifyApiGateway.class,
+            (mock, context) -> {
+                when(mock.refreshAuthorizationTokensAsync(any()))
+                    .thenReturn(CompletableFuture.completedFuture(mockCreds));
+            }
+        )) {
+
+            when(mockValkeyClient.upsertSpotifyAPITokenAsync(successfulSessionId, tokenInfo))
+                .thenReturn(CompletableFuture.completedFuture(false));
+
+            var completionException = assertThrows(CompletionException.class, () -> {
+                spotifyApiConnection.createApiClientAsync(successfulSessionId.toString()).join();
+            });
+
+            assertTrue(completionException.getCause().getMessage().contains("Valkey returned an unsuccessful status"));
+            assertTrue(completionException.getCause().getMessage().contains(successfulSessionId.toString()));
+            assertTrue(completionException.getCause().getMessage().contains(successfulSessionId.toString()));
+            assertInstanceOf(ValkeyOperationException.class, completionException.getCause());
+        }
 
     }
 

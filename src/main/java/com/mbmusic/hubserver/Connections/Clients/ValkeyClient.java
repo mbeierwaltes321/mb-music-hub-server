@@ -78,7 +78,8 @@ public class ValkeyClient {
      * @throws JsonProcessingException
      * @throws InvalidSessionIdException
      */
-    public CompletableFuture<Boolean> upsertSpotifyAPITokenAsync(UUID sessionID, SpotifyTokenInfo tokenInfo) throws JsonProcessingException, InvalidSessionIdException {
+    public CompletableFuture<Boolean> upsertSpotifyAPITokenAsync(UUID sessionID, SpotifyTokenInfo tokenInfo)
+        throws JsonProcessingException, InvalidSessionIdException {
 
         //Validate the input parameters
         if (sessionID == null || sessionID.equals(UUID.fromString("00000000-0000-0000-0000-000000000000")) || tokenInfo == null) {
