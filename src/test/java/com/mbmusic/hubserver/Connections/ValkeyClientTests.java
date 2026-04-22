@@ -1,6 +1,7 @@
 package com.mbmusic.hubserver.Connections;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
@@ -14,6 +15,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import com.mbmusic.hubserver.BaseTest;
 import com.mbmusic.hubserver.Connections.Clients.ValkeyClient;
+import com.mbmusic.hubserver.Connections.Exceptions.InvalidSessionIdException;
 import com.mbmusic.hubserver.Connections.Models.SpotifyTokenInfo;
 
 import glide.api.models.GlideString;
@@ -60,4 +62,27 @@ public class ValkeyClientTests extends BaseTest {
                 expectedTokenInfo.getTokenGeneratedAt().isEqual(returnedToken.getTokenGeneratedAt());
         });
     }
+
+    /**
+     * This method tests both scenarios in getSpotifyAPITokenAsync involving an invalid session id
+     */
+    @Test
+    public void shouldGetInvalidSessionIdWhenRetrievingToken() {
+        UUID nullInvalidUuid = null;
+        UUID nilInvalidUuid = UUID.fromString("00000000-0000-0000-0000-000000000000");
+
+        var exceptionFromNull = assertThrows(InvalidSessionIdException.class, () -> {
+            valkeyClient.getSpotifyAPITokenAsync(nullInvalidUuid);
+        });
+
+        var exceptionFromNil = assertThrows(InvalidSessionIdException.class, () -> {
+            valkeyClient.getSpotifyAPITokenAsync(nilInvalidUuid);
+        });
+
+        assertTrue(() -> {
+            return exceptionFromNull.getMessage().contains("Provided Session ID Invalid") &&
+                exceptionFromNil.getMessage().contains("Provided Session ID Invalid");
+        });
+    }
+
 }
