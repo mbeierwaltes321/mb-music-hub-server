@@ -1,18 +1,21 @@
 package com.mbmusic.hubserver.Connections;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.mbmusic.hubserver.BaseTest;
 import com.mbmusic.hubserver.Connections.Clients.ValkeyClient;
 import com.mbmusic.hubserver.Connections.Exceptions.InvalidSessionIdException;
@@ -33,6 +36,15 @@ public class ValkeyClientTests extends BaseTest {
 
     final private GlideString serializedTestToken = GlideString.gs("{\"accessToken\":\"BQB7_EXAMPLE_TOKEN_STRING_12345\",\"refreshToken\":\"0A1B2C3D4E5F6G7H8I9J0K\",\"expiresIn\":3600,\"tokenGeneratedAt\":\"2026-04-21T20:28:06\"}");
 
+    private SpotifyTokenInfo getExpectedTokenInfo() throws Exception {
+        return mapper.readValue(serializedTestToken.getString(), SpotifyTokenInfo.class);
+    }
+
+    private void mockGlideTokenRetrieval() {
+        when(mockGlideClient.get(successfulSessionKey))
+            .thenReturn(CompletableFuture.completedFuture(serializedTestToken));
+    }
+
     /**
      * Test plan
      * 1. Create happy and sad path tests for getSpotifyAPITokenAsync
@@ -47,9 +59,8 @@ public class ValkeyClientTests extends BaseTest {
     @Test
     public void shouldGetSpotifyApiToken() throws Exception {
 
-        SpotifyTokenInfo expectedTokenInfo = mapper.readValue(serializedTestToken.getString(), SpotifyTokenInfo.class);
-        when(mockGlideClient.get(successfulSessionKey))
-            .thenReturn(CompletableFuture.completedFuture(serializedTestToken));
+        SpotifyTokenInfo expectedTokenInfo = getExpectedTokenInfo();
+        mockGlideTokenRetrieval();
         
         var tokenPair = valkeyClient.getSpotifyAPITokenAsync(successfulUuid).join();
 
@@ -83,6 +94,26 @@ public class ValkeyClientTests extends BaseTest {
             return exceptionFromNull.getMessage().contains("Provided Session ID Invalid") &&
                 exceptionFromNil.getMessage().contains("Provided Session ID Invalid");
         });
+    }
+
+    /**
+     * This method tests the scenario where there is a deserialization exception
+     * @throws Exception
+     */
+    @Test
+    public void shouldThrowJsonMappingExceptionWhenRetrievingToken() throws Exception {
+
+        GlideString invalidJson = GlideString.gs("");
+
+        when(mockGlideClient.get(successfulSessionKey))
+            .thenReturn(CompletableFuture.completedFuture(invalidJson));
+
+        var completionException = assertThrows(CompletionException.class, () -> {
+            valkeyClient.getSpotifyAPITokenAsync(successfulUuid).join();
+        });
+
+        assertInstanceOf(JsonMappingException.class, completionException.getCause());
+
     }
 
 }
