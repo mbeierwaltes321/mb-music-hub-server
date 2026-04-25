@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.mbmusic.hubserver.BaseTest;
 import com.mbmusic.hubserver.Connections.Clients.ValkeyClient;
@@ -47,7 +48,7 @@ public class ValkeyClientTests extends BaseTest {
 
     /**
      * Test plan
-     * 1. Create happy and sad path tests for getSpotifyAPITokenAsync
+     * 1. Create happy and sad path tests for getSpotifyAPITokenAsync --DONE--
      * 2. Create happy and sad path tests for upsertSpotifyAPITokenAsync
      * 3. Create happy and sad path tests for removeTokenAsync
      */
@@ -97,13 +98,14 @@ public class ValkeyClientTests extends BaseTest {
     }
 
     /**
-     * This method tests the scenario where there is a deserialization exception
+     * This method tests that an invalid mapping throws the proper exception
      * @throws Exception
      */
     @Test
     public void shouldThrowJsonMappingExceptionWhenRetrievingToken() throws Exception {
 
-        GlideString invalidJson = GlideString.gs("");
+        //Replace the date with an integer to create an invalid mapping
+        GlideString invalidJson = GlideString.gs(serializedTestToken.toString().replace("\"2026-04-21T20:28:06\"", "11"));
 
         when(mockGlideClient.get(successfulSessionKey))
             .thenReturn(CompletableFuture.completedFuture(invalidJson));
@@ -113,7 +115,25 @@ public class ValkeyClientTests extends BaseTest {
         });
 
         assertInstanceOf(JsonMappingException.class, completionException.getCause());
+    }
 
+    /**
+     * This method tests that invalid json throws a proper exception
+     * @throws Exception
+     */
+    @Test
+    public void shouldThrowJsonParsingExceptionWhenRetrievingToken() throws Exception {
+
+        GlideString invalidJson = GlideString.gs("sdjflha38*@H# HHDFSKLJD HFLDSJbfwe7h2uh3");
+
+        when(mockGlideClient.get(successfulSessionKey))
+            .thenReturn(CompletableFuture.completedFuture(invalidJson));
+
+        var completionException = assertThrows(CompletionException.class, () -> {
+            valkeyClient.getSpotifyAPITokenAsync(successfulUuid).join();
+        });
+
+        assertInstanceOf(JsonParseException.class, completionException.getCause());
     }
 
 }
