@@ -4,6 +4,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
 import java.util.UUID;
@@ -23,6 +25,7 @@ import com.mbmusic.hubserver.Connections.Exceptions.InvalidSessionIdException;
 import com.mbmusic.hubserver.Connections.Models.SpotifyTokenInfo;
 
 import glide.api.models.GlideString;
+import glide.api.models.commands.SetOptions;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -136,4 +139,38 @@ public class ValkeyClientTests extends BaseTest {
         assertInstanceOf(JsonParseException.class, completionException.getCause());
     }
 
+    /**
+     * This method mocks a successful upsert of the spotify api token
+     * @throws Exception
+     */
+    @Test
+    public void shouldUpsertSpotifyAPIToken() throws Exception {
+
+        when(mockGlideClient.set(eq(successfulSessionKey), eq(serializedTestToken), any(SetOptions.class)))
+            .thenReturn(CompletableFuture.completedFuture("OK"));
+
+        assertEquals(valkeyClient.upsertSpotifyAPITokenAsync(successfulUuid, getExpectedTokenInfo()).join(), true);
+    }
+
+    /**
+     * This method tests that an invalid session exceptions is thrown when attempting to upsert an invalid session id
+     * @throws Exception
+     */
+    @Test
+    public void shouldGetInvalidSessionWhenUpsertingSpotifyAPIToken() throws Exception {
+        UUID nullInvalidUuid = null;
+        UUID nilInvalidUuid = UUID.fromString("00000000-0000-0000-0000-000000000000");
+
+        var exceptionFromNull = assertThrows(InvalidSessionIdException.class, () -> {
+            valkeyClient.upsertSpotifyAPITokenAsync(nullInvalidUuid, getExpectedTokenInfo()).join();
+        });
+
+        assertTrue(exceptionFromNull.getMessage().contains("Provided Session ID Invalid"));
+
+        var exceptionFromNil = assertThrows(InvalidSessionIdException.class, () -> {
+            valkeyClient.upsertSpotifyAPITokenAsync(nilInvalidUuid, getExpectedTokenInfo()).join();
+        });
+
+        assertTrue(exceptionFromNil.getMessage().contains("Provided Session ID Invalid"));
+    }
 }
