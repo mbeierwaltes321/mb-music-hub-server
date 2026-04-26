@@ -1,6 +1,7 @@
 package com.mbmusic.hubserver.Connections;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -47,6 +48,11 @@ public class ValkeyClientTests extends BaseTest {
     private void mockGlideTokenRetrieval() {
         when(mockGlideClient.get(successfulSessionKey))
             .thenReturn(CompletableFuture.completedFuture(serializedTestToken));
+    }
+
+    private void mockGlideUpsert(String response) {
+        when(mockGlideClient.set(eq(successfulSessionKey), eq(serializedTestToken), any(SetOptions.class)))
+            .thenReturn(CompletableFuture.completedFuture(response));
     }
 
     /**
@@ -146,10 +152,33 @@ public class ValkeyClientTests extends BaseTest {
     @Test
     public void shouldUpsertSpotifyAPIToken() throws Exception {
 
-        when(mockGlideClient.set(eq(successfulSessionKey), eq(serializedTestToken), any(SetOptions.class)))
-            .thenReturn(CompletableFuture.completedFuture("OK"));
+        mockGlideUpsert("OK");
 
         assertEquals(valkeyClient.upsertSpotifyAPITokenAsync(successfulUuid, getExpectedTokenInfo()).join(), true);
+    }
+
+    /**
+     * This method tests the scenario where the upsert returned a null response
+     * @throws Exception
+     */
+    @Test
+    public void upsertTokenShouldReturnFalseOnNullResponse() throws Exception {
+        
+        mockGlideUpsert(null);
+        
+        assertFalse(valkeyClient.upsertSpotifyAPITokenAsync(successfulUuid, getExpectedTokenInfo()).join());
+    }
+
+    /**
+     * This method tests the scenario where the token upsert returned a non-OK value
+     * @throws Exception
+     */
+    @Test
+    public void upsertTokenShouldReturnFalseInvalidResponse() throws Exception {
+        
+        mockGlideUpsert("Oops!");
+        
+        assertFalse(valkeyClient.upsertSpotifyAPITokenAsync(successfulUuid, getExpectedTokenInfo()).join());
     }
 
     /**
@@ -173,4 +202,5 @@ public class ValkeyClientTests extends BaseTest {
 
         assertTrue(exceptionFromNil.getMessage().contains("Provided Session ID Invalid"));
     }
+
 }
