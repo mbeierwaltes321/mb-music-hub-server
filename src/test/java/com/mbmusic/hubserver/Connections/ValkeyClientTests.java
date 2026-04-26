@@ -54,14 +54,7 @@ public class ValkeyClientTests extends BaseTest {
         when(mockGlideClient.set(eq(successfulSessionKey), eq(serializedTestToken), any(SetOptions.class)))
             .thenReturn(CompletableFuture.completedFuture(response));
     }
-
-    /**
-     * Test plan
-     * 1. Create happy and sad path tests for getSpotifyAPITokenAsync --DONE--
-     * 2. Create happy and sad path tests for upsertSpotifyAPITokenAsync --DONE--
-     * 3. Create happy and sad path tests for removeTokenAsync
-     */
-
+    
     /**
      * This method tests a successful retrieval of Spotify API tokens
      * @throws Exception
@@ -207,9 +200,28 @@ public class ValkeyClientTests extends BaseTest {
      * This method tests for a successful deletion of an existing spotify session id
      */
     @Test
-    public void shouldDeleteSpotifyApiToken() {
-
+    public void shouldDeleteSpotifyApiToken() throws InvalidSessionIdException {
         when(mockGlideClient.del((GlideString[])any())).thenReturn(CompletableFuture.completedFuture(1L));
         assertTrue(valkeyClient.removeTokenAsync(successfulUuid).join());
     }
+
+    /**
+     * This method tests that an invalid session id exception is thrown when passing an invalid session id to 
+     */
+    @Test
+    public void shouldHandleInvalidSessionIdWhenDeletingTokenInfo() {
+        var exception = assertThrows(InvalidSessionIdException.class, () -> {
+            UUID nilUuid = UUID.fromString("00000000-0000-0000-0000-000000000000");
+            valkeyClient.removeTokenAsync(nilUuid);
+        });
+
+        assertTrue(exception.getMessage().contains("Invalid Session ID"));
+    }
+
+    @Test
+    public void shouldReturnFalseWhenZeroTokenRecordsAreDeleted() throws InvalidSessionIdException {
+        when(mockGlideClient.del((GlideString[])any())).thenReturn(CompletableFuture.completedFuture(0L));
+        assertFalse(valkeyClient.removeTokenAsync(successfulUuid).join());
+    }
+
 }

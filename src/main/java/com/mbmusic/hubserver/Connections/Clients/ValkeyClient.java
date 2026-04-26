@@ -117,10 +117,10 @@ public class ValkeyClient {
      * @param sessionId The ID of the session to delete
      * @return A {@link CompletableFuture} with a boolean value indicating success
      */
-    public CompletableFuture<Boolean> removeTokenAsync(UUID sessionId) {
+    public CompletableFuture<Boolean> removeTokenAsync(UUID sessionId) throws InvalidSessionIdException {
 
         if (!UUIDUtils.IsValidSessionId(sessionId)) {
-            return CompletableFuture.completedFuture(false);
+            throw new InvalidSessionIdException("Invalid Session ID");
         }
 
         GlideString[] keys = new GlideString[1];
@@ -130,6 +130,5 @@ public class ValkeyClient {
             .thenApply(numDeleted -> numDeleted.longValue() > 0);
 
     }
-
 
 }
