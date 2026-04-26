@@ -203,6 +203,13 @@ public class ValkeyClientTests extends BaseTest {
         assertTrue(exceptionFromNil.getMessage().contains("Provided Session ID Invalid"));
     }
 
-    
+    /**
+     * This method tests for a successful deletion of an existing spotify session id
+     */
+    @Test
+    public void shouldDeleteSpotifyApiToken() {
 
+        when(mockGlideClient.del((GlideString[])any())).thenReturn(CompletableFuture.completedFuture(1L));
+        assertTrue(valkeyClient.removeTokenAsync(successfulUuid).join());
+    }
 }
