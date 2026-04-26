@@ -58,7 +58,7 @@ public class ValkeyClientTests extends BaseTest {
     /**
      * Test plan
      * 1. Create happy and sad path tests for getSpotifyAPITokenAsync --DONE--
-     * 2. Create happy and sad path tests for upsertSpotifyAPITokenAsync
+     * 2. Create happy and sad path tests for upsertSpotifyAPITokenAsync --DONE--
      * 3. Create happy and sad path tests for removeTokenAsync
      */
 
@@ -202,5 +202,7 @@ public class ValkeyClientTests extends BaseTest {
 
         assertTrue(exceptionFromNil.getMessage().contains("Provided Session ID Invalid"));
     }
+
+    
 
 }

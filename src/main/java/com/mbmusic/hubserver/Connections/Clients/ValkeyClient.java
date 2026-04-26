@@ -13,6 +13,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.mbmusic.hubserver.Common.Utilities.TimeUtils;
+import com.mbmusic.hubserver.Common.Utilities.UUIDUtils;
 import com.mbmusic.hubserver.Connections.Exceptions.InvalidSessionIdException;
 import com.mbmusic.hubserver.Connections.Models.SpotifyTokenInfo;
 
@@ -43,7 +44,7 @@ public class ValkeyClient {
         throws InvalidSessionIdException {
 
         //Validate the incoming session id
-        if (sessionID == null || sessionID.equals(UUID.fromString("00000000-0000-0000-0000-000000000000")))
+        if (!UUIDUtils.IsValidSessionId(sessionID))
             throw new InvalidSessionIdException("Provided Session ID Invalid");
 
         //Retrieve the Spotify API Token
@@ -82,7 +83,7 @@ public class ValkeyClient {
         throws JsonProcessingException, InvalidSessionIdException {
 
         //Validate the input parameters
-        if (sessionID == null || sessionID.equals(UUID.fromString("00000000-0000-0000-0000-000000000000")) || tokenInfo == null) {
+        if (!UUIDUtils.IsValidSessionId(sessionID) || tokenInfo == null) {
             //No session id. Failed
             throw new InvalidSessionIdException("Provided Session ID Invalid");
         }
@@ -118,7 +119,7 @@ public class ValkeyClient {
      */
     public CompletableFuture<Boolean> removeTokenAsync(UUID sessionId) {
 
-        if (sessionId == null || sessionId.equals(UUID.fromString("00000000-0000-0000-0000-000000000000"))) {
+        if (!UUIDUtils.IsValidSessionId(sessionId)) {
             return CompletableFuture.completedFuture(false);
         }
 
