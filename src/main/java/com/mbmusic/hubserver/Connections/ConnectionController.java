@@ -2,6 +2,7 @@ package com.mbmusic.hubserver.Connections;
 
 import java.io.IOException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -16,7 +17,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.view.RedirectView;
-import org.springframework.web.util.UriComponentsBuilder;
 
 import com.mbmusic.hubserver.Common.Utilities.TimeUtils;
 import com.mbmusic.hubserver.Connections.Clients.ValkeyClient;
@@ -109,7 +109,7 @@ public class ConnectionController {
 
     /**
      * This method is called by the Spotify API. It is used to generate an authorization and referesh token
-     * @note When the state is returned to the client, you must verify that the state in the browser matches the state passed here
+     * @note When the state is returned to the client, you must verify that the state in the browser matches the state passed here (double check this)
      * @param code The code returned from the Spotify API used to authenticate the user
      * @param state The state-specific code used to identify the user and session
      * @throws IOException IO Exceptions performed while obtaining the authorization code
@@ -120,7 +120,7 @@ public class ConnectionController {
     @GetMapping("/redirect")
     public CompletableFuture<Void> generateSpotifyAuthToken(@RequestParam(name="code") String code, 
             @RequestParam(name="state") String state, HttpServletResponse response ) 
-                throws ParseException, SpotifyWebApiException, IOException, InvalidSessionIdException {
+                throws ParseException, SpotifyWebApiException, IOException, InvalidSessionIdException, URISyntaxException {
 
         SpotifyApiGateway spotifyGateway = spotifyConnection.createEmptySpotifyApiGateway();
                 
@@ -155,17 +155,13 @@ public class ConnectionController {
 
         //Declare the URL object used to redirect to the frontend application
         //TODO - Make this an environment variable?
-        URL redirectUrl = UriComponentsBuilder.fromUriString("http://127.0.0.1:5173/")
-            .build()
-            .toUri()
-            .toURL();
+        URL redirectUrl = new URI("http://127.0.0.1:5173/").toURL();
 
         return valkeyClient.upsertSpotifyAPITokenAsync(newSessionId, newTokenInfo)
             .thenAccept(inserted -> {
                 try {
                     if (!inserted){
-                        //TODO - eventually decide whether to handle this in this application or the front end
-                        response.sendRedirect(redirectUrl.toString() + "/error");
+                        throw new SpotifyAuthorizationException("Failed to insert session information into Valkey");
                     }
                     response.sendRedirect(redirectUrl.toString());
                 } catch (Exception e) {

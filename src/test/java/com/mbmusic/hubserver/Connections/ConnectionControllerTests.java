@@ -2,15 +2,20 @@ package com.mbmusic.hubserver.Connections;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.net.URI;
+import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -18,11 +23,19 @@ import org.mockito.invocation.InvocationOnMock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 
 import com.mbmusic.hubserver.BaseTest;
+import com.mbmusic.hubserver.Common.Utilities.TimeUtils;
+import com.mbmusic.hubserver.Connections.Clients.ValkeyClient;
 import com.mbmusic.hubserver.Connections.Exceptions.SpotifyAuthorizationException;
+import com.mbmusic.hubserver.Connections.Models.SpotifyTokenInfo;
+
+import jakarta.servlet.http.Cookie;
+import se.michaelthelin.spotify.model_objects.credentials.AuthorizationCodeCredentials;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -40,11 +53,14 @@ public class ConnectionControllerTests extends BaseTest {
     @MockitoBean
     private SpotifyApiConnection mockApiConnection;
 
+    @MockitoBean
+    private ValkeyClient mockValkeyClient;
+
     private static SpotifyApiGateway mockApiGateway;
 
     //#endregion
 
-    //#region Tests
+    //#region Methods
 
     @BeforeEach
     private void prepareMockGateway() {
@@ -52,6 +68,22 @@ public class ConnectionControllerTests extends BaseTest {
         when(mockApiConnection.createEmptySpotifyApiGateway())
             .thenReturn(mockApiGateway);
     }
+
+    /**
+     * This method builds and retrieves an authorization code credentials stub
+     * @return
+     */
+    private AuthorizationCodeCredentials getMockAuthorizationCreds() {
+        return new AuthorizationCodeCredentials.Builder()
+            .setAccessToken("Successfull Access")
+            .setRefreshToken("Time to refresh!")
+            .setExpiresIn(11)
+            .build();
+    }
+
+    //#endregion
+
+    //#region Tests
 
     //Sanity check
 	@Test
@@ -67,7 +99,7 @@ public class ConnectionControllerTests extends BaseTest {
      *  2.2. Failure - Authorization URI returns a failure and it throws a SpotifyAuthorizationException --DONE--
      *  2.3. Failure - State returned from URI does not match, and it throws a SpotifyAuthorizationException --DONE--
      * 3. GET redirect tests
-     *  3.1. Success - We get a successful redirect to the front end
+     *  3.1. Success - We get a successful redirect to the front end --DONE--
      *  3.2. Failure - Exceptions properly handled from SpotifyApiGateway.getAuthorizationCodeCredentials()
      *  3.3. Failure - The SpotifyApi token was not inserted (upsertSpotifyApiTokenAsync returned false)
      *  3.4. Failure - Redirect threw an exception, and it was caught within the catch statement
@@ -139,6 +171,45 @@ public class ConnectionControllerTests extends BaseTest {
         assertInstanceOf(SpotifyAuthorizationException.class, exception);
         assertTrue(exception.getMessage().contains("Access denied"));
         assertTrue(exception.getMessage().contains("State did not match"));
+
+    }
+
+    /**
+     * This method should successfully test the POST redirect request called by Spotify to deliver the 
+     * code used to request authentication tokens
+     * @throws Exception
+     */
+    @Test
+    public void generateSpotifyAuthToken() throws Exception {
+        
+        final String SUCCESSFUL_CODE = "success";
+        AuthorizationCodeCredentials creds = getMockAuthorizationCreds();
+
+        when(mockApiGateway.getAuthorizationCodeCredentials(SUCCESSFUL_CODE))
+            .thenReturn(creds);   
+        when(mockValkeyClient.upsertSpotifyAPITokenAsync(any(UUID.class), any(SpotifyTokenInfo.class)))
+            .thenReturn(CompletableFuture.completedFuture(true));
+        
+        //TODO - When we change the redirect URI then update accordingly
+        mvc.perform(get("/conn/redirect")
+            .accept(MediaType.APPLICATION_JSON)
+            .queryParam("code", SUCCESSFUL_CODE)
+            .queryParam("state", "Hawaii"))
+            .andExpect(status().isFound())
+            .andExpect((MvcResult result) -> {
+                Cookie returnedCookie = result.getResponse().getCookies()[0];
+                assertTrue(() -> returnedCookie.getSecure() == false &&
+                        returnedCookie.getDomain().contentEquals("127.0.0.1") &&
+                        returnedCookie.isHttpOnly() == true &&
+                        returnedCookie.getPath().contentEquals("/") &&
+                        returnedCookie.getAttribute("SameSite").contentEquals("Lax") &&
+                        returnedCookie.getMaxAge() == TimeUtils.WEEK_SECONDS
+                );
+
+                String locationHeader = result.getResponse().getHeader("Location");
+                assertNotNull(locationHeader);
+                assertTrue(locationHeader.contentEquals("http://127.0.0.1:5173/"));
+            });
 
     }
 
