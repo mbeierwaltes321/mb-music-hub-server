@@ -53,14 +53,6 @@ public class ConnectionController {
     //#region Methods
 
     /**
-     * This method builds and retrieves a Spotify Gateway object responsible for performing authentication and authorization
-     */
-    private SpotifyApiGateway getSpotifyApiGateway() {
-        //Retrieve the token and prepare the Spotify API Client
-        return new SpotifyApiGateway(spotifyConnection.createEmptyApiClient());
-    }
-
-    /**
      * This method generates the login URI for authenticating the user into Spotify
      * @return A {@link RedirectView} that redirects to the authentication window for the user on successful login
      * @throws Exception when something goes wrong with the initial authentication
@@ -88,9 +80,9 @@ public class ConnectionController {
             // add Character one by one in end of sb 
             stateSb.append(AlphaNumericString 
             .charAt(index)); 
-        }  
+        }
 
-        SpotifyApiGateway spotifyGateway = getSpotifyApiGateway();
+        SpotifyApiGateway spotifyGateway = spotifyConnection.createEmptySpotifyApiGateway();
         final URI authUri = spotifyGateway.createAuthorizationURI(stateSb.toString());
 
         String responseQuery = authUri.getQuery();
@@ -130,7 +122,7 @@ public class ConnectionController {
             @RequestParam(name="state") String state, HttpServletResponse response ) 
                 throws ParseException, SpotifyWebApiException, IOException, InvalidSessionIdException {
 
-        SpotifyApiGateway spotifyGateway = getSpotifyApiGateway();
+        SpotifyApiGateway spotifyGateway = spotifyConnection.createEmptySpotifyApiGateway();
                 
         final AuthorizationCodeCredentials authorizationCodeCredentials = 
             spotifyGateway.getAuthorizationCodeCredentials(code);

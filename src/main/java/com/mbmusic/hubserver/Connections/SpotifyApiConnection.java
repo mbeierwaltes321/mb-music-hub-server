@@ -44,6 +44,20 @@ public class SpotifyApiConnection {
         return spotifyApiClientBuilder.build();
     }
 
+    /**
+     * This method returns a {@link SpotifyApiGateway} object containing no authorization information
+     * @return A {@link SpotifyApiGateway} object
+     */
+    public SpotifyApiGateway createEmptySpotifyApiGateway() {
+        return new SpotifyApiGateway(createEmptyApiClient());
+    }
+
+    /**
+     * This method creates a new Spotify Api client with the token information from the provided session id
+     * @param sessionId The ID of the session for which to retrieve token information
+     * @return A future with the populated Spotify API client
+     * @throws InvalidSessionIdException
+     */
     public CompletableFuture<SpotifyApi> createApiClientAsync(String sessionId) throws InvalidSessionIdException {
         if (sessionId == null || sessionId.isEmpty()) {
             throw new InvalidSessionIdException("Invalid Session Id");

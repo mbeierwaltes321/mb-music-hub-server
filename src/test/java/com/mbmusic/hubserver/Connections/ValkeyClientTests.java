@@ -54,7 +54,7 @@ public class ValkeyClientTests extends BaseTest {
         when(mockGlideClient.set(eq(successfulSessionKey), eq(serializedTestToken), any(SetOptions.class)))
             .thenReturn(CompletableFuture.completedFuture(response));
     }
-    
+
     /**
      * This method tests a successful retrieval of Spotify API tokens
      * @throws Exception
@@ -218,6 +218,10 @@ public class ValkeyClientTests extends BaseTest {
         assertTrue(exception.getMessage().contains("Invalid Session ID"));
     }
 
+    /**
+     * This method ensures that removeTokenAsync returns false when no tokens are deleted
+     * @throws InvalidSessionIdException
+     */
     @Test
     public void shouldReturnFalseWhenZeroTokenRecordsAreDeleted() throws InvalidSessionIdException {
         when(mockGlideClient.del((GlideString[])any())).thenReturn(CompletableFuture.completedFuture(0L));
