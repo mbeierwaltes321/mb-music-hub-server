@@ -62,9 +62,7 @@ public class SpotifyApiGateway {
      * code credentails needed for a Spotify Token
      * @param code The authorization code given from the Spotify API
      * @return The authorization code credentials
-     * @throws ParseException
-     * @throws SpotifyWebApiException
-     * @throws IOException
+     * @throws SpotifyAuthorizationException
      */
     public AuthorizationCodeCredentials getAuthorizationCodeCredentials(String code) 
         throws SpotifyAuthorizationException {

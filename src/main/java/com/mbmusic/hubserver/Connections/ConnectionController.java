@@ -120,7 +120,7 @@ public class ConnectionController {
     @GetMapping("/redirect")
     public CompletableFuture<Void> generateSpotifyAuthToken(@RequestParam(name="code") String code, 
             @RequestParam(name="state") String state, HttpServletResponse response ) 
-                throws ParseException, SpotifyWebApiException, IOException, InvalidSessionIdException, URISyntaxException {
+                throws SpotifyWebApiException, IOException, InvalidSessionIdException, URISyntaxException {
 
         SpotifyApiGateway spotifyGateway = spotifyConnection.createEmptySpotifyApiGateway();
                 

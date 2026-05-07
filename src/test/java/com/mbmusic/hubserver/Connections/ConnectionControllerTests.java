@@ -1,6 +1,7 @@
 package com.mbmusic.hubserver.Connections;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -209,6 +210,30 @@ public class ConnectionControllerTests extends BaseTest {
                 String locationHeader = result.getResponse().getHeader("Location");
                 assertNotNull(locationHeader);
                 assertTrue(locationHeader.contentEquals("http://127.0.0.1:5173/"));
+            });
+
+    }
+
+    /**
+     * This method tests the scenario where there was a failure to retrieve the authorization code credentials
+     * @throws Exception 
+     */
+    @Test
+    public void generateSpotifyAuthToken_shouldFailToGetAuthorizationCodeCreds() throws Exception {
+        final String UNSUCCESSFUL_CODE = "failure";
+
+        when(mockApiGateway.getAuthorizationCodeCredentials(UNSUCCESSFUL_CODE))
+            .thenThrow(new SpotifyAuthorizationException("There was an error retrieving the Spotify Authorization Code Credentials"));
+
+        mvc.perform(get("/conn/redirect")
+            .accept(MediaType.APPLICATION_JSON)
+            .queryParam("code", UNSUCCESSFUL_CODE)
+            .queryParam("state", "Hawaii"))
+            .andExpect(status().isInternalServerError())
+            .andExpect(result -> {
+                var exception = result.getResolvedException();
+                assertInstanceOf(SpotifyAuthorizationException.class, exception);
+                assertTrue(exception.getMessage().contains("There was an error retrieving the Spotify Authorization Code Credentials"));
             });
 
     }
