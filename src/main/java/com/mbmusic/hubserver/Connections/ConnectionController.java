@@ -159,10 +159,11 @@ public class ConnectionController {
 
         return valkeyClient.upsertSpotifyAPITokenAsync(newSessionId, newTokenInfo)
             .thenAccept(inserted -> {
+                if (!inserted){
+                    throw new SpotifyAuthorizationException("Failed to insert session information into Valkey");
+                }
+                
                 try {
-                    if (!inserted){
-                        throw new SpotifyAuthorizationException("Failed to insert session information into Valkey");
-                    }
                     response.sendRedirect(redirectUrl.toString());
                 } catch (Exception e) {
                     throw new RuntimeException("Error redirecting to the front end");

@@ -1,7 +1,6 @@
 package com.mbmusic.hubserver.Connections;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -9,9 +8,11 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.asyncDispatch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.request;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.net.URI;
@@ -101,8 +102,8 @@ public class ConnectionControllerTests extends BaseTest {
      *  2.3. Failure - State returned from URI does not match, and it throws a SpotifyAuthorizationException --DONE--
      * 3. GET redirect tests
      *  3.1. Success - We get a successful redirect to the front end --DONE--
-     *  3.2. Failure - Exceptions properly handled from SpotifyApiGateway.getAuthorizationCodeCredentials()
-     *  3.3. Failure - The SpotifyApi token was not inserted (upsertSpotifyApiTokenAsync returned false)
+     *  3.2. Failure - Exceptions properly handled from SpotifyApiGateway.getAuthorizationCodeCredentials() --DONE--
+     *  3.3. Failure - The SpotifyApi token was not inserted (upsertSpotifyApiTokenAsync returned false) --DONE--
      *  3.4. Failure - Redirect threw an exception, and it was caught within the catch statement
      */
 
@@ -236,6 +237,38 @@ public class ConnectionControllerTests extends BaseTest {
                 assertTrue(exception.getMessage().contains("There was an error retrieving the Spotify Authorization Code Credentials"));
             });
 
+    }
+
+    /**
+     * This method tests the scenario where the spotify api token does not successfully insert
+     */
+    @Test
+    public void generateSpotifyAuthToken_shouldFailToInsertAuthTokens() throws Exception {
+
+        final String SUCCESSFUL_CODE = "success";
+
+        AuthorizationCodeCredentials mockCreds = getMockAuthorizationCreds();
+
+        when(mockApiGateway.getAuthorizationCodeCredentials(SUCCESSFUL_CODE))
+            .thenReturn(mockCreds);
+
+        when(mockValkeyClient.upsertSpotifyAPITokenAsync(any(UUID.class), any(SpotifyTokenInfo.class)))
+            .thenReturn(CompletableFuture.completedFuture(false));
+
+        var mvcRequest = mvc.perform(get("/conn/redirect")
+            .accept(MediaType.APPLICATION_JSON)
+            .queryParam("code", SUCCESSFUL_CODE)
+            .queryParam("state", "Hawaii"))
+            .andExpect(request().asyncStarted())
+            .andExpect(result -> {
+                var exception = result.getAsyncResult();
+                assertInstanceOf(SpotifyAuthorizationException.class, exception);
+                assertTrue(((SpotifyAuthorizationException)exception).getMessage().contains("Failed to insert session information into Valkey"));
+            })
+            .andReturn();
+        
+        mvc.perform(asyncDispatch(mvcRequest))
+            .andExpect(status().isInternalServerError());
     }
 
     //#endregion

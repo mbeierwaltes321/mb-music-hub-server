@@ -1,16 +1,12 @@
 package com.mbmusic.hubserver.Connections;
 
-import java.io.IOException;
 import java.net.URI;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
-import org.apache.hc.core5.http.ParseException;
-
 import com.mbmusic.hubserver.Connections.Exceptions.SpotifyAuthorizationException;
 
 import se.michaelthelin.spotify.SpotifyApi;
-import se.michaelthelin.spotify.exceptions.SpotifyWebApiException;
 import se.michaelthelin.spotify.model_objects.credentials.AuthorizationCodeCredentials;
 import se.michaelthelin.spotify.model_objects.specification.Paging;
 import se.michaelthelin.spotify.model_objects.specification.Playlist;
