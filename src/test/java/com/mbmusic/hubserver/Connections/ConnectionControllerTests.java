@@ -3,9 +3,11 @@ package com.mbmusic.hubserver.Connections;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.asyncDispatch;
@@ -15,9 +17,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.request;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.io.IOException;
 import java.net.URI;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -37,6 +41,7 @@ import com.mbmusic.hubserver.Connections.Exceptions.SpotifyAuthorizationExceptio
 import com.mbmusic.hubserver.Connections.Models.SpotifyTokenInfo;
 
 import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import se.michaelthelin.spotify.model_objects.credentials.AuthorizationCodeCredentials;
 
 @SpringBootTest
@@ -104,7 +109,7 @@ public class ConnectionControllerTests extends BaseTest {
      *  3.1. Success - We get a successful redirect to the front end --DONE--
      *  3.2. Failure - Exceptions properly handled from SpotifyApiGateway.getAuthorizationCodeCredentials() --DONE--
      *  3.3. Failure - The SpotifyApi token was not inserted (upsertSpotifyApiTokenAsync returned false) --DONE--
-     *  3.4. Failure - Redirect threw an exception, and it was caught within the catch statement
+     *  3.4. Failure - Redirect threw an exception, and it was caught within the catch statement --DONE--
      */
 
 
@@ -269,6 +274,32 @@ public class ConnectionControllerTests extends BaseTest {
         
         mvc.perform(asyncDispatch(mvcRequest))
             .andExpect(status().isInternalServerError());
+    }
+
+    /**
+     * This method tests the scenario where the spotify api token does not successfully insert
+     */
+    @Test
+    public void generateSpotifyAuthToken_shouldFailToRedirectToFrontEnd() throws Exception {
+        final String SUCCESSFUL_CODE = "success";
+        final String STATE = "state";
+        final HttpServletResponse mockResponse = mock(HttpServletResponse.class);
+
+        when(mockApiGateway.getAuthorizationCodeCredentials(SUCCESSFUL_CODE))
+            .thenReturn(getMockAuthorizationCreds());
+
+        when(mockValkeyClient.upsertSpotifyAPITokenAsync(any(UUID.class), any(SpotifyTokenInfo.class)))
+            .thenReturn(CompletableFuture.completedFuture(true));
+            
+        doThrow(IOException.class).when(mockResponse).sendRedirect(anyString());
+
+        ConnectionController mockController = new ConnectionController(mockApiConnection, mockValkeyClient);
+
+        var exception = assertThrows(CompletionException.class,
+            () -> mockController.generateSpotifyAuthToken(SUCCESSFUL_CODE, STATE, mockResponse).join());
+
+        assertInstanceOf(RuntimeException.class, exception.getCause());
+        assertTrue(exception.getMessage().contains("Error redirecting to the front end"));
     }
 
     //#endregion

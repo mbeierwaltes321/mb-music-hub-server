@@ -10,7 +10,6 @@ import java.util.HashMap;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import org.apache.hc.core5.http.ParseException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -37,15 +36,15 @@ public class ConnectionController {
     //#region Members
     private SpotifyApiConnection spotifyConnection;
 
-    @Autowired 
     private ValkeyClient valkeyClient;
 
     //#endregion
 
     //#region Constructor
 
-    public ConnectionController(SpotifyApiConnection spotifyConnection) {
+    public ConnectionController(SpotifyApiConnection spotifyConnection, ValkeyClient valkeyClient) {
         this.spotifyConnection = spotifyConnection;
+        this.valkeyClient = valkeyClient;
     }
 
     //#endregion
