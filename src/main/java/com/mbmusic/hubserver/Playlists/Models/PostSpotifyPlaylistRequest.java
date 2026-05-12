@@ -2,17 +2,17 @@ package com.mbmusic.hubserver.Playlists.Models;
 
 import java.util.List;
 
-import com.mbmusic.hubserver.Connections.Models.SpotifyTokenInfo;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 
 //This class models the request body for the post spotify playlist endpoint
 public class PostSpotifyPlaylistRequest {
     
     //#region " Members "
 
-    //The token information associated with the request
-    private SpotifyTokenInfo authTokens;
-
     //The name of the playlist to create
+    @NotNull
+    @Size(min = 1)
     private String playlistName;
 
     //The description of the playlist to create
@@ -27,14 +27,6 @@ public class PostSpotifyPlaylistRequest {
     //#endregion
 
     //#region " Getters/Setters "
-    public SpotifyTokenInfo getAuthTokens() {
-        return authTokens;
-    }
-
-    public void setAuthTokens(SpotifyTokenInfo authTokens) {
-        this.authTokens = authTokens;
-    }
-
     public String getPlaylistName() {
         return playlistName;
     }
