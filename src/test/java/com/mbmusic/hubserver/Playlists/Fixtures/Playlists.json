@@ -1,0 +1,1512 @@
+{
+    "href": "https://api.spotify.com/v1/users/1256937600/playlists?offset=0&limit=50",
+    "items": [
+        {
+            "externalUrls": {
+                "externalUrls": {
+                    "spotify": "https://open.spotify.com/playlist/2P7ed563aJMg8hIMUmfVX1"
+                }
+            },
+            "href": "https://api.spotify.com/v1/playlists/2P7ed563aJMg8hIMUmfVX1",
+            "id": "2P7ed563aJMg8hIMUmfVX1",
+            "images": [
+                {
+                    "height": 640,
+                    "url": "https://mosaic.scdn.co/640/ab67616d00001e021849ae38e29624393c390fb4ab67616d00001e022a061f8cc383443cbb46adf6ab67616d00001e0259a6022f671f929b9979011dab67616d00001e02644e1887489294e6700b44ec",
+                    "width": 640
+                },
+                {
+                    "height": 300,
+                    "url": "https://mosaic.scdn.co/300/ab67616d00001e021849ae38e29624393c390fb4ab67616d00001e022a061f8cc383443cbb46adf6ab67616d00001e0259a6022f671f929b9979011dab67616d00001e02644e1887489294e6700b44ec",
+                    "width": 300
+                },
+                {
+                    "height": 60,
+                    "url": "https://mosaic.scdn.co/60/ab67616d00001e021849ae38e29624393c390fb4ab67616d00001e022a061f8cc383443cbb46adf6ab67616d00001e0259a6022f671f929b9979011dab67616d00001e02644e1887489294e6700b44ec",
+                    "width": 60
+                }
+            ],
+            "name": "MB's Persona Playlist",
+            "owner": {
+                "birthdate": null,
+                "country": null,
+                "displayName": "Michael Beierwaltes",
+                "email": null,
+                "externalUrls": {
+                    "externalUrls": {
+                        "spotify": "https://open.spotify.com/user/1256937600"
+                    }
+                },
+                "followers": null,
+                "href": "https://api.spotify.com/v1/users/1256937600",
+                "id": "1256937600",
+                "images": null,
+                "product": null,
+                "type": "USER",
+                "uri": "spotify:user:1256937600"
+            },
+            "snapshotId": "AAAAQt/y3TjC8lRIRSDo0THKbAaBs3dT",
+            "tracks": {
+                "href": "https://api.spotify.com/v1/playlists/2P7ed563aJMg8hIMUmfVX1/tracks",
+                "total": 63
+            },
+            "type": "PLAYLIST",
+            "uri": "spotify:playlist:2P7ed563aJMg8hIMUmfVX1",
+            "isCollaborative": false,
+            "isPublicAccess": true
+        },
+        {
+            "externalUrls": {
+                "externalUrls": {
+                    "spotify": "https://open.spotify.com/playlist/331iw4A2uShyIiqzqqWrAo"
+                }
+            },
+            "href": "https://api.spotify.com/v1/playlists/331iw4A2uShyIiqzqqWrAo",
+            "id": "331iw4A2uShyIiqzqqWrAo",
+            "images": [
+                {
+                    "height": 640,
+                    "url": "https://mosaic.scdn.co/640/ab67616d00001e025d1165adee9d1ed52ef3467cab67616d00001e02dc68e7ac663d3669b4ac480cab67616d00001e02e249607321030fe35145b142ab67616d00001e02ee3ed1736572eb15fa6b69cb",
+                    "width": 640
+                },
+                {
+                    "height": 300,
+                    "url": "https://mosaic.scdn.co/300/ab67616d00001e025d1165adee9d1ed52ef3467cab67616d00001e02dc68e7ac663d3669b4ac480cab67616d00001e02e249607321030fe35145b142ab67616d00001e02ee3ed1736572eb15fa6b69cb",
+                    "width": 300
+                },
+                {
+                    "height": 60,
+                    "url": "https://mosaic.scdn.co/60/ab67616d00001e025d1165adee9d1ed52ef3467cab67616d00001e02dc68e7ac663d3669b4ac480cab67616d00001e02e249607321030fe35145b142ab67616d00001e02ee3ed1736572eb15fa6b69cb",
+                    "width": 60
+                }
+            ],
+            "name": "MB's Serendipitous Southern Avenue Hits",
+            "owner": {
+                "birthdate": null,
+                "country": null,
+                "displayName": "Michael Beierwaltes",
+                "email": null,
+                "externalUrls": {
+                    "externalUrls": {
+                        "spotify": "https://open.spotify.com/user/1256937600"
+                    }
+                },
+                "followers": null,
+                "href": "https://api.spotify.com/v1/users/1256937600",
+                "id": "1256937600",
+                "images": null,
+                "product": null,
+                "type": "USER",
+                "uri": "spotify:user:1256937600"
+            },
+            "snapshotId": "AAAAGhQXR10Me9vJ/oNJQl7cac+xwe+m",
+            "tracks": {
+                "href": "https://api.spotify.com/v1/playlists/331iw4A2uShyIiqzqqWrAo/tracks",
+                "total": 22
+            },
+            "type": "PLAYLIST",
+            "uri": "spotify:playlist:331iw4A2uShyIiqzqqWrAo",
+            "isCollaborative": false,
+            "isPublicAccess": true
+        },
+        {
+            "externalUrls": {
+                "externalUrls": {
+                    "spotify": "https://open.spotify.com/playlist/4JFb66kvsNWNvHUmXvnkGS"
+                }
+            },
+            "href": "https://api.spotify.com/v1/playlists/4JFb66kvsNWNvHUmXvnkGS",
+            "id": "4JFb66kvsNWNvHUmXvnkGS",
+            "images": [
+                {
+                    "height": 640,
+                    "url": "https://mosaic.scdn.co/640/ab67616d00001e020c14cc34bc3be11bccbad85fab67616d00001e0248341e864d4b4881f56f01b4ab67616d00001e0274c732f8aa0e0ccbb3d17d96ab67616d00001e02ae872bedc5b44f93ab50da37",
+                    "width": 640
+                },
+                {
+                    "height": 300,
+                    "url": "https://mosaic.scdn.co/300/ab67616d00001e020c14cc34bc3be11bccbad85fab67616d00001e0248341e864d4b4881f56f01b4ab67616d00001e0274c732f8aa0e0ccbb3d17d96ab67616d00001e02ae872bedc5b44f93ab50da37",
+                    "width": 300
+                },
+                {
+                    "height": 60,
+                    "url": "https://mosaic.scdn.co/60/ab67616d00001e020c14cc34bc3be11bccbad85fab67616d00001e0248341e864d4b4881f56f01b4ab67616d00001e0274c732f8aa0e0ccbb3d17d96ab67616d00001e02ae872bedc5b44f93ab50da37",
+                    "width": 60
+                }
+            ],
+            "name": "MB's Lovely Laufey Songs",
+            "owner": {
+                "birthdate": null,
+                "country": null,
+                "displayName": "Michael Beierwaltes",
+                "email": null,
+                "externalUrls": {
+                    "externalUrls": {
+                        "spotify": "https://open.spotify.com/user/1256937600"
+                    }
+                },
+                "followers": null,
+                "href": "https://api.spotify.com/v1/users/1256937600",
+                "id": "1256937600",
+                "images": null,
+                "product": null,
+                "type": "USER",
+                "uri": "spotify:user:1256937600"
+            },
+            "snapshotId": "AAAAE5sycH2p7UhmcOVSzZQEz6yi3ZpF",
+            "tracks": {
+                "href": "https://api.spotify.com/v1/playlists/4JFb66kvsNWNvHUmXvnkGS/tracks",
+                "total": 34
+            },
+            "type": "PLAYLIST",
+            "uri": "spotify:playlist:4JFb66kvsNWNvHUmXvnkGS",
+            "isCollaborative": false,
+            "isPublicAccess": true
+        },
+        {
+            "externalUrls": {
+                "externalUrls": {
+                    "spotify": "https://open.spotify.com/playlist/6mdthFWRPMrZTa8X2okiv5"
+                }
+            },
+            "href": "https://api.spotify.com/v1/playlists/6mdthFWRPMrZTa8X2okiv5",
+            "id": "6mdthFWRPMrZTa8X2okiv5",
+            "images": [
+                {
+                    "height": 640,
+                    "url": "https://mosaic.scdn.co/640/ab67616d00001e02785b79f97d1407494f105798ab67616d00001e02796c0744b04db30174704d24ab67616d00001e02aee40febc8bfb847addb4f73ab67616d00001e02b5bd204be04c5d81000ec669",
+                    "width": 640
+                },
+                {
+                    "height": 300,
+                    "url": "https://mosaic.scdn.co/300/ab67616d00001e02785b79f97d1407494f105798ab67616d00001e02796c0744b04db30174704d24ab67616d00001e02aee40febc8bfb847addb4f73ab67616d00001e02b5bd204be04c5d81000ec669",
+                    "width": 300
+                },
+                {
+                    "height": 60,
+                    "url": "https://mosaic.scdn.co/60/ab67616d00001e02785b79f97d1407494f105798ab67616d00001e02796c0744b04db30174704d24ab67616d00001e02aee40febc8bfb847addb4f73ab67616d00001e02b5bd204be04c5d81000ec669",
+                    "width": 60
+                }
+            ],
+            "name": "MB's Josh Groban Jives",
+            "owner": {
+                "birthdate": null,
+                "country": null,
+                "displayName": "Michael Beierwaltes",
+                "email": null,
+                "externalUrls": {
+                    "externalUrls": {
+                        "spotify": "https://open.spotify.com/user/1256937600"
+                    }
+                },
+                "followers": null,
+                "href": "https://api.spotify.com/v1/users/1256937600",
+                "id": "1256937600",
+                "images": null,
+                "product": null,
+                "type": "USER",
+                "uri": "spotify:user:1256937600"
+            },
+            "snapshotId": "AAAAEtqTPuHKVlV1eiU3oBkKEhFDsy0I",
+            "tracks": {
+                "href": "https://api.spotify.com/v1/playlists/6mdthFWRPMrZTa8X2okiv5/tracks",
+                "total": 16
+            },
+            "type": "PLAYLIST",
+            "uri": "spotify:playlist:6mdthFWRPMrZTa8X2okiv5",
+            "isCollaborative": false,
+            "isPublicAccess": true
+        },
+        {
+            "externalUrls": {
+                "externalUrls": {
+                    "spotify": "https://open.spotify.com/playlist/4Yvua92YidqZ7Z67LGzWYK"
+                }
+            },
+            "href": "https://api.spotify.com/v1/playlists/4Yvua92YidqZ7Z67LGzWYK",
+            "id": "4Yvua92YidqZ7Z67LGzWYK",
+            "images": [
+                {
+                    "height": 640,
+                    "url": "https://mosaic.scdn.co/640/ab67616d00001e024d99daebb5868135abdc7c65ab67616d00001e025f57f9583b4b0f148cdfe274ab67616d00001e029b135e9a67f99b228bf90483ab67616d00001e02b447bc580fd3431a2f95ad39",
+                    "width": 640
+                },
+                {
+                    "height": 300,
+                    "url": "https://mosaic.scdn.co/300/ab67616d00001e024d99daebb5868135abdc7c65ab67616d00001e025f57f9583b4b0f148cdfe274ab67616d00001e029b135e9a67f99b228bf90483ab67616d00001e02b447bc580fd3431a2f95ad39",
+                    "width": 300
+                },
+                {
+                    "height": 60,
+                    "url": "https://mosaic.scdn.co/60/ab67616d00001e024d99daebb5868135abdc7c65ab67616d00001e025f57f9583b4b0f148cdfe274ab67616d00001e029b135e9a67f99b228bf90483ab67616d00001e02b447bc580fd3431a2f95ad39",
+                    "width": 60
+                }
+            ],
+            "name": "MB's Fulminacci Frenzies",
+            "owner": {
+                "birthdate": null,
+                "country": null,
+                "displayName": "Michael Beierwaltes",
+                "email": null,
+                "externalUrls": {
+                    "externalUrls": {
+                        "spotify": "https://open.spotify.com/user/1256937600"
+                    }
+                },
+                "followers": null,
+                "href": "https://api.spotify.com/v1/users/1256937600",
+                "id": "1256937600",
+                "images": null,
+                "product": null,
+                "type": "USER",
+                "uri": "spotify:user:1256937600"
+            },
+            "snapshotId": "AAAACN9VGzeHuH9Wxcvtz/MtuLbqU6PB",
+            "tracks": {
+                "href": "https://api.spotify.com/v1/playlists/4Yvua92YidqZ7Z67LGzWYK/tracks",
+                "total": 5
+            },
+            "type": "PLAYLIST",
+            "uri": "spotify:playlist:4Yvua92YidqZ7Z67LGzWYK",
+            "isCollaborative": false,
+            "isPublicAccess": true
+        },
+        {
+            "externalUrls": {
+                "externalUrls": {
+                    "spotify": "https://open.spotify.com/playlist/1hmwKAZCW0gRe0mh5yt1zT"
+                }
+            },
+            "href": "https://api.spotify.com/v1/playlists/1hmwKAZCW0gRe0mh5yt1zT",
+            "id": "1hmwKAZCW0gRe0mh5yt1zT",
+            "images": [
+                {
+                    "height": 640,
+                    "url": "https://mosaic.scdn.co/640/ab67616d00001e02068a5559744d17bd5e871740ab67616d00001e025c21d73934bb9760a2f791a2ab67616d00001e02b19cb81319fbfd9ed54baeaeab67616d00001e02ff0dae802acb38075786b58c",
+                    "width": 640
+                },
+                {
+                    "height": 300,
+                    "url": "https://mosaic.scdn.co/300/ab67616d00001e02068a5559744d17bd5e871740ab67616d00001e025c21d73934bb9760a2f791a2ab67616d00001e02b19cb81319fbfd9ed54baeaeab67616d00001e02ff0dae802acb38075786b58c",
+                    "width": 300
+                },
+                {
+                    "height": 60,
+                    "url": "https://mosaic.scdn.co/60/ab67616d00001e02068a5559744d17bd5e871740ab67616d00001e025c21d73934bb9760a2f791a2ab67616d00001e02b19cb81319fbfd9ed54baeaeab67616d00001e02ff0dae802acb38075786b58c",
+                    "width": 60
+                }
+            ],
+            "name": "MB's Fabulous Frank Sinatra Playlist",
+            "owner": {
+                "birthdate": null,
+                "country": null,
+                "displayName": "Michael Beierwaltes",
+                "email": null,
+                "externalUrls": {
+                    "externalUrls": {
+                        "spotify": "https://open.spotify.com/user/1256937600"
+                    }
+                },
+                "followers": null,
+                "href": "https://api.spotify.com/v1/users/1256937600",
+                "id": "1256937600",
+                "images": null,
+                "product": null,
+                "type": "USER",
+                "uri": "spotify:user:1256937600"
+            },
+            "snapshotId": "AAAAKmPyy8VNjwWsxHfFnDJxsczXZgIr",
+            "tracks": {
+                "href": "https://api.spotify.com/v1/playlists/1hmwKAZCW0gRe0mh5yt1zT/tracks",
+                "total": 44
+            },
+            "type": "PLAYLIST",
+            "uri": "spotify:playlist:1hmwKAZCW0gRe0mh5yt1zT",
+            "isCollaborative": false,
+            "isPublicAccess": true
+        },
+        {
+            "externalUrls": {
+                "externalUrls": {
+                    "spotify": "https://open.spotify.com/playlist/4HsC9ZcJtbcXlrDKLFeCM5"
+                }
+            },
+            "href": "https://api.spotify.com/v1/playlists/4HsC9ZcJtbcXlrDKLFeCM5",
+            "id": "4HsC9ZcJtbcXlrDKLFeCM5",
+            "images": [
+                {
+                    "height": 640,
+                    "url": "https://mosaic.scdn.co/640/ab67616d00001e020754c950a9d55524add9fdf4ab67616d00001e025843cb50b0751124f3e34e6eab67616d00001e02c648a42b5dad72c8aafceeecab67616d00001e02df3bee99d02e42d71d3a5a4a",
+                    "width": 640
+                },
+                {
+                    "height": 300,
+                    "url": "https://mosaic.scdn.co/300/ab67616d00001e020754c950a9d55524add9fdf4ab67616d00001e025843cb50b0751124f3e34e6eab67616d00001e02c648a42b5dad72c8aafceeecab67616d00001e02df3bee99d02e42d71d3a5a4a",
+                    "width": 300
+                },
+                {
+                    "height": 60,
+                    "url": "https://mosaic.scdn.co/60/ab67616d00001e020754c950a9d55524add9fdf4ab67616d00001e025843cb50b0751124f3e34e6eab67616d00001e02c648a42b5dad72c8aafceeecab67616d00001e02df3bee99d02e42d71d3a5a4a",
+                    "width": 60
+                }
+            ],
+            "name": "MB's Gnarly Norah Jones Playlist",
+            "owner": {
+                "birthdate": null,
+                "country": null,
+                "displayName": "Michael Beierwaltes",
+                "email": null,
+                "externalUrls": {
+                    "externalUrls": {
+                        "spotify": "https://open.spotify.com/user/1256937600"
+                    }
+                },
+                "followers": null,
+                "href": "https://api.spotify.com/v1/users/1256937600",
+                "id": "1256937600",
+                "images": null,
+                "product": null,
+                "type": "USER",
+                "uri": "spotify:user:1256937600"
+            },
+            "snapshotId": "AAAAM/PmERi1qLOLEW+ePrHJAIo8WZ6X",
+            "tracks": {
+                "href": "https://api.spotify.com/v1/playlists/4HsC9ZcJtbcXlrDKLFeCM5/tracks",
+                "total": 58
+            },
+            "type": "PLAYLIST",
+            "uri": "spotify:playlist:4HsC9ZcJtbcXlrDKLFeCM5",
+            "isCollaborative": false,
+            "isPublicAccess": true
+        },
+        {
+            "externalUrls": {
+                "externalUrls": {
+                    "spotify": "https://open.spotify.com/playlist/05rbOdy1n5Pjkcw9FgaKtX"
+                }
+            },
+            "href": "https://api.spotify.com/v1/playlists/05rbOdy1n5Pjkcw9FgaKtX",
+            "id": "05rbOdy1n5Pjkcw9FgaKtX",
+            "images": [
+                {
+                    "height": 640,
+                    "url": "https://mosaic.scdn.co/640/ab67616d00001e021f400a1f4d821b00824cf58fab67616d00001e02bd051c6c0e500f5043083640ab67616d00001e02e090c6c5677e2cb8baeab3f5ab67616d00001e02eec120f35546507f59f05c41",
+                    "width": 640
+                },
+                {
+                    "height": 300,
+                    "url": "https://mosaic.scdn.co/300/ab67616d00001e021f400a1f4d821b00824cf58fab67616d00001e02bd051c6c0e500f5043083640ab67616d00001e02e090c6c5677e2cb8baeab3f5ab67616d00001e02eec120f35546507f59f05c41",
+                    "width": 300
+                },
+                {
+                    "height": 60,
+                    "url": "https://mosaic.scdn.co/60/ab67616d00001e021f400a1f4d821b00824cf58fab67616d00001e02bd051c6c0e500f5043083640ab67616d00001e02e090c6c5677e2cb8baeab3f5ab67616d00001e02eec120f35546507f59f05c41",
+                    "width": 60
+                }
+            ],
+            "name": "MB's Super Shakira Playlist",
+            "owner": {
+                "birthdate": null,
+                "country": null,
+                "displayName": "Michael Beierwaltes",
+                "email": null,
+                "externalUrls": {
+                    "externalUrls": {
+                        "spotify": "https://open.spotify.com/user/1256937600"
+                    }
+                },
+                "followers": null,
+                "href": "https://api.spotify.com/v1/users/1256937600",
+                "id": "1256937600",
+                "images": null,
+                "product": null,
+                "type": "USER",
+                "uri": "spotify:user:1256937600"
+            },
+            "snapshotId": "AAAAEUqVfSJ8apXTWMOE2LWnfghKx5Br",
+            "tracks": {
+                "href": "https://api.spotify.com/v1/playlists/05rbOdy1n5Pjkcw9FgaKtX/tracks",
+                "total": 13
+            },
+            "type": "PLAYLIST",
+            "uri": "spotify:playlist:05rbOdy1n5Pjkcw9FgaKtX",
+            "isCollaborative": false,
+            "isPublicAccess": true
+        },
+        {
+            "externalUrls": {
+                "externalUrls": {
+                    "spotify": "https://open.spotify.com/playlist/0ZWOYvPJ201tmJw4zAgqnP"
+                }
+            },
+            "href": "https://api.spotify.com/v1/playlists/0ZWOYvPJ201tmJw4zAgqnP",
+            "id": "0ZWOYvPJ201tmJw4zAgqnP",
+            "images": [
+                {
+                    "height": 640,
+                    "url": "https://mosaic.scdn.co/640/ab67616d00001e0280809b13da5665ae02d32775ab67616d00001e0283fc43cfc25d836e17f8cc30ab67616d00001e02bf75b0e371d96b9231e350adab67616d00001e02ed164cf1c10f028e8f528784",
+                    "width": 640
+                },
+                {
+                    "height": 300,
+                    "url": "https://mosaic.scdn.co/300/ab67616d00001e0280809b13da5665ae02d32775ab67616d00001e0283fc43cfc25d836e17f8cc30ab67616d00001e02bf75b0e371d96b9231e350adab67616d00001e02ed164cf1c10f028e8f528784",
+                    "width": 300
+                },
+                {
+                    "height": 60,
+                    "url": "https://mosaic.scdn.co/60/ab67616d00001e0280809b13da5665ae02d32775ab67616d00001e0283fc43cfc25d836e17f8cc30ab67616d00001e02bf75b0e371d96b9231e350adab67616d00001e02ed164cf1c10f028e8f528784",
+                    "width": 60
+                }
+            ],
+            "name": "MB's Delightful Demi Lovato Playlist",
+            "owner": {
+                "birthdate": null,
+                "country": null,
+                "displayName": "Michael Beierwaltes",
+                "email": null,
+                "externalUrls": {
+                    "externalUrls": {
+                        "spotify": "https://open.spotify.com/user/1256937600"
+                    }
+                },
+                "followers": null,
+                "href": "https://api.spotify.com/v1/users/1256937600",
+                "id": "1256937600",
+                "images": null,
+                "product": null,
+                "type": "USER",
+                "uri": "spotify:user:1256937600"
+            },
+            "snapshotId": "AAAATfVM1nvfpS9+ux3eNxhT6CEJ5LZs",
+            "tracks": {
+                "href": "https://api.spotify.com/v1/playlists/0ZWOYvPJ201tmJw4zAgqnP/tracks",
+                "total": 64
+            },
+            "type": "PLAYLIST",
+            "uri": "spotify:playlist:0ZWOYvPJ201tmJw4zAgqnP",
+            "isCollaborative": false,
+            "isPublicAccess": true
+        },
+        {
+            "externalUrls": {
+                "externalUrls": {
+                    "spotify": "https://open.spotify.com/playlist/4LjznzqXpAUbqQmqMGiTQG"
+                }
+            },
+            "href": "https://api.spotify.com/v1/playlists/4LjznzqXpAUbqQmqMGiTQG",
+            "id": "4LjznzqXpAUbqQmqMGiTQG",
+            "images": [
+                {
+                    "height": 640,
+                    "url": "https://mosaic.scdn.co/640/ab67616d00001e02790260cc86fd7b2678bb204dab67616d00001e027dd3ba455ee3390cb55b0192ab67616d00001e02ae395b47b186c2bc8c458e0fab67616d00001e02ccdddb2e5349ea0608c3e016",
+                    "width": 640
+                },
+                {
+                    "height": 300,
+                    "url": "https://mosaic.scdn.co/300/ab67616d00001e02790260cc86fd7b2678bb204dab67616d00001e027dd3ba455ee3390cb55b0192ab67616d00001e02ae395b47b186c2bc8c458e0fab67616d00001e02ccdddb2e5349ea0608c3e016",
+                    "width": 300
+                },
+                {
+                    "height": 60,
+                    "url": "https://mosaic.scdn.co/60/ab67616d00001e02790260cc86fd7b2678bb204dab67616d00001e027dd3ba455ee3390cb55b0192ab67616d00001e02ae395b47b186c2bc8c458e0fab67616d00001e02ccdddb2e5349ea0608c3e016",
+                    "width": 60
+                }
+            ],
+            "name": "MB's Dashing Dua Lipa Songs",
+            "owner": {
+                "birthdate": null,
+                "country": null,
+                "displayName": "Michael Beierwaltes",
+                "email": null,
+                "externalUrls": {
+                    "externalUrls": {
+                        "spotify": "https://open.spotify.com/user/1256937600"
+                    }
+                },
+                "followers": null,
+                "href": "https://api.spotify.com/v1/users/1256937600",
+                "id": "1256937600",
+                "images": null,
+                "product": null,
+                "type": "USER",
+                "uri": "spotify:user:1256937600"
+            },
+            "snapshotId": "AAAARx2ZAos1BjRxRavcSZA+QrWkUrSq",
+            "tracks": {
+                "href": "https://api.spotify.com/v1/playlists/4LjznzqXpAUbqQmqMGiTQG/tracks",
+                "total": 50
+            },
+            "type": "PLAYLIST",
+            "uri": "spotify:playlist:4LjznzqXpAUbqQmqMGiTQG",
+            "isCollaborative": false,
+            "isPublicAccess": true
+        },
+        {
+            "externalUrls": {
+                "externalUrls": {
+                    "spotify": "https://open.spotify.com/playlist/2er1zykeveGcLmOaEa8THB"
+                }
+            },
+            "href": "https://api.spotify.com/v1/playlists/2er1zykeveGcLmOaEa8THB",
+            "id": "2er1zykeveGcLmOaEa8THB",
+            "images": [
+                {
+                    "height": 640,
+                    "url": "https://mosaic.scdn.co/640/ab67616d00001e022ceedc8c879a1f6784fbeef5ab67616d00001e022e60ff0f37e6504fcc503981ab67616d00001e02b732a522a686bb304a5d3fdfab67616d00001e02fba4d4f37bc4ba2633264d1d",
+                    "width": 640
+                },
+                {
+                    "height": 300,
+                    "url": "https://mosaic.scdn.co/300/ab67616d00001e022ceedc8c879a1f6784fbeef5ab67616d00001e022e60ff0f37e6504fcc503981ab67616d00001e02b732a522a686bb304a5d3fdfab67616d00001e02fba4d4f37bc4ba2633264d1d",
+                    "width": 300
+                },
+                {
+                    "height": 60,
+                    "url": "https://mosaic.scdn.co/60/ab67616d00001e022ceedc8c879a1f6784fbeef5ab67616d00001e022e60ff0f37e6504fcc503981ab67616d00001e02b732a522a686bb304a5d3fdfab67616d00001e02fba4d4f37bc4ba2633264d1d",
+                    "width": 60
+                }
+            ],
+            "name": "MB's MB Playlist",
+            "owner": {
+                "birthdate": null,
+                "country": null,
+                "displayName": "Michael Beierwaltes",
+                "email": null,
+                "externalUrls": {
+                    "externalUrls": {
+                        "spotify": "https://open.spotify.com/user/1256937600"
+                    }
+                },
+                "followers": null,
+                "href": "https://api.spotify.com/v1/users/1256937600",
+                "id": "1256937600",
+                "images": null,
+                "product": null,
+                "type": "USER",
+                "uri": "spotify:user:1256937600"
+            },
+            "snapshotId": "AAAAQuf5hBZtJfAQJU1XQE17bG7na+9J",
+            "tracks": {
+                "href": "https://api.spotify.com/v1/playlists/2er1zykeveGcLmOaEa8THB/tracks",
+                "total": 60
+            },
+            "type": "PLAYLIST",
+            "uri": "spotify:playlist:2er1zykeveGcLmOaEa8THB",
+            "isCollaborative": false,
+            "isPublicAccess": true
+        },
+        {
+            "externalUrls": {
+                "externalUrls": {
+                    "spotify": "https://open.spotify.com/playlist/74dV44eSMSlyALHNIEx1AJ"
+                }
+            },
+            "href": "https://api.spotify.com/v1/playlists/74dV44eSMSlyALHNIEx1AJ",
+            "id": "74dV44eSMSlyALHNIEx1AJ",
+            "images": [
+                {
+                    "height": 640,
+                    "url": "https://mosaic.scdn.co/640/ab67616d00001e0246f68aa695eb75e4fcae0b92ab67616d00001e02c843b449f7950df535c512d1ab67616d00001e02d09684b265ea4165cd7e3848ab67616d00001e02ed76d065160e84066cc0a97b",
+                    "width": 640
+                },
+                {
+                    "height": 300,
+                    "url": "https://mosaic.scdn.co/300/ab67616d00001e0246f68aa695eb75e4fcae0b92ab67616d00001e02c843b449f7950df535c512d1ab67616d00001e02d09684b265ea4165cd7e3848ab67616d00001e02ed76d065160e84066cc0a97b",
+                    "width": 300
+                },
+                {
+                    "height": 60,
+                    "url": "https://mosaic.scdn.co/60/ab67616d00001e0246f68aa695eb75e4fcae0b92ab67616d00001e02c843b449f7950df535c512d1ab67616d00001e02d09684b265ea4165cd7e3848ab67616d00001e02ed76d065160e84066cc0a97b",
+                    "width": 60
+                }
+            ],
+            "name": "MB's Vivacious Veronica Swift Playlist",
+            "owner": {
+                "birthdate": null,
+                "country": null,
+                "displayName": "Michael Beierwaltes",
+                "email": null,
+                "externalUrls": {
+                    "externalUrls": {
+                        "spotify": "https://open.spotify.com/user/1256937600"
+                    }
+                },
+                "followers": null,
+                "href": "https://api.spotify.com/v1/users/1256937600",
+                "id": "1256937600",
+                "images": null,
+                "product": null,
+                "type": "USER",
+                "uri": "spotify:user:1256937600"
+            },
+            "snapshotId": "AAAAGTWzlL2Bojh8OMH2lqgiPlbgKl3z",
+            "tracks": {
+                "href": "https://api.spotify.com/v1/playlists/74dV44eSMSlyALHNIEx1AJ/tracks",
+                "total": 35
+            },
+            "type": "PLAYLIST",
+            "uri": "spotify:playlist:74dV44eSMSlyALHNIEx1AJ",
+            "isCollaborative": false,
+            "isPublicAccess": true
+        },
+        {
+            "externalUrls": {
+                "externalUrls": {
+                    "spotify": "https://open.spotify.com/playlist/5bM4ouJCoIj1JLzpW8EyXl"
+                }
+            },
+            "href": "https://api.spotify.com/v1/playlists/5bM4ouJCoIj1JLzpW8EyXl",
+            "id": "5bM4ouJCoIj1JLzpW8EyXl",
+            "images": [
+                {
+                    "height": 640,
+                    "url": "https://mosaic.scdn.co/640/ab67616d00001e025e25e034e25258b356774c79ab67616d00001e0297ab1b10778be7fafcda7930ab67616d00001e02b6aa65ea45fef5e36dfe1a45ab67616d00001e02d6f2541124f591c3b73de016",
+                    "width": 640
+                },
+                {
+                    "height": 300,
+                    "url": "https://mosaic.scdn.co/300/ab67616d00001e025e25e034e25258b356774c79ab67616d00001e0297ab1b10778be7fafcda7930ab67616d00001e02b6aa65ea45fef5e36dfe1a45ab67616d00001e02d6f2541124f591c3b73de016",
+                    "width": 300
+                },
+                {
+                    "height": 60,
+                    "url": "https://mosaic.scdn.co/60/ab67616d00001e025e25e034e25258b356774c79ab67616d00001e0297ab1b10778be7fafcda7930ab67616d00001e02b6aa65ea45fef5e36dfe1a45ab67616d00001e02d6f2541124f591c3b73de016",
+                    "width": 60
+                }
+            ],
+            "name": "MB's Rad R&B Hits",
+            "owner": {
+                "birthdate": null,
+                "country": null,
+                "displayName": "Michael Beierwaltes",
+                "email": null,
+                "externalUrls": {
+                    "externalUrls": {
+                        "spotify": "https://open.spotify.com/user/1256937600"
+                    }
+                },
+                "followers": null,
+                "href": "https://api.spotify.com/v1/users/1256937600",
+                "id": "1256937600",
+                "images": null,
+                "product": null,
+                "type": "USER",
+                "uri": "spotify:user:1256937600"
+            },
+            "snapshotId": "AAAAFdb7uP3LQyHdFBL/hqSTRT3QRk1I",
+            "tracks": {
+                "href": "https://api.spotify.com/v1/playlists/5bM4ouJCoIj1JLzpW8EyXl/tracks",
+                "total": 19
+            },
+            "type": "PLAYLIST",
+            "uri": "spotify:playlist:5bM4ouJCoIj1JLzpW8EyXl",
+            "isCollaborative": false,
+            "isPublicAccess": true
+        },
+        {
+            "externalUrls": {
+                "externalUrls": {
+                    "spotify": "https://open.spotify.com/playlist/6LiqTsyP5uT2AhL7g8QsUd"
+                }
+            },
+            "href": "https://api.spotify.com/v1/playlists/6LiqTsyP5uT2AhL7g8QsUd",
+            "id": "6LiqTsyP5uT2AhL7g8QsUd",
+            "images": [
+                {
+                    "height": 640,
+                    "url": "https://mosaic.scdn.co/640/ab67616d00001e02103965e3ff1de4cc9cf25fd7ab67616d00001e029e55437e01c5cec5db1ed267ab67616d00001e02d47ef9dde6aa7a13ca05f256ab67616d00001e02ded556b858164159f96662cb",
+                    "width": 640
+                },
+                {
+                    "height": 300,
+                    "url": "https://mosaic.scdn.co/300/ab67616d00001e02103965e3ff1de4cc9cf25fd7ab67616d00001e029e55437e01c5cec5db1ed267ab67616d00001e02d47ef9dde6aa7a13ca05f256ab67616d00001e02ded556b858164159f96662cb",
+                    "width": 300
+                },
+                {
+                    "height": 60,
+                    "url": "https://mosaic.scdn.co/60/ab67616d00001e02103965e3ff1de4cc9cf25fd7ab67616d00001e029e55437e01c5cec5db1ed267ab67616d00001e02d47ef9dde6aa7a13ca05f256ab67616d00001e02ded556b858164159f96662cb",
+                    "width": 60
+                }
+            ],
+            "name": "Le canzoni impressionanti italiane da MB",
+            "owner": {
+                "birthdate": null,
+                "country": null,
+                "displayName": "Michael Beierwaltes",
+                "email": null,
+                "externalUrls": {
+                    "externalUrls": {
+                        "spotify": "https://open.spotify.com/user/1256937600"
+                    }
+                },
+                "followers": null,
+                "href": "https://api.spotify.com/v1/users/1256937600",
+                "id": "1256937600",
+                "images": null,
+                "product": null,
+                "type": "USER",
+                "uri": "spotify:user:1256937600"
+            },
+            "snapshotId": "AAAAFDX1dHg07ZE0Oo1Cpc1K7J2tvQxr",
+            "tracks": {
+                "href": "https://api.spotify.com/v1/playlists/6LiqTsyP5uT2AhL7g8QsUd/tracks",
+                "total": 25
+            },
+            "type": "PLAYLIST",
+            "uri": "spotify:playlist:6LiqTsyP5uT2AhL7g8QsUd",
+            "isCollaborative": false,
+            "isPublicAccess": true
+        },
+        {
+            "externalUrls": {
+                "externalUrls": {
+                    "spotify": "https://open.spotify.com/playlist/6vvWELBAIahy95e5RsVuDB"
+                }
+            },
+            "href": "https://api.spotify.com/v1/playlists/6vvWELBAIahy95e5RsVuDB",
+            "id": "6vvWELBAIahy95e5RsVuDB",
+            "images": [
+                {
+                    "height": 640,
+                    "url": "https://mosaic.scdn.co/640/ab67616d00001e0230dc6027fd140c7ba68e900cab67616d00001e027845f74d6db14b400fa61cd3ab67616d00001e02785b79f97d1407494f105798ab67616d00001e02d16831527ee5c1edd9327b78",
+                    "width": 640
+                },
+                {
+                    "height": 300,
+                    "url": "https://mosaic.scdn.co/300/ab67616d00001e0230dc6027fd140c7ba68e900cab67616d00001e027845f74d6db14b400fa61cd3ab67616d00001e02785b79f97d1407494f105798ab67616d00001e02d16831527ee5c1edd9327b78",
+                    "width": 300
+                },
+                {
+                    "height": 60,
+                    "url": "https://mosaic.scdn.co/60/ab67616d00001e0230dc6027fd140c7ba68e900cab67616d00001e027845f74d6db14b400fa61cd3ab67616d00001e02785b79f97d1407494f105798ab67616d00001e02d16831527ee5c1edd9327b78",
+                    "width": 60
+                }
+            ],
+            "name": "MB's Holly Jolly Christmas",
+            "owner": {
+                "birthdate": null,
+                "country": null,
+                "displayName": "Michael Beierwaltes",
+                "email": null,
+                "externalUrls": {
+                    "externalUrls": {
+                        "spotify": "https://open.spotify.com/user/1256937600"
+                    }
+                },
+                "followers": null,
+                "href": "https://api.spotify.com/v1/users/1256937600",
+                "id": "1256937600",
+                "images": null,
+                "product": null,
+                "type": "USER",
+                "uri": "spotify:user:1256937600"
+            },
+            "snapshotId": "AAAArBbzrGExOrCPba2v71Vb3jzwsmt3",
+            "tracks": {
+                "href": "https://api.spotify.com/v1/playlists/6vvWELBAIahy95e5RsVuDB/tracks",
+                "total": 159
+            },
+            "type": "PLAYLIST",
+            "uri": "spotify:playlist:6vvWELBAIahy95e5RsVuDB",
+            "isCollaborative": false,
+            "isPublicAccess": true
+        },
+        {
+            "externalUrls": {
+                "externalUrls": {
+                    "spotify": "https://open.spotify.com/playlist/7nKc8kXIJgpqrqP0CjAE53"
+                }
+            },
+            "href": "https://api.spotify.com/v1/playlists/7nKc8kXIJgpqrqP0CjAE53",
+            "id": "7nKc8kXIJgpqrqP0CjAE53",
+            "images": [
+                {
+                    "height": 640,
+                    "url": "https://mosaic.scdn.co/640/ab67616d00001e02076d5800ba4feb54b7b50cf4ab67616d00001e0290f268003cfbc8788ed7873fab67616d00001e02a0f675f5552c87b3ea8f7debab67616d00001e02d3a42b660b011a49a3fa7f54",
+                    "width": 640
+                },
+                {
+                    "height": 300,
+                    "url": "https://mosaic.scdn.co/300/ab67616d00001e02076d5800ba4feb54b7b50cf4ab67616d00001e0290f268003cfbc8788ed7873fab67616d00001e02a0f675f5552c87b3ea8f7debab67616d00001e02d3a42b660b011a49a3fa7f54",
+                    "width": 300
+                },
+                {
+                    "height": 60,
+                    "url": "https://mosaic.scdn.co/60/ab67616d00001e02076d5800ba4feb54b7b50cf4ab67616d00001e0290f268003cfbc8788ed7873fab67616d00001e02a0f675f5552c87b3ea8f7debab67616d00001e02d3a42b660b011a49a3fa7f54",
+                    "width": 60
+                }
+            ],
+            "name": "MB's Iconic Indian Songs",
+            "owner": {
+                "birthdate": null,
+                "country": null,
+                "displayName": "Michael Beierwaltes",
+                "email": null,
+                "externalUrls": {
+                    "externalUrls": {
+                        "spotify": "https://open.spotify.com/user/1256937600"
+                    }
+                },
+                "followers": null,
+                "href": "https://api.spotify.com/v1/users/1256937600",
+                "id": "1256937600",
+                "images": null,
+                "product": null,
+                "type": "USER",
+                "uri": "spotify:user:1256937600"
+            },
+            "snapshotId": "AAAAGhoLXcKmU2qhfY3X4REJV91TWLpi",
+            "tracks": {
+                "href": "https://api.spotify.com/v1/playlists/7nKc8kXIJgpqrqP0CjAE53/tracks",
+                "total": 24
+            },
+            "type": "PLAYLIST",
+            "uri": "spotify:playlist:7nKc8kXIJgpqrqP0CjAE53",
+            "isCollaborative": false,
+            "isPublicAccess": false
+        },
+        {
+            "externalUrls": {
+                "externalUrls": {
+                    "spotify": "https://open.spotify.com/playlist/6awWEKBg1BLTu2kRLCFhml"
+                }
+            },
+            "href": "https://api.spotify.com/v1/playlists/6awWEKBg1BLTu2kRLCFhml",
+            "id": "6awWEKBg1BLTu2kRLCFhml",
+            "images": [
+                {
+                    "height": 640,
+                    "url": "https://mosaic.scdn.co/640/ab67616d00001e0274c69b95a7b488717b7fcc75ab67616d00001e02b19cb81319fbfd9ed54baeaeab67616d00001e02c0f74b53d4cf4b14f7f5d41aab67616d00001e02f6cc9564c1e06ebda02ca500",
+                    "width": 640
+                },
+                {
+                    "height": 300,
+                    "url": "https://mosaic.scdn.co/300/ab67616d00001e0274c69b95a7b488717b7fcc75ab67616d00001e02b19cb81319fbfd9ed54baeaeab67616d00001e02c0f74b53d4cf4b14f7f5d41aab67616d00001e02f6cc9564c1e06ebda02ca500",
+                    "width": 300
+                },
+                {
+                    "height": 60,
+                    "url": "https://mosaic.scdn.co/60/ab67616d00001e0274c69b95a7b488717b7fcc75ab67616d00001e02b19cb81319fbfd9ed54baeaeab67616d00001e02c0f74b53d4cf4b14f7f5d41aab67616d00001e02f6cc9564c1e06ebda02ca500",
+                    "width": 60
+                }
+            ],
+            "name": "MB's Jazz-Tastic Jams",
+            "owner": {
+                "birthdate": null,
+                "country": null,
+                "displayName": "Michael Beierwaltes",
+                "email": null,
+                "externalUrls": {
+                    "externalUrls": {
+                        "spotify": "https://open.spotify.com/user/1256937600"
+                    }
+                },
+                "followers": null,
+                "href": "https://api.spotify.com/v1/users/1256937600",
+                "id": "1256937600",
+                "images": null,
+                "product": null,
+                "type": "USER",
+                "uri": "spotify:user:1256937600"
+            },
+            "snapshotId": "AAABzdYvqv9BlLFPypuwBNmA4+jvx+of",
+            "tracks": {
+                "href": "https://api.spotify.com/v1/playlists/6awWEKBg1BLTu2kRLCFhml/tracks",
+                "total": 430
+            },
+            "type": "PLAYLIST",
+            "uri": "spotify:playlist:6awWEKBg1BLTu2kRLCFhml",
+            "isCollaborative": false,
+            "isPublicAccess": true
+        },
+        {
+            "externalUrls": {
+                "externalUrls": {
+                    "spotify": "https://open.spotify.com/playlist/36hjaffS1mn4bh6Spvl3J3"
+                }
+            },
+            "href": "https://api.spotify.com/v1/playlists/36hjaffS1mn4bh6Spvl3J3",
+            "id": "36hjaffS1mn4bh6Spvl3J3",
+            "images": [
+                {
+                    "height": 640,
+                    "url": "https://mosaic.scdn.co/640/ab67616d00001e026e88eb6508fd94cd1b745ce2ab67616d00001e029fa2954cdefd83d439a1e7acab67616d00001e02ec87694e64f0d3822f47b732ab67616d00001e02f8fa110661ccdfb74cbcb447",
+                    "width": 640
+                },
+                {
+                    "height": 300,
+                    "url": "https://mosaic.scdn.co/300/ab67616d00001e026e88eb6508fd94cd1b745ce2ab67616d00001e029fa2954cdefd83d439a1e7acab67616d00001e02ec87694e64f0d3822f47b732ab67616d00001e02f8fa110661ccdfb74cbcb447",
+                    "width": 300
+                },
+                {
+                    "height": 60,
+                    "url": "https://mosaic.scdn.co/60/ab67616d00001e026e88eb6508fd94cd1b745ce2ab67616d00001e029fa2954cdefd83d439a1e7acab67616d00001e02ec87694e64f0d3822f47b732ab67616d00001e02f8fa110661ccdfb74cbcb447",
+                    "width": 60
+                }
+            ],
+            "name": "MB's Riveting Rap Hits",
+            "owner": {
+                "birthdate": null,
+                "country": null,
+                "displayName": "Michael Beierwaltes",
+                "email": null,
+                "externalUrls": {
+                    "externalUrls": {
+                        "spotify": "https://open.spotify.com/user/1256937600"
+                    }
+                },
+                "followers": null,
+                "href": "https://api.spotify.com/v1/users/1256937600",
+                "id": "1256937600",
+                "images": null,
+                "product": null,
+                "type": "USER",
+                "uri": "spotify:user:1256937600"
+            },
+            "snapshotId": "AAAAcSb49+f3blOEkfuM2rc7U8mMDz++",
+            "tracks": {
+                "href": "https://api.spotify.com/v1/playlists/36hjaffS1mn4bh6Spvl3J3/tracks",
+                "total": 94
+            },
+            "type": "PLAYLIST",
+            "uri": "spotify:playlist:36hjaffS1mn4bh6Spvl3J3",
+            "isCollaborative": false,
+            "isPublicAccess": true
+        },
+        {
+            "externalUrls": {
+                "externalUrls": {
+                    "spotify": "https://open.spotify.com/playlist/6Kkd2Ex7ziyf6PHRiNhUU8"
+                }
+            },
+            "href": "https://api.spotify.com/v1/playlists/6Kkd2Ex7ziyf6PHRiNhUU8",
+            "id": "6Kkd2Ex7ziyf6PHRiNhUU8",
+            "images": [
+                {
+                    "height": 640,
+                    "url": "https://mosaic.scdn.co/640/ab67616d00001e0245b4e9481e0846c16553a048ab67616d00001e028c7f355d649e0a3cfcf6fc39ab67616d00001e0293bf4c5e67f6a72149d94c94ab67616d00001e02ab3b105e28a0d26df5be8d16",
+                    "width": 640
+                },
+                {
+                    "height": 300,
+                    "url": "https://mosaic.scdn.co/300/ab67616d00001e0245b4e9481e0846c16553a048ab67616d00001e028c7f355d649e0a3cfcf6fc39ab67616d00001e0293bf4c5e67f6a72149d94c94ab67616d00001e02ab3b105e28a0d26df5be8d16",
+                    "width": 300
+                },
+                {
+                    "height": 60,
+                    "url": "https://mosaic.scdn.co/60/ab67616d00001e0245b4e9481e0846c16553a048ab67616d00001e028c7f355d649e0a3cfcf6fc39ab67616d00001e0293bf4c5e67f6a72149d94c94ab67616d00001e02ab3b105e28a0d26df5be8d16",
+                    "width": 60
+                }
+            ],
+            "name": "MB's Rock and Classic Hits",
+            "owner": {
+                "birthdate": null,
+                "country": null,
+                "displayName": "Michael Beierwaltes",
+                "email": null,
+                "externalUrls": {
+                    "externalUrls": {
+                        "spotify": "https://open.spotify.com/user/1256937600"
+                    }
+                },
+                "followers": null,
+                "href": "https://api.spotify.com/v1/users/1256937600",
+                "id": "1256937600",
+                "images": null,
+                "product": null,
+                "type": "USER",
+                "uri": "spotify:user:1256937600"
+            },
+            "snapshotId": "AAACIDC4g4cpHsa3ACIVs1gOXvhzk9dQ",
+            "tracks": {
+                "href": "https://api.spotify.com/v1/playlists/6Kkd2Ex7ziyf6PHRiNhUU8/tracks",
+                "total": 354
+            },
+            "type": "PLAYLIST",
+            "uri": "spotify:playlist:6Kkd2Ex7ziyf6PHRiNhUU8",
+            "isCollaborative": false,
+            "isPublicAccess": true
+        },
+        {
+            "externalUrls": {
+                "externalUrls": {
+                    "spotify": "https://open.spotify.com/playlist/6RXebsi70V8lmwOZsoAwoC"
+                }
+            },
+            "href": "https://api.spotify.com/v1/playlists/6RXebsi70V8lmwOZsoAwoC",
+            "id": "6RXebsi70V8lmwOZsoAwoC",
+            "images": [
+                {
+                    "height": 640,
+                    "url": "https://mosaic.scdn.co/640/ab67616d00001e021a1eea01889569fbac8cbc5dab67616d00001e021b216bbc594dab55b55dec28ab67616d00001e02cfecc82a50c79fda2e22e845ab67616d00001e02f2623e6c5b1376c48f767b52",
+                    "width": 640
+                },
+                {
+                    "height": 300,
+                    "url": "https://mosaic.scdn.co/300/ab67616d00001e021a1eea01889569fbac8cbc5dab67616d00001e021b216bbc594dab55b55dec28ab67616d00001e02cfecc82a50c79fda2e22e845ab67616d00001e02f2623e6c5b1376c48f767b52",
+                    "width": 300
+                },
+                {
+                    "height": 60,
+                    "url": "https://mosaic.scdn.co/60/ab67616d00001e021a1eea01889569fbac8cbc5dab67616d00001e021b216bbc594dab55b55dec28ab67616d00001e02cfecc82a50c79fda2e22e845ab67616d00001e02f2623e6c5b1376c48f767b52",
+                    "width": 60
+                }
+            ],
+            "name": "MB's Worship Wonders",
+            "owner": {
+                "birthdate": null,
+                "country": null,
+                "displayName": "Michael Beierwaltes",
+                "email": null,
+                "externalUrls": {
+                    "externalUrls": {
+                        "spotify": "https://open.spotify.com/user/1256937600"
+                    }
+                },
+                "followers": null,
+                "href": "https://api.spotify.com/v1/users/1256937600",
+                "id": "1256937600",
+                "images": null,
+                "product": null,
+                "type": "USER",
+                "uri": "spotify:user:1256937600"
+            },
+            "snapshotId": "AAAAQeVlOKdBU2jyEeXIUfkh06OaXyw3",
+            "tracks": {
+                "href": "https://api.spotify.com/v1/playlists/6RXebsi70V8lmwOZsoAwoC/tracks",
+                "total": 68
+            },
+            "type": "PLAYLIST",
+            "uri": "spotify:playlist:6RXebsi70V8lmwOZsoAwoC",
+            "isCollaborative": false,
+            "isPublicAccess": true
+        },
+        {
+            "externalUrls": {
+                "externalUrls": {
+                    "spotify": "https://open.spotify.com/playlist/05R8KGUwsaTnsDMgHeN1Cg"
+                }
+            },
+            "href": "https://api.spotify.com/v1/playlists/05R8KGUwsaTnsDMgHeN1Cg",
+            "id": "05R8KGUwsaTnsDMgHeN1Cg",
+            "images": [
+                {
+                    "height": 640,
+                    "url": "https://mosaic.scdn.co/640/ab67616d00001e02621560f7bcafead2c1df6a23ab67616d00001e02759ae529f35484865514374dab67616d00001e02bc174e6fa6532fe2cafe73f4ab67616d00001e02da69809e17238f9528b887e8",
+                    "width": 640
+                },
+                {
+                    "height": 300,
+                    "url": "https://mosaic.scdn.co/300/ab67616d00001e02621560f7bcafead2c1df6a23ab67616d00001e02759ae529f35484865514374dab67616d00001e02bc174e6fa6532fe2cafe73f4ab67616d00001e02da69809e17238f9528b887e8",
+                    "width": 300
+                },
+                {
+                    "height": 60,
+                    "url": "https://mosaic.scdn.co/60/ab67616d00001e02621560f7bcafead2c1df6a23ab67616d00001e02759ae529f35484865514374dab67616d00001e02bc174e6fa6532fe2cafe73f4ab67616d00001e02da69809e17238f9528b887e8",
+                    "width": 60
+                }
+            ],
+            "name": "MB's Disco Doozies",
+            "owner": {
+                "birthdate": null,
+                "country": null,
+                "displayName": "Michael Beierwaltes",
+                "email": null,
+                "externalUrls": {
+                    "externalUrls": {
+                        "spotify": "https://open.spotify.com/user/1256937600"
+                    }
+                },
+                "followers": null,
+                "href": "https://api.spotify.com/v1/users/1256937600",
+                "id": "1256937600",
+                "images": null,
+                "product": null,
+                "type": "USER",
+                "uri": "spotify:user:1256937600"
+            },
+            "snapshotId": "AAAAQmPMtivhQ/9/32X2A3h8l6eSxsDZ",
+            "tracks": {
+                "href": "https://api.spotify.com/v1/playlists/05R8KGUwsaTnsDMgHeN1Cg/tracks",
+                "total": 57
+            },
+            "type": "PLAYLIST",
+            "uri": "spotify:playlist:05R8KGUwsaTnsDMgHeN1Cg",
+            "isCollaborative": false,
+            "isPublicAccess": true
+        },
+        {
+            "externalUrls": {
+                "externalUrls": {
+                    "spotify": "https://open.spotify.com/playlist/3t8EZViajjwyS7PLEhA9Rj"
+                }
+            },
+            "href": "https://api.spotify.com/v1/playlists/3t8EZViajjwyS7PLEhA9Rj",
+            "id": "3t8EZViajjwyS7PLEhA9Rj",
+            "images": [
+                {
+                    "height": 640,
+                    "url": "https://mosaic.scdn.co/640/ab67616d00001e020276236d403fd127cbb3dd68ab67616d00001e0237706d3b594fa52d5a1ef026ab67616d00001e02ccdddb2e5349ea0608c3e016ab67616d00001e02fc39eb9eb3f3824a58f338dc",
+                    "width": 640
+                },
+                {
+                    "height": 300,
+                    "url": "https://mosaic.scdn.co/300/ab67616d00001e020276236d403fd127cbb3dd68ab67616d00001e0237706d3b594fa52d5a1ef026ab67616d00001e02ccdddb2e5349ea0608c3e016ab67616d00001e02fc39eb9eb3f3824a58f338dc",
+                    "width": 300
+                },
+                {
+                    "height": 60,
+                    "url": "https://mosaic.scdn.co/60/ab67616d00001e020276236d403fd127cbb3dd68ab67616d00001e0237706d3b594fa52d5a1ef026ab67616d00001e02ccdddb2e5349ea0608c3e016ab67616d00001e02fc39eb9eb3f3824a58f338dc",
+                    "width": 60
+                }
+            ],
+            "name": "MB's Pop Powerhouse",
+            "owner": {
+                "birthdate": null,
+                "country": null,
+                "displayName": "Michael Beierwaltes",
+                "email": null,
+                "externalUrls": {
+                    "externalUrls": {
+                        "spotify": "https://open.spotify.com/user/1256937600"
+                    }
+                },
+                "followers": null,
+                "href": "https://api.spotify.com/v1/users/1256937600",
+                "id": "1256937600",
+                "images": null,
+                "product": null,
+                "type": "USER",
+                "uri": "spotify:user:1256937600"
+            },
+            "snapshotId": "AAABDIwM40VMg4TIBgWEUdeW/s6C7M1B",
+            "tracks": {
+                "href": "https://api.spotify.com/v1/playlists/3t8EZViajjwyS7PLEhA9Rj/tracks",
+                "total": 294
+            },
+            "type": "PLAYLIST",
+            "uri": "spotify:playlist:3t8EZViajjwyS7PLEhA9Rj",
+            "isCollaborative": false,
+            "isPublicAccess": true
+        },
+        {
+            "externalUrls": {
+                "externalUrls": {
+                    "spotify": "https://open.spotify.com/playlist/1mUfFGIBF8oZ0c83CHA2RQ"
+                }
+            },
+            "href": "https://api.spotify.com/v1/playlists/1mUfFGIBF8oZ0c83CHA2RQ",
+            "id": "1mUfFGIBF8oZ0c83CHA2RQ",
+            "images": [
+                {
+                    "height": 640,
+                    "url": "https://mosaic.scdn.co/640/ab67616d00001e02058ec9749ace1aa96ab57829ab67616d00001e020760e8d768fb656684f9de80ab67616d00001e02698d1ff9c15316453f7a487aab67616d00001e02fd0a989f4455ad3c23076be4",
+                    "width": 640
+                },
+                {
+                    "height": 300,
+                    "url": "https://mosaic.scdn.co/300/ab67616d00001e02058ec9749ace1aa96ab57829ab67616d00001e020760e8d768fb656684f9de80ab67616d00001e02698d1ff9c15316453f7a487aab67616d00001e02fd0a989f4455ad3c23076be4",
+                    "width": 300
+                },
+                {
+                    "height": 60,
+                    "url": "https://mosaic.scdn.co/60/ab67616d00001e02058ec9749ace1aa96ab57829ab67616d00001e020760e8d768fb656684f9de80ab67616d00001e02698d1ff9c15316453f7a487aab67616d00001e02fd0a989f4455ad3c23076be4",
+                    "width": 60
+                }
+            ],
+            "name": "MB's Country Coolness",
+            "owner": {
+                "birthdate": null,
+                "country": null,
+                "displayName": "Michael Beierwaltes",
+                "email": null,
+                "externalUrls": {
+                    "externalUrls": {
+                        "spotify": "https://open.spotify.com/user/1256937600"
+                    }
+                },
+                "followers": null,
+                "href": "https://api.spotify.com/v1/users/1256937600",
+                "id": "1256937600",
+                "images": null,
+                "product": null,
+                "type": "USER",
+                "uri": "spotify:user:1256937600"
+            },
+            "snapshotId": "AAAAmCVr/1qQ65o4hSzVrrLiYxnRfvop",
+            "tracks": {
+                "href": "https://api.spotify.com/v1/playlists/1mUfFGIBF8oZ0c83CHA2RQ/tracks",
+                "total": 155
+            },
+            "type": "PLAYLIST",
+            "uri": "spotify:playlist:1mUfFGIBF8oZ0c83CHA2RQ",
+            "isCollaborative": false,
+            "isPublicAccess": true
+        },
+        {
+            "externalUrls": {
+                "externalUrls": {
+                    "spotify": "https://open.spotify.com/playlist/7D0UhSgQRIChUVXYNWPrDG"
+                }
+            },
+            "href": "https://api.spotify.com/v1/playlists/7D0UhSgQRIChUVXYNWPrDG",
+            "id": "7D0UhSgQRIChUVXYNWPrDG",
+            "images": [
+                {
+                    "height": null,
+                    "url": "https://i.scdn.co/image/ab67616d00001e02bb81598a4bff92da8f422ec9",
+                    "width": null
+                }
+            ],
+            "name": "Relax, Man",
+            "owner": {
+                "birthdate": null,
+                "country": null,
+                "displayName": "Michael Beierwaltes",
+                "email": null,
+                "externalUrls": {
+                    "externalUrls": {
+                        "spotify": "https://open.spotify.com/user/1256937600"
+                    }
+                },
+                "followers": null,
+                "href": "https://api.spotify.com/v1/users/1256937600",
+                "id": "1256937600",
+                "images": null,
+                "product": null,
+                "type": "USER",
+                "uri": "spotify:user:1256937600"
+            },
+            "snapshotId": "AAAAA8Rt3+R8wb20TSJL+0lamxbnJOeS",
+            "tracks": {
+                "href": "https://api.spotify.com/v1/playlists/7D0UhSgQRIChUVXYNWPrDG/tracks",
+                "total": 1
+            },
+            "type": "PLAYLIST",
+            "uri": "spotify:playlist:7D0UhSgQRIChUVXYNWPrDG",
+            "isCollaborative": false,
+            "isPublicAccess": true
+        },
+        {
+            "externalUrls": {
+                "externalUrls": {
+                    "spotify": "https://open.spotify.com/playlist/5E2oOs38SSsGSUdd0Un0pt"
+                }
+            },
+            "href": "https://api.spotify.com/v1/playlists/5E2oOs38SSsGSUdd0Un0pt",
+            "id": "5E2oOs38SSsGSUdd0Un0pt",
+            "images": [
+                {
+                    "height": 640,
+                    "url": "https://mosaic.scdn.co/640/ab67616d00001e024b292ed7c7360a04d3d6b74aab67616d00001e02ba5db46f4b838ef6027e6f96ab67616d00001e02bdcc3b587b5249932bc415c2ab67616d00001e02c648a42b5dad72c8aafceeec",
+                    "width": 640
+                },
+                {
+                    "height": 300,
+                    "url": "https://mosaic.scdn.co/300/ab67616d00001e024b292ed7c7360a04d3d6b74aab67616d00001e02ba5db46f4b838ef6027e6f96ab67616d00001e02bdcc3b587b5249932bc415c2ab67616d00001e02c648a42b5dad72c8aafceeec",
+                    "width": 300
+                },
+                {
+                    "height": 60,
+                    "url": "https://mosaic.scdn.co/60/ab67616d00001e024b292ed7c7360a04d3d6b74aab67616d00001e02ba5db46f4b838ef6027e6f96ab67616d00001e02bdcc3b587b5249932bc415c2ab67616d00001e02c648a42b5dad72c8aafceeec",
+                    "width": 60
+                }
+            ],
+            "name": "MB and Ryry's Smooth Slowdances",
+            "owner": {
+                "birthdate": null,
+                "country": null,
+                "displayName": "Michael Beierwaltes",
+                "email": null,
+                "externalUrls": {
+                    "externalUrls": {
+                        "spotify": "https://open.spotify.com/user/1256937600"
+                    }
+                },
+                "followers": null,
+                "href": "https://api.spotify.com/v1/users/1256937600",
+                "id": "1256937600",
+                "images": null,
+                "product": null,
+                "type": "USER",
+                "uri": "spotify:user:1256937600"
+            },
+            "snapshotId": "AAAAJcdpsMCBxKIHvIg6eGZ/rnPwDEf8",
+            "tracks": {
+                "href": "https://api.spotify.com/v1/playlists/5E2oOs38SSsGSUdd0Un0pt/tracks",
+                "total": 32
+            },
+            "type": "PLAYLIST",
+            "uri": "spotify:playlist:5E2oOs38SSsGSUdd0Un0pt",
+            "isCollaborative": false,
+            "isPublicAccess": false
+        },
+        {
+            "externalUrls": {
+                "externalUrls": {
+                    "spotify": "https://open.spotify.com/playlist/6QnkhH9kLCOVcARx5opMn0"
+                }
+            },
+            "href": "https://api.spotify.com/v1/playlists/6QnkhH9kLCOVcARx5opMn0",
+            "id": "6QnkhH9kLCOVcARx5opMn0",
+            "images": [
+                {
+                    "height": 640,
+                    "url": "https://mosaic.scdn.co/640/ab67616d00001e022a061f8cc383443cbb46adf6ab67616d00001e0237706d3b594fa52d5a1ef026ab67616d00001e029a9b1cc067e4460da04adce2ab67616d00001e02c0f74b53d4cf4b14f7f5d41a",
+                    "width": 640
+                },
+                {
+                    "height": 300,
+                    "url": "https://mosaic.scdn.co/300/ab67616d00001e022a061f8cc383443cbb46adf6ab67616d00001e0237706d3b594fa52d5a1ef026ab67616d00001e029a9b1cc067e4460da04adce2ab67616d00001e02c0f74b53d4cf4b14f7f5d41a",
+                    "width": 300
+                },
+                {
+                    "height": 60,
+                    "url": "https://mosaic.scdn.co/60/ab67616d00001e022a061f8cc383443cbb46adf6ab67616d00001e0237706d3b594fa52d5a1ef026ab67616d00001e029a9b1cc067e4460da04adce2ab67616d00001e02c0f74b53d4cf4b14f7f5d41a",
+                    "width": 60
+                }
+            ],
+            "name": "Looking Good! Feeling Good!",
+            "owner": {
+                "birthdate": null,
+                "country": null,
+                "displayName": "Michael Beierwaltes",
+                "email": null,
+                "externalUrls": {
+                    "externalUrls": {
+                        "spotify": "https://open.spotify.com/user/1256937600"
+                    }
+                },
+                "followers": null,
+                "href": "https://api.spotify.com/v1/users/1256937600",
+                "id": "1256937600",
+                "images": null,
+                "product": null,
+                "type": "USER",
+                "uri": "spotify:user:1256937600"
+            },
+            "snapshotId": "AAACT89qGF6z3ajbtvO7WeReaBZuyZy6",
+            "tracks": {
+                "href": "https://api.spotify.com/v1/playlists/6QnkhH9kLCOVcARx5opMn0/tracks",
+                "total": 615
+            },
+            "type": "PLAYLIST",
+            "uri": "spotify:playlist:6QnkhH9kLCOVcARx5opMn0",
+            "isCollaborative": false,
+            "isPublicAccess": true
+        },
+        {
+            "externalUrls": {
+                "externalUrls": {
+                    "spotify": "https://open.spotify.com/playlist/7Io9z7s60CBWRrSs5DiEY6"
+                }
+            },
+            "href": "https://api.spotify.com/v1/playlists/7Io9z7s60CBWRrSs5DiEY6",
+            "id": "7Io9z7s60CBWRrSs5DiEY6",
+            "images": [
+                {
+                    "height": 640,
+                    "url": "https://mosaic.scdn.co/640/ab67616d00001e020e670fb857f02a88b3328cf0ab67616d00001e026f4f62da3d811b6501a69ffaab67616d00001e027865d33379a77ac65b45e606ab67616d00001e029e7223fa7dc5e0ffcf59d107",
+                    "width": 640
+                },
+                {
+                    "height": 300,
+                    "url": "https://mosaic.scdn.co/300/ab67616d00001e020e670fb857f02a88b3328cf0ab67616d00001e026f4f62da3d811b6501a69ffaab67616d00001e027865d33379a77ac65b45e606ab67616d00001e029e7223fa7dc5e0ffcf59d107",
+                    "width": 300
+                },
+                {
+                    "height": 60,
+                    "url": "https://mosaic.scdn.co/60/ab67616d00001e020e670fb857f02a88b3328cf0ab67616d00001e026f4f62da3d811b6501a69ffaab67616d00001e027865d33379a77ac65b45e606ab67616d00001e029e7223fa7dc5e0ffcf59d107",
+                    "width": 60
+                }
+            ],
+            "name": "Ain't Feeling So Good",
+            "owner": {
+                "birthdate": null,
+                "country": null,
+                "displayName": "Michael Beierwaltes",
+                "email": null,
+                "externalUrls": {
+                    "externalUrls": {
+                        "spotify": "https://open.spotify.com/user/1256937600"
+                    }
+                },
+                "followers": null,
+                "href": "https://api.spotify.com/v1/users/1256937600",
+                "id": "1256937600",
+                "images": null,
+                "product": null,
+                "type": "USER",
+                "uri": "spotify:user:1256937600"
+            },
+            "snapshotId": "AAAAtcbeQZ9mL3cxPyjyGPuuVLnUQ3lq",
+            "tracks": {
+                "href": "https://api.spotify.com/v1/playlists/7Io9z7s60CBWRrSs5DiEY6/tracks",
+                "total": 132
+            },
+            "type": "PLAYLIST",
+            "uri": "spotify:playlist:7Io9z7s60CBWRrSs5DiEY6",
+            "isCollaborative": false,
+            "isPublicAccess": true
+        },
+        {
+            "externalUrls": {
+                "externalUrls": {
+                    "spotify": "https://open.spotify.com/playlist/5XhWkyfydKyWRsJENvg07B"
+                }
+            },
+            "href": "https://api.spotify.com/v1/playlists/5XhWkyfydKyWRsJENvg07B",
+            "id": "5XhWkyfydKyWRsJENvg07B",
+            "images": [
+                {
+                    "height": 640,
+                    "url": "https://mosaic.scdn.co/640/ab67616d00001e02128450651c9f0442780d8eb8ab67616d00001e026009055038261f9f34adfd4fab67616d00001e0297475ef2470f186d30235fe3ab67616d00001e02f5e30500f0eec7d92b159eae",
+                    "width": 640
+                },
+                {
+                    "height": 300,
+                    "url": "https://mosaic.scdn.co/300/ab67616d00001e02128450651c9f0442780d8eb8ab67616d00001e026009055038261f9f34adfd4fab67616d00001e0297475ef2470f186d30235fe3ab67616d00001e02f5e30500f0eec7d92b159eae",
+                    "width": 300
+                },
+                {
+                    "height": 60,
+                    "url": "https://mosaic.scdn.co/60/ab67616d00001e02128450651c9f0442780d8eb8ab67616d00001e026009055038261f9f34adfd4fab67616d00001e0297475ef2470f186d30235fe3ab67616d00001e02f5e30500f0eec7d92b159eae",
+                    "width": 60
+                }
+            ],
+            "name": "MB's Workout Wins",
+            "owner": {
+                "birthdate": null,
+                "country": null,
+                "displayName": "Michael Beierwaltes",
+                "email": null,
+                "externalUrls": {
+                    "externalUrls": {
+                        "spotify": "https://open.spotify.com/user/1256937600"
+                    }
+                },
+                "followers": null,
+                "href": "https://api.spotify.com/v1/users/1256937600",
+                "id": "1256937600",
+                "images": null,
+                "product": null,
+                "type": "USER",
+                "uri": "spotify:user:1256937600"
+            },
+            "snapshotId": "AAAAwRVZ/o891LrJ2dkZ4tvRSPNcwPmA",
+            "tracks": {
+                "href": "https://api.spotify.com/v1/playlists/5XhWkyfydKyWRsJENvg07B/tracks",
+                "total": 160
+            },
+            "type": "PLAYLIST",
+            "uri": "spotify:playlist:5XhWkyfydKyWRsJENvg07B",
+            "isCollaborative": false,
+            "isPublicAccess": true
+        }
+    ],
+    "limit": 50,
+    "next": null,
+    "offset": 0,
+    "previous": null,
+    "total": 27
+}

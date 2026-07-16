@@ -1,0 +1,119 @@
+package com.mbmusic.hubserver.Playlists;
+
+import java.io.IOException;
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
+
+import org.apache.hc.core5.http.ParseException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.util.Pair;
+import org.springframework.stereotype.Component;
+
+import com.mbmusic.hubserver.Common.DataAccess;
+import com.mbmusic.hubserver.Connections.SpotifyApiGateway;
+import com.mbmusic.hubserver.Connections.Exceptions.InvalidSessionIdException;
+import com.mbmusic.hubserver.Playlists.Models.PostSpotifyPlaylistResponse;
+
+import se.michaelthelin.spotify.exceptions.SpotifyWebApiException;
+import se.michaelthelin.spotify.model_objects.specification.Paging;
+import se.michaelthelin.spotify.model_objects.specification.Playlist;
+import se.michaelthelin.spotify.model_objects.specification.PlaylistSimplified;
+import se.michaelthelin.spotify.model_objects.specification.User;
+
+@Component
+public class PlaylistDA {
+
+    //#region Members
+
+    @Autowired
+    private DataAccess da;
+
+    //#endregion
+
+    //#region Methods
+
+    /**
+     * This method retrieves all the Spotify playlists created by the current user
+     * @param offset Represents the index of the first playlist to return
+     * @return 
+     * @throws IOException 
+     * @throws SpotifyWebApiException 
+     * @throws ParseException 
+     */
+    public CompletableFuture<Paging<PlaylistSimplified>> retrieveUserPlaylists(String sessionId, Integer offset)
+        throws ParseException, SpotifyWebApiException, IOException, InvalidSessionIdException {
+
+        return da.getSpotifyApiGatewayAsync(sessionId)
+            .thenCompose(spotifyGateway -> spotifyGateway.retrieveUserPlaylists(offset));
+    }
+
+
+    /**
+     * This method adds spotify items (tracks, podcast episodes, etc.) to a specified playlist
+     * @param playlistId The ID of the spotify playlist for which to add the spotify items
+     * @param spotifyItems The spotify items (tracks, podcast episodes, etc.) to add.
+     * @return
+     * @throws InvalidSessionIdException 
+     */
+    public CompletableFuture<Boolean> addItemsToPlaylist(String sessionId, String playlistId, List<String> spotifyItems)
+        throws InvalidSessionIdException {
+
+        return da.getSpotifyApiGatewayAsync(sessionId)
+            .thenCompose(spotifyGateway -> spotifyGateway.addItemsToPlaylist(playlistId, spotifyItems));
+    }
+
+    /**
+     * This method attempts to create a playlist in Spotify and subsequently add items in there, if provided
+     * @param sessionId The ID of the session associated with the Spotify token information
+     * @param playlistName The name of the playlist to create
+     * @param playlistDescription The description to associate with the newly created playlist
+     * @param spotifyURIs URIs of the spotify items ()
+     * @param isPublic
+     * @return A {@link PostSpotifyPlaylistResponse} object indiciating success or failure. If there was a failure, 
+     * then the error message is populated with the reason
+     * @throws InvalidSessionIdException
+     */
+    public CompletableFuture<PostSpotifyPlaylistResponse> createSpotifyPlaylist(String sessionId, String playlistName, 
+        String playlistDescription, List<String> spotifyURIs, boolean isPublic) throws InvalidSessionIdException {
+
+        return da.getSpotifyApiGatewayAsync(sessionId).thenCompose(spotifyGateway -> {
+           return spotifyGateway.getCurrentSpotifyUserProfile().thenApply(user -> Pair.of(spotifyGateway, user));
+        })
+        .thenCompose(apiAndUser -> {
+            SpotifyApiGateway spotifyApiGateway = apiAndUser.getFirst();
+            User currentUser = apiAndUser.getSecond();
+            String userId = currentUser.getId();
+
+            //Validate the userId
+            if (userId == null || userId.isBlank()) {
+                throw new RuntimeException("Invalid User ID when obtaining user's profile");
+            }
+
+            //Now create a playlist request
+            return spotifyApiGateway.createNewSpotifyPlaylist(userId, playlistName, playlistDescription, isPublic)
+                .thenApply(newPlaylist -> {
+                    if (newPlaylist == null) {
+                        throw new RuntimeException("Error creating the spotify playlist");
+                    }
+                    return Pair.of(spotifyApiGateway, newPlaylist);
+                });
+        }).thenCompose(apiAndNewPlaylist -> {
+            SpotifyApiGateway spotifyApiGateway = apiAndNewPlaylist.getFirst();
+            Playlist newPlaylist = apiAndNewPlaylist.getSecond();
+
+            String newPlaylistId = newPlaylist.getId();
+
+            //Add spotify items to the newly created playlist
+            if (spotifyURIs != null && !spotifyURIs.isEmpty()) {
+                //Insert the items
+                return spotifyApiGateway.addItemsToPlaylist(newPlaylistId, spotifyURIs)
+                    .thenApply(snapshotResult -> new PostSpotifyPlaylistResponse(true, newPlaylistId));
+            }
+
+            return CompletableFuture.completedFuture(new PostSpotifyPlaylistResponse(true, newPlaylistId));
+        });
+    }
+
+    //#endregion
+
+}

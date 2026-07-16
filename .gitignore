@@ -1,5 +1,5 @@
 #Hide the environment variables file
-properties.env
+*.env
 
 HELP.md
 .gradle
