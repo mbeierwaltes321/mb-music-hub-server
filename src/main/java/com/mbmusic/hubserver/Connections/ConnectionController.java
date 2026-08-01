@@ -11,7 +11,6 @@ import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import org.apache.hc.core5.http.ParseException;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -57,7 +56,7 @@ public class ConnectionController {
      * @throws Exception when something goes wrong with the initial authentication
      */
     @GetMapping("/spotifylogin")
-    public RedirectView postSpotifyLogin() {
+    public RedirectView getSpotifyLogin() {
      
         // Generate a state
         // choose a Character random from this String 
