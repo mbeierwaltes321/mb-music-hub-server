@@ -131,7 +131,7 @@ public class ConnectionControllerTests extends BaseTest {
                 return new URI(finalUri.toString());
             });
         
-        mvc.perform(post("/conn/spotifylogin"))
+        mvc.perform(get("/conn/spotifylogin"))
             .andExpect(status().isFound())
             .andExpect(header().exists("Location"))
             .andExpect(header().string("Location", finalUri.toString()));
@@ -148,7 +148,7 @@ public class ConnectionControllerTests extends BaseTest {
         when(mockApiGateway.createAuthorizationURI(anyString()))
             .thenReturn(URI_WITH_ERROR);
 
-        var exception = mvc.perform(post("/conn/spotifylogin"))
+        var exception = mvc.perform(get("/conn/spotifylogin"))
             .andExpect(status().isInternalServerError())
             .andReturn()
             .getResolvedException();
@@ -170,7 +170,7 @@ public class ConnectionControllerTests extends BaseTest {
         when(mockApiGateway.createAuthorizationURI(anyString()))
             .thenReturn(URI_WITH_INVALID_STATE);
         
-        var exception = mvc.perform(post("/conn/spotifylogin"))
+        var exception = mvc.perform(get("/conn/spotifylogin"))
             .andExpect(status().isInternalServerError())
             .andReturn()
             .getResolvedException();

@@ -56,7 +56,7 @@ public class ConnectionController {
      * @return A {@link RedirectView} that redirects to the authentication window for the user on successful login
      * @throws Exception when something goes wrong with the initial authentication
      */
-    @PostMapping("/spotifylogin")
+    @GetMapping("/spotifylogin")
     public RedirectView postSpotifyLogin() {
      
         // Generate a state
