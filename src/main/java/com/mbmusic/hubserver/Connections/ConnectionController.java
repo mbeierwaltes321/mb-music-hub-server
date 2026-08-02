@@ -143,7 +143,7 @@ public class ConnectionController {
         UUID newSessionId = UUID.randomUUID();
         Cookie cookie = new Cookie(ConnectionUtils.SPOTIFY_COOKIE_NAME, newSessionId.toString());
         cookie.setSecure(false);
-        cookie.setDomain("127.0.0.1");  //NOTE: For testing, you must use 127.0.0.1 instead of "localhost" to match what Spotify requests
+        //cookie.setDomain("127.0.0.1");  //NOTE: For testing, you must use 127.0.0.1 instead of "localhost" to match what Spotify requests
         cookie.setHttpOnly(true);
         cookie.setPath("/");
         cookie.setAttribute("SameSite", "Lax");
