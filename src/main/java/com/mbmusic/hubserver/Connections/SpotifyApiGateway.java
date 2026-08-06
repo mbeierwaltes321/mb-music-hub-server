@@ -45,10 +45,12 @@ public class SpotifyApiGateway {
      * @return The Authorization URI
      */
     public URI createAuthorizationURI(String state) {
+        final String scope = "user-library-read playlist-read-private playlist-modify-public playlist-modify-private " +
+            "user-read-private"; 
         return spotifyClient.authorizationCodeUri()
             .state(state)
             .response_type("code")
-            .scope("user-library-read playlist-read-private playlist-modify-public playlist-modify-private")
+            .scope(scope)
             .build()
             .execute();
     }
