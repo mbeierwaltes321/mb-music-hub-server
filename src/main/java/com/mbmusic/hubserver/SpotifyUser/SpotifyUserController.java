@@ -3,6 +3,7 @@ package com.mbmusic.hubserver.SpotifyUser;
 import java.util.concurrent.CompletableFuture;
 
 import org.springframework.web.bind.annotation.CookieValue;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -32,9 +33,19 @@ public class SpotifyUserController {
 
     //#region Methods
 
+    /**
+     * This method retrieves basic user information for the current user
+     * @param sessionIdCookie The cookie containing the session id
+     * @return A CompletableFuture containing a {@link GetSpotifyUserInfoResponse } object, which contains
+     * the name, profile picture, and the type of account the user has
+     * @throws InvalidSessionIdException
+     */
+    @GetMapping("info")
     public CompletableFuture<GetSpotifyUserInfoResponse> getSpotifyUserInfo(
         @CookieValue(name = ConnectionUtils.SPOTIFY_COOKIE_NAME) Cookie sessionIdCookie
     ) throws InvalidSessionIdException {
+
+        //TODO - Write tests for this
 
         if (sessionIdCookie.getValue() == null || sessionIdCookie.getValue() == "")
             throw new InvalidSessionIdException("Invalid Session ID");
