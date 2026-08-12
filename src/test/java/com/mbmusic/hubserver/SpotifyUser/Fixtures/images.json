@@ -1,0 +1,12 @@
+[
+  {
+    "height": 300,
+    "url": "https://testimage.com/biggerimage",
+    "width": 300
+  },
+  {
+    "height": 64,
+    "url": "https://testimage.com/smallerimage",
+    "width": 64
+  }
+]

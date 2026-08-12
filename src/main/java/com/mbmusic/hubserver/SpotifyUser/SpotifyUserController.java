@@ -45,8 +45,6 @@ public class SpotifyUserController {
         @CookieValue(name = ConnectionUtils.SPOTIFY_COOKIE_NAME) Cookie sessionIdCookie
     ) throws InvalidSessionIdException {
 
-        //TODO - Write tests for this
-
         if (sessionIdCookie.getValue() == null || sessionIdCookie.getValue() == "")
             throw new InvalidSessionIdException("Invalid Session ID");
 
