@@ -6,9 +6,9 @@ public class GetSpotifyUserInfoResponse {
 
     private String subscriptionLevel;
 
-    private int imageHeight;
+    private Integer imageHeight;
 
-    private int imageWidth;
+    private Integer imageWidth;
 
     private String imageUrl;
 
@@ -28,7 +28,7 @@ public class GetSpotifyUserInfoResponse {
         this.subscriptionLevel = subscriptionLevel;
     }
 
-    public int getImageHeight() {
+    public Integer getImageHeight() {
         return imageHeight;
     }
 
@@ -36,7 +36,7 @@ public class GetSpotifyUserInfoResponse {
         this.imageHeight = imageHeight;
     }
 
-    public int getImageWidth() {
+    public Integer getImageWidth() {
         return imageWidth;
     }
 

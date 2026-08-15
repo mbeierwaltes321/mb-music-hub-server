@@ -9,6 +9,7 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.asyncDispatch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.request;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -125,6 +126,37 @@ public class SpotifyUserControllerTests extends BaseTest {
         mvc.perform(asyncDispatch(asyncResult))
             .andExpect(status().isOk())
             .andExpect(content().json(mapper.writeValueAsString(expectedResponse)));
+    }
+
+    @Test
+    public void getSpotifyUser_WithoutImages() throws Exception {
+        User mockSpotifyUser = new User.Builder()
+            .setDisplayName("Test Testington")
+            .setProduct(ProductType.PREMIUM)
+            .setImages(new Image[0])
+            .build();
+
+        when(mockGateway.getCurrentSpotifyUserProfile()).thenReturn(CompletableFuture.completedFuture(mockSpotifyUser));
+
+        GetSpotifyUserInfoResponse expectedResponse = new GetSpotifyUserInfoResponse();
+        expectedResponse.setDisplayName(mockSpotifyUser.getDisplayName());
+        expectedResponse.setSubscriptionLevel(mockSpotifyUser.getProduct().getType());
+
+        MvcResult asyncResult = mvc.perform(get("/spotify-users/info")
+            .cookie(mockSessionCookie))
+            .andExpect(status().isOk())
+            .andExpect(request().asyncStarted())
+            .andReturn();
+        
+        mvc.perform(asyncDispatch(asyncResult))
+            .andExpect(status().isOk())
+            .andExpectAll(
+                jsonPath("$.imageHeight", org.hamcrest.Matchers.nullValue()),
+                jsonPath("$.imageWidth", org.hamcrest.Matchers.nullValue()),
+                jsonPath("$.imageUrl", org.hamcrest.Matchers.nullValue())
+            )
+            .andExpect(content().json(mapper.writeValueAsString(expectedResponse)));
+
     }
 
     /**
