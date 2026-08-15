@@ -14,6 +14,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.io.File;
 import java.nio.file.Path;
+import java.util.Arrays;
 import java.util.concurrent.CompletableFuture;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -106,12 +107,14 @@ public class SpotifyUserControllerTests extends BaseTest {
 
         when(mockGateway.getCurrentSpotifyUserProfile()).thenReturn(CompletableFuture.completedFuture(mockSpotifyUser));
 
+        var minImage = Arrays.stream(images)
+            .min((img1, img2) -> (img1.getWidth() * img1.getHeight()) - (img2.getWidth() * img2.getHeight())).get();
         GetSpotifyUserInfoResponse expectedResponse = new GetSpotifyUserInfoResponse();
-        expectedResponse.setDisplayName("Test Testington");
-        expectedResponse.setSubscriptionLevel("premium");
-        expectedResponse.setImageHeight(300);
-        expectedResponse.setImageWidth(300);
-        expectedResponse.setImageUrl(images[0].getUrl());
+        expectedResponse.setDisplayName(mockSpotifyUser.getDisplayName());
+        expectedResponse.setSubscriptionLevel(mockSpotifyUser.getProduct().getType());
+        expectedResponse.setImageHeight(minImage.getHeight());
+        expectedResponse.setImageWidth(minImage.getWidth());
+        expectedResponse.setImageUrl(minImage.getUrl());
         
         MvcResult asyncResult = mvc.perform(get("/spotify-users/info")
             .cookie(mockSessionCookie))
