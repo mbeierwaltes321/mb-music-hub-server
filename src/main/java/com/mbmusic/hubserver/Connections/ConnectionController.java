@@ -4,6 +4,10 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.HashMap;
@@ -15,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.view.RedirectView;
+import org.springframework.web.util.UriUtils;
 
 import com.mbmusic.hubserver.Common.Utilities.TimeUtils;
 import com.mbmusic.hubserver.Connections.Clients.ValkeyClient;
@@ -56,7 +61,9 @@ public class ConnectionController {
      * @throws Exception when something goes wrong with the initial authentication
      */
     @GetMapping("/spotifylogin")
-    public RedirectView getSpotifyLogin() {
+    public RedirectView getSpotifyLogin(
+        @RequestParam (name = "frontendState", required = false) String frontendState
+    ) {
      
         // Generate a state
         // choose a Character random from this String 
@@ -80,8 +87,10 @@ public class ConnectionController {
             .charAt(index)); 
         }
 
+        final String finalState = buildStateParameter(frontendState, AlphaNumericString);
+
         SpotifyApiGateway spotifyGateway = spotifyConnection.createEmptySpotifyApiGateway();
-        final URI authUri = spotifyGateway.createAuthorizationURI(stateSb.toString());
+        final URI authUri = spotifyGateway.createAuthorizationURI(finalState);
 
         String responseQuery = authUri.getQuery();
 
@@ -98,7 +107,7 @@ public class ConnectionController {
 
         //Validate that the state is the same
         String returnedState = parmInfo.get("state");
-        if (returnedState == null || !returnedState.equals(stateSb.toString())) {
+        if (returnedState == null || !returnedState.equals(finalState.toString())) {
             throw new SpotifyAuthorizationException("Access denied: State did not match");
         }
 
@@ -109,16 +118,18 @@ public class ConnectionController {
      * This method is called by the Spotify API. It is used to generate an authorization and referesh token
      * @note When the state is returned to the client, you must verify that the state in the browser matches the state passed here (double check this)
      * @param code The code returned from the Spotify API used to authenticate the user
-     * @param state The state-specific code used to identify the user and session
+     * @param state The state indicating where in the front end application to restore the state
      * @throws IOException IO Exceptions performed while obtaining the authorization code
      * @throws SpotifyWebApiException Exceptions specific to the Spotify API while retrieving the authorization code
      * @throws ParseException Parsing exception when retrieving the Spotify API codes
      * @throws InvalidSessionIdException Invalid session id when upserting the new session id to Valkey
      */
     @GetMapping("/redirect")
-    public CompletableFuture<Void> generateSpotifyAuthToken(@RequestParam(name="code") String code, 
-            @RequestParam(name="state") String state, HttpServletResponse response ) 
-                throws SpotifyWebApiException, IOException, InvalidSessionIdException, URISyntaxException {
+    public CompletableFuture<Void> generateSpotifyAuthToken(
+        @RequestParam(name="code") String code, 
+        @RequestParam(name="state") String state,
+        HttpServletResponse response) 
+            throws SpotifyWebApiException, IOException, InvalidSessionIdException, URISyntaxException {
 
         SpotifyApiGateway spotifyGateway = spotifyConnection.createEmptySpotifyApiGateway();
                 
@@ -152,8 +163,11 @@ public class ConnectionController {
         response.addCookie(cookie);
 
         //Declare the URL object used to redirect to the frontend application
-        //TODO - Make this an environment variable?
-        URL redirectUrl = new URI("http://127.0.0.1:5173/").toURL();
+        //TODO - Make the domain an environment variable
+        
+        String redirectString = "http://127.0.0.1:5173" + extractDecodedFrontendPathFromState(state);
+
+        URL redirectUrl = new URI(redirectString).toURL();
 
         return valkeyClient.upsertSpotifyAPITokenAsync(newSessionId, newTokenInfo)
             .thenAccept(inserted -> {
@@ -167,6 +181,61 @@ public class ConnectionController {
                     throw new RuntimeException("Error redirecting to the front end");
                 }
             });
+    }
+
+    /**
+     * This method builds the state parameter to be used throughout the Spotify Authentication/Authorization process
+     * @param frontendUrl The encoded URL indicating where in the front end to redirect once authenticated, if present
+     * @param stateCode The unique code generated to prevent XSS attacks
+     * @return The prepared state parameter, formatted as "encodedurl_stateCode". If the encoded url is null or empty,
+     * then it just returns _stateCode
+     */
+    private static String buildStateParameter(String frontendUrl, String stateCode) {
+
+        if (frontendUrl == null || frontendUrl.isEmpty()) {
+            return "_" + stateCode;
+        }
+        
+        return frontendUrl + "_" + stateCode;
+
+    }
+
+    /**
+     * This method takes a fully formed state parameter and extracts the front end path from its
+     * @param state The completed state parameter containing the frontend path and state formatted as
+     * {frontendPath}_{stateCode}
+     * @return The decoded frontend path if present. Otherwise returns the root "/" path
+     */
+    private static String extractDecodedFrontendPathFromState(String state) {
+        if (state == null || state.isEmpty()) {
+            return "/";
+        }
+
+        String[] stateParts = state.split("_");
+        if (stateParts.length != 2 || stateParts[0].isEmpty()) {
+            return "/";
+        }
+
+        return UriUtils.decode(stateParts[0], StandardCharsets.UTF_8);
+    }
+
+    /**
+     * This method extracts the state code from the fully formed state parameter
+     * @param state The completed state parameter containing the frontend path and state formatted as
+     * {frontendpath}_{stateCode}
+     * @return The state code if present. Otherwise it retruns null.
+     */
+    private static String extractStateCodeFromState(String state) {
+        if (state == null || state.isEmpty()) {
+            return null;
+        }
+
+        String[] stateParts = state.split("_");
+        if (stateParts.length != 2 || stateParts[1].isEmpty()) {
+            return null;
+        }
+
+        return stateParts[1];
     }
 
     //#endregion
