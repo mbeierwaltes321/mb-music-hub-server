@@ -87,7 +87,7 @@ public class ConnectionController {
             .charAt(index)); 
         }
 
-        final String finalState = buildStateParameter(frontendState, AlphaNumericString);
+        final String finalState = buildStateParameter(frontendState, stateSb.toString());
 
         SpotifyApiGateway spotifyGateway = spotifyConnection.createEmptySpotifyApiGateway();
         final URI authUri = spotifyGateway.createAuthorizationURI(finalState);
