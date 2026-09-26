@@ -185,7 +185,7 @@ public class ConnectionController {
 
     /**
      * This method builds the state parameter to be used throughout the Spotify Authentication/Authorization process
-     * @param frontendUrl The encoded URL indicating where in the front end to redirect once authenticated, if present
+     * @param frontendUrl The URL indicating where in the front end to redirect once authenticated, if present
      * @param stateCode The unique code generated to prevent XSS attacks
      * @return The prepared state parameter, formatted as "encodedurl_stateCode". If the encoded url is null or empty,
      * then it just returns _stateCode
@@ -196,7 +196,7 @@ public class ConnectionController {
             return "_" + stateCode;
         }
         
-        return frontendUrl + "_" + stateCode;
+        return UriUtils.encode(frontendUrl, StandardCharsets.UTF_8) + "_" + stateCode;
 
     }
 
