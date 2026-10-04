@@ -4,9 +4,6 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.net.URLDecoder;
-import java.net.URLEncoder;
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -56,9 +53,9 @@ public class ConnectionController {
     //#region Methods
 
     /**
-     * This method generates the login URI for authenticating the user into Spotify
-     * @return A {@link RedirectView} that redirects to the authentication window for the user on successful login
-     * @throws Exception when something goes wrong with the initial authentication
+     * This method performs authorization for the user attempting to log into Spotify
+     * @param frontendState The path from which the person tried to log in from in the front end application
+     * @return
      */
     @GetMapping("/spotifylogin")
     public RedirectView getSpotifyLogin(
@@ -147,20 +144,24 @@ public class ConnectionController {
         newTokenInfo.setExpiresIn(authorizationCodeCredentials.getExpiresIn());
 
         //Create the session id for the user, and add the session cookie
-        //So it looks like the cookie requirements are as follows during development:
-        //1. For Safari: setSecure should be false; cookie cannot have __Secure if setSecure is false. Otherwise it will not show
-        //2. For Edge: setSecure will work, but it doesn't like that it's being combined with SameSite: none
-        //3. We need to find the best way to handle this
         UUID newSessionId = UUID.randomUUID();
-        Cookie cookie = new Cookie(ConnectionUtils.SPOTIFY_COOKIE_NAME, newSessionId.toString());
-        cookie.setSecure(false);
+        Cookie sessionCookie = new Cookie(ConnectionUtils.SPOTIFY_COOKIE_NAME, newSessionId.toString());
+        sessionCookie.setSecure(false); //TODO - Set this to TRUE once you have HTTPS set up; Safari does not send/receive cookies with localhost if this is true
         //cookie.setDomain("127.0.0.1");  //NOTE: For testing, you must use 127.0.0.1 instead of "localhost" to match what Spotify requests
-        cookie.setHttpOnly(true);
-        cookie.setPath("/");
-        cookie.setAttribute("SameSite", "Lax");
-        cookie.setMaxAge(TimeUtils.WEEK_SECONDS); //TODO - Configure this with "Remember Me" at one point
+        sessionCookie.setHttpOnly(true);
+        sessionCookie.setPath("/"); //TODO - Should this be "/api/"?
+        sessionCookie.setAttribute("SameSite", "Lax");
+        sessionCookie.setMaxAge(TimeUtils.WEEK_SECONDS); //TODO - Configure this with "Remember Me" at one point
 
-        response.addCookie(cookie);
+        Cookie loggedInCookie = new Cookie(ConnectionUtils.LOGGED_IN_COOKIE_NAME, "true");
+        loggedInCookie.setSecure(false);
+        loggedInCookie.setHttpOnly(false);
+        loggedInCookie.setAttribute("SameSite", "Lax");
+        loggedInCookie.setMaxAge(TimeUtils.WEEK_SECONDS);
+        loggedInCookie.setPath("/");
+
+        response.addCookie(sessionCookie);
+        response.addCookie(loggedInCookie);
 
         //Declare the URL object used to redirect to the frontend application
         //TODO - Make the domain an environment variable
