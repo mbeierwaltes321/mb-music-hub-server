@@ -52,6 +52,11 @@ public class ValkeyClient {
             this.valkeyGlide.get(GlideString.gs(SESSION_PREFIX + sessionID.toString()))
         .thenApply((GlideString serializedToken) -> {
 
+            if (!serializedToken.canConvertToString() || serializedToken.getString() == "null") {
+                InvalidSessionIdException ex = new InvalidSessionIdException("Unable to retrieve Spotfiy Tokens.");
+                throw new CompletionException(ex);
+            }
+
             SpotifyTokenInfo tokenInfo;
             try {
                 //Build the spotify token information

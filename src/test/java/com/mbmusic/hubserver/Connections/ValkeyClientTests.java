@@ -78,10 +78,10 @@ public class ValkeyClientTests extends BaseTest {
     }
 
     /**
-     * This method tests both scenarios in getSpotifyAPITokenAsync involving an invalid session id
+     * This method tests aall scenarios in getSpotifyAPITokenAsync involving an invalid session id
      */
     @Test
-    public void shouldGetInvalidSessionIdWhenRetrievingToken() {
+    public void shouldGetInvalidSessionIdBeforeRetrievingToken() {
         UUID nullInvalidUuid = null;
         UUID nilInvalidUuid = UUID.fromString("00000000-0000-0000-0000-000000000000");
 
@@ -96,6 +96,24 @@ public class ValkeyClientTests extends BaseTest {
         assertTrue(() -> {
             return exceptionFromNull.getMessage().contains("Provided Session ID Invalid") &&
                 exceptionFromNil.getMessage().contains("Provided Session ID Invalid");
+        });
+    }
+
+    @Test
+    public void shouldGetInvalidSessionIdExceptionWhenSessionDoesnotExist() {
+        UUID invalidUuid = UUID.randomUUID();
+
+        when(mockGlideClient.get(any(GlideString.class)))
+            .thenReturn(CompletableFuture.completedFuture(GlideString.of("null")));
+        
+        var returnedException = assertThrows(CompletionException.class, () -> {
+            valkeyClient.getSpotifyAPITokenAsync(invalidUuid).join();
+        });
+
+        assertInstanceOf(InvalidSessionIdException.class, returnedException.getCause());
+        
+        assertTrue(() -> {
+            return returnedException.getMessage().contains("Unable to retrieve Spotfiy Tokens.");
         });
     }
 

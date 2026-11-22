@@ -9,6 +9,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.asyncDispatch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -18,9 +19,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.io.IOException;
 import java.net.URI;
+import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
+import java.util.stream.Stream;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -32,6 +36,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.web.util.UriUtils;
 
 import com.mbmusic.hubserver.BaseTest;
 import com.mbmusic.hubserver.Common.Utilities.TimeUtils;
@@ -117,7 +122,7 @@ public class ConnectionControllerTests extends BaseTest {
      * @throws Exception
      */
     @Test
-    public void postSpotifyLoginSuccess() throws Exception {
+    public void getSpotifyLoginSuccess() throws Exception {
         final String URI_WITHOUT_STATE = "http://testuri.com/";
 
         final StringBuilder finalUri = new StringBuilder(URI_WITHOUT_STATE);
@@ -141,7 +146,7 @@ public class ConnectionControllerTests extends BaseTest {
      * @throws Exception
      */
     @Test
-    public void postSpotifyLogin_authorizationShouldReturnError() throws Exception {
+    public void getSpotifyLogin_authorizationShouldReturnError() throws Exception {
         URI URI_WITH_ERROR = new URI("http://testuri.com/?state=Hawaii&error=failure");
 
         when(mockApiGateway.createAuthorizationURI(anyString()))
@@ -163,7 +168,7 @@ public class ConnectionControllerTests extends BaseTest {
      * @throws Exception
      */
     @Test
-    public void postSpotifyLogin_stateShouldNotMatch() throws Exception {
+    public void getSpotifyLogin_stateShouldNotMatch() throws Exception {
         URI URI_WITH_INVALID_STATE = new URI("http://testuri.com/?state=Invalid!!!");
 
         when(mockApiGateway.createAuthorizationURI(anyString()))
@@ -203,13 +208,33 @@ public class ConnectionControllerTests extends BaseTest {
             .queryParam("state", "Hawaii"))
             .andExpect(status().isFound())
             .andExpect((MvcResult result) -> {
-                Cookie returnedCookie = result.getResponse().getCookies()[0];
-                assertTrue(() -> returnedCookie.getSecure() == false &&
+
+                var sessionCookie = Arrays.stream(result.getResponse().getCookies())
+                    .filter(cookie -> cookie.getName() == ConnectionUtils.SPOTIFY_COOKIE_NAME)
+                    .findFirst();
+                
+                assertTrue(sessionCookie.isPresent());
+                assertTrue(() -> sessionCookie.get().getSecure() == false &&
+                        sessionCookie.get().getName() == ConnectionUtils.SPOTIFY_COOKIE_NAME &&
                         //returnedCookie.getDomain().contentEquals("127.0.0.1") &&
-                        returnedCookie.isHttpOnly() == true &&
-                        returnedCookie.getPath().contentEquals("/") &&
-                        returnedCookie.getAttribute("SameSite").contentEquals("Lax") &&
-                        returnedCookie.getMaxAge() == TimeUtils.WEEK_SECONDS
+                        sessionCookie.get().isHttpOnly() == true &&
+                        sessionCookie.get().getPath().contentEquals("/") &&
+                        sessionCookie.get().getAttribute("SameSite").contentEquals("Lax") &&
+                        sessionCookie.get().getMaxAge() == TimeUtils.WEEK_SECONDS
+                );
+
+                var loggedInCookie = Arrays.stream(result.getResponse().getCookies())
+                    .filter(cookie -> cookie.getName() == ConnectionUtils.LOGGED_IN_COOKIE_NAME)
+                    .findFirst();
+
+                assertTrue(loggedInCookie.isPresent());
+                assertTrue(() -> loggedInCookie.get().getSecure() == false &&
+                        loggedInCookie.get().getName() == ConnectionUtils.LOGGED_IN_COOKIE_NAME &&
+                        //returnedCookie.getDomain().contentEquals("127.0.0.1") &&
+                        loggedInCookie.get().isHttpOnly() == false &&
+                        loggedInCookie.get().getPath().contentEquals("/") &&
+                        loggedInCookie.get().getAttribute("SameSite").contentEquals("Lax") &&
+                        loggedInCookie.get().getMaxAge() == TimeUtils.WEEK_SECONDS
                 );
 
                 String locationHeader = result.getResponse().getHeader("Location");
@@ -299,6 +324,44 @@ public class ConnectionControllerTests extends BaseTest {
 
         assertInstanceOf(RuntimeException.class, exception.getCause());
         assertTrue(exception.getMessage().contains("Error redirecting to the front end"));
+    }
+
+    @Test
+    public void generateSpotifyAuthToken_shouldExtractFrontendPath_FromState() throws Exception {
+        final String SUCCESSFUL_CODE = "success";
+        final String STATE = UriUtils.decode("/playlist/1234/_1234567890abcdef", StandardCharsets.UTF_8);
+        final HttpServletResponse mockResponse = mock(HttpServletResponse.class);
+
+        when(mockApiGateway.getAuthorizationCodeCredentials(SUCCESSFUL_CODE))
+            .thenReturn(getMockAuthorizationCreds());
+        
+        when(mockValkeyClient.upsertSpotifyAPITokenAsync(any(UUID.class), any(SpotifyTokenInfo.class)))
+            .thenReturn(CompletableFuture.completedFuture(true));
+
+        ConnectionController connectionController = new ConnectionController(mockApiConnection, mockValkeyClient);
+
+        connectionController.generateSpotifyAuthToken(SUCCESSFUL_CODE, STATE, mockResponse).join();
+
+        verify(mockResponse).sendRedirect("http://127.0.0.1:5173/playlist/1234/");
+    }
+
+    @Test
+    public void generateSpotifyAuthToken_shouldExtractFrontendPath_FromStateWithoutPath() throws Exception {
+        final String SUCCESSFUL_CODE = "success";
+        final String STATE = UriUtils.decode("_1234567890abcdef", StandardCharsets.UTF_8);
+        final HttpServletResponse mockResponse = mock(HttpServletResponse.class);
+
+        when(mockApiGateway.getAuthorizationCodeCredentials(SUCCESSFUL_CODE))
+            .thenReturn(getMockAuthorizationCreds());
+        
+        when(mockValkeyClient.upsertSpotifyAPITokenAsync(any(UUID.class), any(SpotifyTokenInfo.class)))
+            .thenReturn(CompletableFuture.completedFuture(true));
+
+        ConnectionController connectionController = new ConnectionController(mockApiConnection, mockValkeyClient);
+
+        connectionController.generateSpotifyAuthToken(SUCCESSFUL_CODE, STATE, mockResponse).join();
+
+        verify(mockResponse).sendRedirect("http://127.0.0.1:5173/");
     }
 
     //#endregion
